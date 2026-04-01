@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 
@@ -7,8 +8,25 @@ import {
   KeyValue,
   Row,
 } from '@folio/stripes/components';
+import { useCategories } from '@folio/stripes-acq-components';
+
+import { RECIPIENT_PRIMARY_EMAIL } from '../../constants';
 
 export const EmailView = ({ ediEmail = {} }) => {
+  const { categories } = useCategories();
+
+  const recipientLabel = useMemo(() => {
+    if (!ediEmail.recipient) return '-';
+
+    if (ediEmail.recipient === RECIPIENT_PRIMARY_EMAIL) {
+      return <FormattedMessage id="ui-organizations.integration.email.recipient.primaryEmail" />;
+    }
+
+    const category = categories.find(c => c.id === ediEmail.recipient);
+
+    return category?.value || ediEmail.recipient;
+  }, [ediEmail.recipient, categories]);
+
   return (
     <Accordion
       id="email"
@@ -16,13 +34,23 @@ export const EmailView = ({ ediEmail = {} }) => {
     >
       <Row>
         <Col
-          data-test-email-address
+          data-test-sender-address
           xs={6}
           md={3}
         >
           <KeyValue
-            label={<FormattedMessage id="ui-organizations.integration.email.emailAddress" />}
-            value={ediEmail.emailTo}
+            label={<FormattedMessage id="ui-organizations.integration.email.senderAddress" />}
+            value={ediEmail.emailFrom}
+          />
+        </Col>
+        <Col
+          data-test-recipient
+          xs={6}
+          md={3}
+        >
+          <KeyValue
+            label={<FormattedMessage id="ui-organizations.integration.email.recipient" />}
+            value={recipientLabel}
           />
         </Col>
         <Col

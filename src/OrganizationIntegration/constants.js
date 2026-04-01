@@ -59,3 +59,10 @@ export const FILE_FORMAT = {
   edi: 'EDI',
   eml: 'EML',
 };
+
+export const RECIPIENT_PRIMARY_EMAIL = 'primaryEmail';
+
+export const ATTACHMENT_FORMAT = {
+  csv: 'CSV',
+  edi: 'EDI',
+};

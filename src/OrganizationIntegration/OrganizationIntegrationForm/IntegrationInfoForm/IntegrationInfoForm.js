@@ -65,7 +65,17 @@ export const IntegrationInfoForm = ({
 
   const integrationTypeOptions = useMemo(() => getIntegrationTypeOptions(intl), [intl]);
   const transmissionMethodOptions = useMemo(() => getTransmissionMethodOptions(intl), [intl]);
+  // Ordering: only FTP and Email (no File download — original folio-org behavior)
+  const orderingTransmissionMethodOptions = useMemo(
+    () => transmissionMethodOptions.filter(o => o.value !== TRANSMISSION_METHOD.fileDownLoad),
+    [transmissionMethodOptions],
+  );
   const fileFormatOptions = useMemo(() => getFileFormatOptions(), []);
+  // For email: CSV and EDI only (no EML), CSV is the default
+  const emailFileFormatOptions = useMemo(
+    () => fileFormatOptions.filter(o => o.value !== FILE_FORMAT.eml),
+    [fileFormatOptions],
+  );
 
   const configPath = 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig';
 
@@ -95,7 +105,7 @@ export const IntegrationInfoForm = ({
       change(`${configPath}.transmissionMethod`, value);
 
       if (value === TRANSMISSION_METHOD.email) {
-        change(`${configPath}.fileFormat`, FILE_FORMAT.eml);
+        change(`${configPath}.fileFormat`, FILE_FORMAT.csv);
       } else if (value === TRANSMISSION_METHOD.ftp && isOrderingType) {
         change(`${configPath}.fileFormat`, FILE_FORMAT.edi);
       }
@@ -154,7 +164,7 @@ export const IntegrationInfoForm = ({
         <Col xs={3}>
           <Field
             component={Select}
-            dataOptions={transmissionMethodOptions}
+            dataOptions={isOrderingType ? orderingTransmissionMethodOptions : transmissionMethodOptions}
             fullWidth
             label={<FormattedMessage id="ui-organizations.integration.info.transmissionMethod" />}
             name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.transmissionMethod"
@@ -165,8 +175,8 @@ export const IntegrationInfoForm = ({
         <Col xs={3}>
           <Field
             component={Select}
-            dataOptions={fileFormatOptions}
-            disabled={isMethodEmail || (isOrderingType && isMethodFTP)}
+            dataOptions={isMethodEmail ? emailFileFormatOptions : fileFormatOptions}
+            disabled={isOrderingType && isMethodFTP}
             fullWidth
             label={<FormattedMessage id="ui-organizations.integration.info.fileFormat" />}
             name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.fileFormat"

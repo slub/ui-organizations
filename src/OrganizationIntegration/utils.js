@@ -196,7 +196,3 @@ export const validateFTPServerAddress = (...params) => {
 export const validateFTPPort = (...params) => {
   return createConditionalValidator(isTransmissionMethodFTP, validateRequired)(...params);
 };
-
-export const validateEmailAddress = (...params) => {
-  return createConditionalValidator(isTransmissionMethodEmail, validateRequired)(...params);
-};

@@ -388,7 +388,7 @@
   "integration.info.fileFormat": "File format",
   "integration.edi": "EDI configuration",
   "integration.edi.accountNumbers": "Account numbers",
-  "integration.edi.defaultAcquisitionMethods": "Automate order export for acquisition methods",
+  "integration.edi.defaultAcquisitionMethods": "Acquisition methods",
   "integration.edi.vendorEDICode": "Vendor EDI code",
   "integration.edi.vendorEDIType": "Vendor EDI type",
   "integration.edi.libraryEDICode": "Library EDI code",

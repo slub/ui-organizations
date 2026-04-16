@@ -373,11 +373,6 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                               required=""
                             >
                               <option
-                                value="File download"
-                              >
-                                ui-organizations.integration.info.transmissionMethod.fileDownLoad
-                              </option>
-                              <option
                                 value="FTP"
                               >
                                 ui-organizations.integration.info.transmissionMethod.ftp
@@ -453,9 +448,13 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                           />
                         </div>
                       </div>
+                    </div>
+                    <div
+                      class="row"
+                    >
                       <div
                         class="col-xs-6 col-md-3"
-                        data-test-edi-account-numbers="true"
+                        data-test-edi-acq-methods="true"
                       >
                         <div
                           class="select inputGroup fullWidth"
@@ -465,7 +464,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                             for="select-12"
                             id="select-12-label"
                           >
-                            ui-organizations.integration.edi.accountNumbers
+                            ui-organizations.integration.edi.defaultAcquisitionMethods
                           </label>
                           <div
                             class="selectWrap"
@@ -473,9 +472,40 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                             <select
                               aria-invalid="false"
                               aria-labelledby="select-12-label"
-                              aria-required="false"
                               class="selectControl formControl"
                               id="select-12"
+                              multiple=""
+                              name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.defaultAcquisitionMethods"
+                            />
+                          </div>
+                          <div
+                            role="alert"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-edi-account-numbers="true"
+                      >
+                        <div
+                          class="select inputGroup fullWidth"
+                        >
+                          <label
+                            class="label"
+                            for="select-13"
+                            id="select-13-label"
+                          >
+                            ui-organizations.integration.edi.accountNumbers
+                          </label>
+                          <div
+                            class="selectWrap"
+                          >
+                            <select
+                              aria-invalid="false"
+                              aria-labelledby="select-13-label"
+                              aria-required="false"
+                              class="selectControl formControl"
+                              id="select-13"
                               multiple=""
                               name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.accountNoList"
                             >
@@ -562,37 +592,6 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                     <div
                       class="row"
                     >
-                      <div
-                        class="col-xs-6 col-md-3"
-                        data-test-edi-acq-methods="true"
-                      >
-                        <div
-                          class="select inputGroup fullWidth"
-                        >
-                          <label
-                            class="label"
-                            for="select-13"
-                            id="select-13-label"
-                          >
-                            ui-organizations.integration.edi.defaultAcquisitionMethods
-                          </label>
-                          <div
-                            class="selectWrap"
-                          >
-                            <select
-                              aria-invalid="false"
-                              aria-labelledby="select-13-label"
-                              class="selectControl formControl"
-                              id="select-13"
-                              multiple=""
-                              name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.defaultAcquisitionMethods"
-                            />
-                          </div>
-                          <div
-                            role="alert"
-                          />
-                        </div>
-                      </div>
                       <div
                         class="col-xs-6 col-md-3"
                         data-test-vendor-edi-code="true"

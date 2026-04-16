@@ -28,6 +28,7 @@ import {
 } from '../../constants';
 import {
   getAccountOptions,
+  getAcqMethodOptions,
   getFileFormatOptions,
   getIntegrationTypeOptions,
   getTransmissionMethodOptions,
@@ -40,6 +41,7 @@ import {
 
 export const IntegrationInfoForm = ({
   accounts,
+  acqMethods,
   defaultIntegration,
 }) => {
   const intl = useIntl();
@@ -62,6 +64,7 @@ export const IntegrationInfoForm = ({
     ?.isDefaultConfig;
 
   const accountOptions = useMemo(() => getAccountOptions(accounts), [accounts]);
+  const acqMethodOptions = useMemo(() => getAcqMethodOptions(acqMethods), [acqMethods]);
 
   const integrationTypeOptions = useMemo(() => getIntegrationTypeOptions(intl), [intl]);
   const transmissionMethodOptions = useMemo(() => getTransmissionMethodOptions(intl), [intl]);
@@ -183,8 +186,24 @@ export const IntegrationInfoForm = ({
             required
           />
         </Col>
+      </Row>
+      <Row>
+        <Col
+          data-test-edi-acq-methods
+          xs={6}
+          md={3}
+        >
+          <Field
+            label={<FormattedMessage id="ui-organizations.integration.edi.defaultAcquisitionMethods" />}
+            name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.defaultAcquisitionMethods"
+            component={Select}
+            dataOptions={acqMethodOptions}
+            fullWidth
+            multiple
+          />
+        </Col>
         {
-          !isDefaultConfig && !isMethodEmail && (
+          !isDefaultConfig && (
             <Col
               data-test-edi-account-numbers
               xs={6}
@@ -210,5 +229,6 @@ export const IntegrationInfoForm = ({
 
 IntegrationInfoForm.propTypes = {
   accounts: PropTypes.arrayOf(PropTypes.string),
+  acqMethods: PropTypes.arrayOf(PropTypes.object),
   defaultIntegration: PropTypes.object,
 };

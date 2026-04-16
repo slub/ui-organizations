@@ -1,5 +1,3 @@
-import PropTypes from 'prop-types';
-import { useMemo } from 'react';
 import {
   Field,
   useForm,
@@ -22,16 +20,13 @@ import {
   EDI_NAMING_TOKENS,
 } from '../../constants';
 import {
-  getAcqMethodOptions,
   isFileFormatEDI,
   validateLibraryEDICode,
   validateVendorEDICode,
 } from '../../utils';
 
-export const EdiForm = ({ acqMethods }) => {
+export const EdiForm = () => {
   const { getState } = useForm();
-
-  const acqMethodOptions = useMemo(() => getAcqMethodOptions(acqMethods), [acqMethods]);
 
   const isFormatEDI = isFileFormatEDI(getState()?.values);
 
@@ -41,21 +36,6 @@ export const EdiForm = ({ acqMethods }) => {
       label={<FormattedMessage id="ui-organizations.integration.edi" />}
     >
       <Row>
-        <Col
-          data-test-edi-acq-methods
-          xs={6}
-          md={3}
-        >
-          <Field
-            label={<FormattedMessage id="ui-organizations.integration.edi.defaultAcquisitionMethods" />}
-            name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.defaultAcquisitionMethods"
-            component={Select}
-            dataOptions={acqMethodOptions}
-            fullWidth
-            multiple
-          />
-        </Col>
-
         <Col
           data-test-vendor-edi-code
           xs={6}
@@ -195,8 +175,4 @@ export const EdiForm = ({ acqMethods }) => {
       </Row>
     </Accordion>
   );
-};
-
-EdiForm.propTypes = {
-  acqMethods: PropTypes.arrayOf(PropTypes.object),
 };

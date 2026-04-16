@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import {
@@ -12,34 +11,13 @@ import {
 
 const EdiView = ({
   vendorEdiOrdersExportConfig = {},
-  acqMethods = [],
 }) => {
-  const defaultAcquisitionMethodsOptions = useMemo(() => {
-    const defaultAcquisitionMethods = vendorEdiOrdersExportConfig.ediConfig?.defaultAcquisitionMethods || [];
-
-    return acqMethods
-      .filter(({ id }) => defaultAcquisitionMethods.includes(id))
-      .map(({ value }) => value)
-      .join(', ');
-  }, [vendorEdiOrdersExportConfig.ediConfig?.defaultAcquisitionMethods, acqMethods]);
-
   return (
     <Accordion
       id="edi"
       label={<FormattedMessage id="ui-organizations.integration.edi" />}
     >
       <Row>
-        <Col
-          data-test-edi-acq-methods
-          xs={6}
-          md={3}
-        >
-          <KeyValue
-            label={<FormattedMessage id="ui-organizations.integration.edi.defaultAcquisitionMethods" />}
-            value={defaultAcquisitionMethodsOptions}
-          />
-        </Col>
-
         <Col
           data-test-vendor-edi-code
           xs={6}
@@ -151,7 +129,6 @@ const EdiView = ({
 
 EdiView.propTypes = {
   vendorEdiOrdersExportConfig: PropTypes.object,
-  acqMethods: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default EdiView;

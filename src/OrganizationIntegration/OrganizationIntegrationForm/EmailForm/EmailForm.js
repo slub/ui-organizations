@@ -38,6 +38,10 @@ const validateRecipient = (...params) => {
   return createConditionalValidator(isTransmissionMethodEmail, validateRequired)(...params);
 };
 
+const validateEmailTemplate = (...params) => {
+  return createConditionalValidator(isTransmissionMethodEmail, validateRequired)(...params);
+};
+
 export const EmailForm = ({ organizationEmails }) => {
   const intl = useIntl();
   const { change, getState } = useForm();
@@ -79,19 +83,19 @@ export const EmailForm = ({ organizationEmails }) => {
     currentRecipient && (
       (currentRecipient === RECIPIENT_PRIMARY_EMAIL && !hasPrimaryEmail) ||
       (currentRecipient !== RECIPIENT_PRIMARY_EMAIL && !categoryOptions.some(c => c.value === currentRecipient))
-    )
+    ),
   );
 
   // Build children array without falsy values — React.Children.map in stripes Select
   // iterates over false/null children and crashes on child.type
   const recipientSelectChildren = useMemo(() => {
-    const opts = [<option key="empty" value="" />];
+    const opts = [<option key="empty" value="" aria-label="empty" />];
 
     if (hasPrimaryEmail) {
       opts.push(
         <option key="primary" value={RECIPIENT_PRIMARY_EMAIL}>
           {intl.formatMessage({ id: 'ui-organizations.integration.email.recipient.primaryEmail' })}
-        </option>
+        </option>,
       );
     }
 
@@ -104,7 +108,7 @@ export const EmailForm = ({ organizationEmails }) => {
           {categoryOptions.map(c => (
             <option key={c.value} value={c.value}>{c.label}</option>
           ))}
-        </optgroup>
+        </optgroup>,
       );
     }
 
@@ -187,6 +191,8 @@ export const EmailForm = ({ organizationEmails }) => {
             dataOptions={templateOptions}
             disabled={isTemplatesLoading}
             fullWidth
+            required={isMethodEmail}
+            validate={validateEmailTemplate}
             validateFields={[]}
           />
         </Col>

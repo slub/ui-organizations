@@ -28,6 +28,9 @@ import {
 const TEMPLATES_API = 'templates';
 const TEMPLATE_SCOPE = 'orders';
 
+const EMAIL_SETTINGS_API = 'email/settings';
+const SMTP_CONFIG_QUERY = 'scope==mod-email and key==smtp-configuration';
+
 const ediEmailPath = 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediEmail';
 
 const validateEmailFrom = (...params) => {
@@ -56,6 +59,12 @@ export const EmailForm = ({ organizationEmails }) => {
     ?.vendorEdiOrdersExportConfig
     ?.ediEmail
     ?.recipient;
+
+  const currentEmailFrom = values
+    ?.exportTypeSpecificParameters
+    ?.vendorEdiOrdersExportConfig
+    ?.ediEmail
+    ?.emailFrom;
 
   const { categories } = useCategories();
 
@@ -135,6 +144,64 @@ export const EmailForm = ({ organizationEmails }) => {
     { enabled: isMethodEmail },
   );
 
+  const { data: smtpData, isLoading: isSmtpLoading } = useQuery(
+    ['ui-organizations', 'email-smtp-settings'],
+    () => ky.get(EMAIL_SETTINGS_API, {
+      searchParams: { query: SMTP_CONFIG_QUERY },
+    }).json(),
+    { enabled: isMethodEmail },
+  );
+
+  const smtpConfig = smtpData?.settings?.[0]?.value;
+
+  // Dedupe by address; aliases override `from` only if they add a name
+  const senderOptions = useMemo(() => {
+    if (!smtpConfig?.from) return [];
+
+    const byAddress = new Map();
+
+    byAddress.set(smtpConfig.from, { address: smtpConfig.from });
+    (smtpConfig.fromAliases || []).forEach(alias => {
+      const existing = byAddress.get(alias.address);
+
+      if (!existing || (alias.name && !existing.name)) {
+        byAddress.set(alias.address, alias);
+      }
+    });
+
+    return Array.from(byAddress.values());
+  }, [smtpConfig]);
+
+  const isEmailFromOrphaned = Boolean(
+    isMethodEmail
+    && currentEmailFrom
+    && senderOptions.length > 0
+    && !senderOptions.some(o => o.address === currentEmailFrom),
+  );
+
+  const senderDataOptions = useMemo(() => {
+    const options = senderOptions.map(o => ({
+      value: o.address,
+      label: o.name ? `${o.name} <${o.address}>` : o.address,
+    }));
+
+    if (isEmailFromOrphaned && currentEmailFrom) {
+      options.unshift({ value: currentEmailFrom, label: currentEmailFrom });
+    }
+
+    return options;
+  }, [senderOptions, isEmailFromOrphaned, currentEmailFrom]);
+
+  const hasNoSender = isMethodEmail && !isSmtpLoading && senderOptions.length === 0;
+  const hasMultipleSenders = senderOptions.length >= 2;
+
+  // Auto-select default `from` once SMTP config is loaded and no value is saved yet
+  useEffect(() => {
+    if (!smtpConfig?.from || currentEmailFrom) return;
+    change(`${ediEmailPath}.emailFrom`, smtpConfig.from);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [smtpConfig]);
+
   const templateOptions = useMemo(() => {
     const options = [{ value: '', label: '' }];
     const templates = templatesData?.templates || [];
@@ -157,18 +224,42 @@ export const EmailForm = ({ organizationEmails }) => {
           <FormattedMessage id="ui-organizations.integration.email.recipient.orphanedWarning" />
         </MessageBanner>
       )}
+      {hasNoSender && (
+        <MessageBanner type="error">
+          <FormattedMessage id="ui-organizations.integration.email.senderAddress.noSenderError" />
+        </MessageBanner>
+      )}
+      {isEmailFromOrphaned && (
+        <MessageBanner type="warning">
+          <FormattedMessage id="ui-organizations.integration.email.senderAddress.orphanedWarning" />
+        </MessageBanner>
+      )}
       <Row>
         <Col xs={4}>
-          <Field
-            label={<FormattedMessage id="ui-organizations.integration.email.senderAddress" />}
-            name={`${ediEmailPath}.emailFrom`}
-            type="email"
-            component={TextField}
-            fullWidth
-            required={isMethodEmail}
-            validate={validateEmailFrom}
-            validateFields={[]}
-          />
+          {hasMultipleSenders ? (
+            <Field
+              label={<FormattedMessage id="ui-organizations.integration.email.senderAddress" />}
+              name={`${ediEmailPath}.emailFrom`}
+              component={Select}
+              dataOptions={senderDataOptions}
+              fullWidth
+              required={isMethodEmail}
+              validate={validateEmailFrom}
+              validateFields={[]}
+            />
+          ) : (
+            <Field
+              label={<FormattedMessage id="ui-organizations.integration.email.senderAddress" />}
+              name={`${ediEmailPath}.emailFrom`}
+              type="email"
+              component={TextField}
+              disabled
+              fullWidth
+              required={isMethodEmail}
+              validate={validateEmailFrom}
+              validateFields={[]}
+            />
+          )}
         </Col>
         <Col xs={4}>
           <Field

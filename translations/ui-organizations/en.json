@@ -415,6 +415,8 @@
   "integration.ftp.notes": "Notes",
   "integration.email": "Email details",
   "integration.email.senderAddress": "Sender address",
+  "integration.email.senderAddress.noSenderError": "No sender address is configured in the email settings. Please ask your administrator to configure one.",
+  "integration.email.senderAddress.orphanedWarning": "The previously selected sender address is no longer configured in the email settings. Please select a new sender address.",
   "integration.email.emailTemplate": "Email template",
   "integration.email.recipient": "Recipient",
   "integration.email.recipient.primaryEmail": "Organization primary email",

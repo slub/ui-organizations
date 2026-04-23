@@ -179,28 +179,51 @@ export const EmailForm = ({ organizationEmails }) => {
     && !senderOptions.some(o => o.address === currentEmailFrom),
   );
 
-  const senderDataOptions = useMemo(() => {
-    const options = senderOptions.map(o => ({
-      value: o.address,
-      label: o.name ? `${o.name} <${o.address}>` : o.address,
-    }));
+  // No auto-select for sender: the user must pick consciously (separator layout
+  // mirrors the Recipient field, so admins treat both fields the same way).
+  const senderSelectChildren = useMemo(() => {
+    if (senderOptions.length === 0) return null;
+
+    const opts = [<option key="empty" value="" aria-label="empty" />];
 
     if (isEmailFromOrphaned && currentEmailFrom) {
-      options.unshift({ value: currentEmailFrom, label: currentEmailFrom });
+      opts.push(
+        <option key="orphan" value={currentEmailFrom}>
+          {currentEmailFrom}
+        </option>,
+      );
     }
 
-    return options;
-  }, [senderOptions, isEmailFromOrphaned, currentEmailFrom]);
+    const defaultAddress = smtpConfig?.from;
+    const defaultOption = senderOptions.find(o => o.address === defaultAddress);
+    const aliasOptions = senderOptions.filter(o => o.address !== defaultAddress);
+
+    if (defaultOption) {
+      opts.push(
+        <option key="default" value={defaultOption.address}>
+          {defaultOption.name
+            ? `${defaultOption.name} <${defaultOption.address}>`
+            : defaultOption.address}
+        </option>,
+      );
+    }
+
+    if (aliasOptions.length > 0) {
+      opts.push(
+        <optgroup key="aliases" label="──────────────────────────">
+          {aliasOptions.map(o => (
+            <option key={o.address} value={o.address}>
+              {o.name ? `${o.name} <${o.address}>` : o.address}
+            </option>
+          ))}
+        </optgroup>,
+      );
+    }
+
+    return opts;
+  }, [senderOptions, isEmailFromOrphaned, currentEmailFrom, smtpConfig]);
 
   const hasNoSender = isMethodEmail && !isSmtpLoading && senderOptions.length === 0;
-  const hasMultipleSenders = senderOptions.length >= 2;
-
-  // Auto-select default `from` once SMTP config is loaded and no value is saved yet
-  useEffect(() => {
-    if (!smtpConfig?.from || currentEmailFrom) return;
-    change(`${ediEmailPath}.emailFrom`, smtpConfig.from);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [smtpConfig]);
 
   const templateOptions = useMemo(() => {
     const options = [{ value: '', label: '' }];
@@ -236,17 +259,18 @@ export const EmailForm = ({ organizationEmails }) => {
       )}
       <Row>
         <Col xs={4}>
-          {hasMultipleSenders ? (
+          {senderOptions.length > 0 ? (
             <Field
               label={<FormattedMessage id="ui-organizations.integration.email.senderAddress" />}
               name={`${ediEmailPath}.emailFrom`}
               component={Select}
-              dataOptions={senderDataOptions}
               fullWidth
               required={isMethodEmail}
               validate={validateEmailFrom}
               validateFields={[]}
-            />
+            >
+              {senderSelectChildren}
+            </Field>
           ) : (
             <Field
               label={<FormattedMessage id="ui-organizations.integration.email.senderAddress" />}

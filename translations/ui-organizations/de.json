@@ -324,7 +324,7 @@
     "integration.info.isDefaultConfig": "Standardintegration",
     "integration.edi": "EDI-Konfiguration",
     "integration.edi.accountNumbers": "Kundennummern",
-    "integration.edi.defaultAcquisitionMethods": "Auftragsexport für Erwerbungsarten automatisieren",
+    "integration.edi.defaultAcquisitionMethods": "Erwerbungsarten",
     "integration.edi.vendorEDICode": "EDI-Kennung des Lieferanten",
     "integration.edi.vendorEDIType": "EDI-Typ des Lieferanten",
     "integration.edi.libraryEDICode": "EDI-Kennung der Bibliothek",

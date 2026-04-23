@@ -28,6 +28,9 @@ import {
 const TEMPLATES_API = 'templates';
 const TEMPLATE_SCOPE = 'orders';
 
+const EMAIL_SETTINGS_API = 'email/settings';
+const SMTP_CONFIG_QUERY = 'scope==mod-email and key==smtp-configuration';
+
 const ediEmailPath = 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediEmail';
 
 const validateEmailFrom = (...params) => {
@@ -35,6 +38,10 @@ const validateEmailFrom = (...params) => {
 };
 
 const validateRecipient = (...params) => {
+  return createConditionalValidator(isTransmissionMethodEmail, validateRequired)(...params);
+};
+
+const validateEmailTemplate = (...params) => {
   return createConditionalValidator(isTransmissionMethodEmail, validateRequired)(...params);
 };
 
@@ -52,6 +59,12 @@ export const EmailForm = ({ organizationEmails }) => {
     ?.vendorEdiOrdersExportConfig
     ?.ediEmail
     ?.recipient;
+
+  const currentEmailFrom = values
+    ?.exportTypeSpecificParameters
+    ?.vendorEdiOrdersExportConfig
+    ?.ediEmail
+    ?.emailFrom;
 
   const { categories } = useCategories();
 
@@ -79,19 +92,19 @@ export const EmailForm = ({ organizationEmails }) => {
     currentRecipient && (
       (currentRecipient === RECIPIENT_PRIMARY_EMAIL && !hasPrimaryEmail) ||
       (currentRecipient !== RECIPIENT_PRIMARY_EMAIL && !categoryOptions.some(c => c.value === currentRecipient))
-    )
+    ),
   );
 
   // Build children array without falsy values — React.Children.map in stripes Select
   // iterates over false/null children and crashes on child.type
   const recipientSelectChildren = useMemo(() => {
-    const opts = [<option key="empty" value="" />];
+    const opts = [<option key="empty" value="" aria-label="empty" />];
 
     if (hasPrimaryEmail) {
       opts.push(
         <option key="primary" value={RECIPIENT_PRIMARY_EMAIL}>
           {intl.formatMessage({ id: 'ui-organizations.integration.email.recipient.primaryEmail' })}
-        </option>
+        </option>,
       );
     }
 
@@ -104,7 +117,7 @@ export const EmailForm = ({ organizationEmails }) => {
           {categoryOptions.map(c => (
             <option key={c.value} value={c.value}>{c.label}</option>
           ))}
-        </optgroup>
+        </optgroup>,
       );
     }
 
@@ -131,6 +144,87 @@ export const EmailForm = ({ organizationEmails }) => {
     { enabled: isMethodEmail },
   );
 
+  const { data: smtpData, isLoading: isSmtpLoading } = useQuery(
+    ['ui-organizations', 'email-smtp-settings'],
+    () => ky.get(EMAIL_SETTINGS_API, {
+      searchParams: { query: SMTP_CONFIG_QUERY },
+    }).json(),
+    { enabled: isMethodEmail },
+  );
+
+  const smtpConfig = smtpData?.settings?.[0]?.value;
+
+  // Dedupe by address; aliases override `from` only if they add a name
+  const senderOptions = useMemo(() => {
+    if (!smtpConfig?.from) return [];
+
+    const byAddress = new Map();
+
+    byAddress.set(smtpConfig.from, { address: smtpConfig.from });
+    (smtpConfig.fromAliases || []).forEach(alias => {
+      const existing = byAddress.get(alias.address);
+
+      if (!existing || (alias.name && !existing.name)) {
+        byAddress.set(alias.address, alias);
+      }
+    });
+
+    return Array.from(byAddress.values());
+  }, [smtpConfig]);
+
+  const isEmailFromOrphaned = Boolean(
+    isMethodEmail
+    && currentEmailFrom
+    && senderOptions.length > 0
+    && !senderOptions.some(o => o.address === currentEmailFrom),
+  );
+
+  // No auto-select for sender: the user must pick consciously (separator layout
+  // mirrors the Recipient field, so admins treat both fields the same way).
+  const senderSelectChildren = useMemo(() => {
+    if (senderOptions.length === 0) return null;
+
+    const opts = [<option key="empty" value="" aria-label="empty" />];
+
+    if (isEmailFromOrphaned && currentEmailFrom) {
+      opts.push(
+        <option key="orphan" value={currentEmailFrom}>
+          {currentEmailFrom}
+        </option>,
+      );
+    }
+
+    const defaultAddress = smtpConfig?.from;
+    const defaultOption = senderOptions.find(o => o.address === defaultAddress);
+    const aliasOptions = senderOptions.filter(o => o.address !== defaultAddress);
+
+    if (defaultOption) {
+      opts.push(
+        <option key="default" value={defaultOption.address}>
+          {defaultOption.name
+            ? `${defaultOption.name} <${defaultOption.address}>`
+            : defaultOption.address}
+        </option>,
+      );
+    }
+
+    if (aliasOptions.length > 0) {
+      opts.push(
+        <optgroup key="aliases" label="──────────────────────────">
+          {aliasOptions.map(o => (
+            <option key={o.address} value={o.address}>
+              {o.name ? `${o.name} <${o.address}>` : o.address}
+            </option>
+          ))}
+        </optgroup>,
+      );
+    }
+
+    return opts;
+  }, [senderOptions, isEmailFromOrphaned, currentEmailFrom, smtpConfig]);
+
+  const hasNoSender = isMethodEmail && !isSmtpLoading && senderOptions.length === 0;
+
   const templateOptions = useMemo(() => {
     const options = [{ value: '', label: '' }];
     const templates = templatesData?.templates || [];
@@ -153,18 +247,43 @@ export const EmailForm = ({ organizationEmails }) => {
           <FormattedMessage id="ui-organizations.integration.email.recipient.orphanedWarning" />
         </MessageBanner>
       )}
+      {hasNoSender && (
+        <MessageBanner type="error">
+          <FormattedMessage id="ui-organizations.integration.email.senderAddress.noSenderError" />
+        </MessageBanner>
+      )}
+      {isEmailFromOrphaned && (
+        <MessageBanner type="warning">
+          <FormattedMessage id="ui-organizations.integration.email.senderAddress.orphanedWarning" />
+        </MessageBanner>
+      )}
       <Row>
         <Col xs={4}>
-          <Field
-            label={<FormattedMessage id="ui-organizations.integration.email.senderAddress" />}
-            name={`${ediEmailPath}.emailFrom`}
-            type="email"
-            component={TextField}
-            fullWidth
-            required={isMethodEmail}
-            validate={validateEmailFrom}
-            validateFields={[]}
-          />
+          {senderOptions.length > 0 ? (
+            <Field
+              label={<FormattedMessage id="ui-organizations.integration.email.senderAddress" />}
+              name={`${ediEmailPath}.emailFrom`}
+              component={Select}
+              fullWidth
+              required={isMethodEmail}
+              validate={validateEmailFrom}
+              validateFields={[]}
+            >
+              {senderSelectChildren}
+            </Field>
+          ) : (
+            <Field
+              label={<FormattedMessage id="ui-organizations.integration.email.senderAddress" />}
+              name={`${ediEmailPath}.emailFrom`}
+              type="email"
+              component={TextField}
+              disabled
+              fullWidth
+              required={isMethodEmail}
+              validate={validateEmailFrom}
+              validateFields={[]}
+            />
+          )}
         </Col>
         <Col xs={4}>
           <Field
@@ -187,6 +306,8 @@ export const EmailForm = ({ organizationEmails }) => {
             dataOptions={templateOptions}
             disabled={isTemplatesLoading}
             fullWidth
+            required={isMethodEmail}
+            validate={validateEmailTemplate}
             validateFields={[]}
           />
         </Col>

@@ -30,6 +30,7 @@ import {
 import { ORGANIZATIONS_ROUTE } from '../../common/constants';
 import {
   isClaimingIntegration,
+  isFileFormatEDI,
   isTransmissionMethodFTP,
   isTransmissionMethodEmail,
 } from '../utils';
@@ -119,6 +120,7 @@ const OrganizationIntegrationForm = ({
   const isClaimingType = isClaimingIntegration(formValues);
   const isMethodFTP = isTransmissionMethodFTP(formValues);
   const isMethodEmail = isTransmissionMethodEmail(formValues);
+  const isFormatEDI = isFileFormatEDI(formValues);
 
   return (
     <HasCommand
@@ -155,10 +157,11 @@ const OrganizationIntegrationForm = ({
               <AccordionSet id="org-integration-form-accordion-set">
                 <IntegrationInfoForm
                   accounts={accounts}
+                  acqMethods={acqMethods}
                   defaultIntegration={defaultIntegration}
                 />
 
-                {!isMethodEmail && <EdiForm acqMethods={acqMethods} />}
+                {(!isMethodEmail || isFormatEDI) && <EdiForm />}
 
                 {isMethodFTP && <FtpForm />}
 

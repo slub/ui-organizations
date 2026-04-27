@@ -19,7 +19,6 @@ import {
 } from '@folio/stripes/components';
 import { useCategories, validateRequired } from '@folio/stripes-acq-components';
 
-import { RECIPIENT_PRIMARY_EMAIL } from '../../constants';
 import {
   createConditionalValidator,
   isTransmissionMethodEmail,
@@ -54,11 +53,11 @@ export const EmailForm = ({ organizationEmails }) => {
   const formValues = getState()?.values;
   const isMethodEmail = isTransmissionMethodEmail(formValues);
 
-  const currentRecipient = values
+  const currentEmailTo = values
     ?.exportTypeSpecificParameters
     ?.vendorEdiOrdersExportConfig
     ?.ediEmail
-    ?.recipient;
+    ?.emailTo;
 
   const currentEmailFrom = values
     ?.exportTypeSpecificParameters
@@ -68,31 +67,52 @@ export const EmailForm = ({ organizationEmails }) => {
 
   const { categories } = useCategories();
 
-  const orgCategoryIds = useMemo(() => {
-    if (!organizationEmails?.length) return new Set();
-
-    return new Set(organizationEmails.flatMap(e => e.categories || []));
-  }, [organizationEmails]);
-
-  const hasPrimaryEmail = useMemo(
-    () => Boolean(organizationEmails?.some(e => e.isPrimary)),
+  // Resolve recipient tokens to actual addresses on the client (mod-data-export-spring
+  // does not resolve `recipient` server-side, so `emailTo` carries the literal address).
+  // Each option carries a group flag so the Select can render primary above an optgroup
+  // separator and the categories below.
+  const primaryEmail = useMemo(
+    () => organizationEmails?.find(e => e.isPrimary && e.value),
     [organizationEmails],
   );
 
-  const categoryOptions = useMemo(
-    () => categories
-      .filter(c => orgCategoryIds.has(c.id))
-      .map(c => ({ value: c.id, label: c.value })),
-    [categories, orgCategoryIds],
-  );
+  const categoryRecipientOptions = useMemo(() => {
+    const seen = new Set(primaryEmail ? [primaryEmail.value] : []);
 
-  const hasNoRecipients = !hasPrimaryEmail && categoryOptions.length === 0;
+    return categories
+      .map(category => {
+        // First email assigned to this category wins; backend rule for now.
+        const match = organizationEmails?.find(
+          e => e.value && (e.categories || []).includes(category.id),
+        );
+
+        if (!match || seen.has(match.value)) return null;
+        seen.add(match.value);
+
+        return {
+          key: `cat-${category.id}`,
+          value: match.value,
+          label: `${category.value} <${match.value}>`,
+        };
+      })
+      .filter(Boolean);
+  }, [categories, organizationEmails, primaryEmail]);
+
+  const recipientAddresses = useMemo(() => {
+    const addresses = new Set();
+
+    if (primaryEmail) addresses.add(primaryEmail.value);
+    categoryRecipientOptions.forEach(o => addresses.add(o.value));
+
+    return addresses;
+  }, [primaryEmail, categoryRecipientOptions]);
+
+  const hasNoRecipients = recipientAddresses.size === 0;
 
   const isRecipientOrphaned = Boolean(
-    currentRecipient && (
-      (currentRecipient === RECIPIENT_PRIMARY_EMAIL && !hasPrimaryEmail) ||
-      (currentRecipient !== RECIPIENT_PRIMARY_EMAIL && !categoryOptions.some(c => c.value === currentRecipient))
-    ),
+    currentEmailTo
+    && recipientAddresses.size > 0
+    && !recipientAddresses.has(currentEmailTo),
   );
 
   // Build children array without falsy values — React.Children.map in stripes Select
@@ -100,38 +120,46 @@ export const EmailForm = ({ organizationEmails }) => {
   const recipientSelectChildren = useMemo(() => {
     const opts = [<option key="empty" value="" aria-label="empty" />];
 
-    if (hasPrimaryEmail) {
+    if (isRecipientOrphaned && currentEmailTo) {
       opts.push(
-        <option key="primary" value={RECIPIENT_PRIMARY_EMAIL}>
-          {intl.formatMessage({ id: 'ui-organizations.integration.email.recipient.primaryEmail' })}
+        <option key="orphan" value={currentEmailTo}>
+          {currentEmailTo}
         </option>,
       );
     }
 
-    if (categoryOptions.length > 0) {
+    if (primaryEmail) {
+      opts.push(
+        <option key="primary" value={primaryEmail.value}>
+          {`${intl.formatMessage({ id: 'ui-organizations.integration.email.recipient.primaryEmail' })} <${primaryEmail.value}>`}
+        </option>,
+      );
+    }
+
+    if (categoryRecipientOptions.length > 0) {
       opts.push(
         <optgroup
           key="categories"
           label={`── ${intl.formatMessage({ id: 'ui-organizations.integration.email.recipient.categoriesGroup' })} ──────────────`}
         >
-          {categoryOptions.map(c => (
-            <option key={c.value} value={c.value}>{c.label}</option>
+          {categoryRecipientOptions.map(o => (
+            <option key={o.key} value={o.value}>{o.label}</option>
           ))}
         </optgroup>,
       );
     }
 
     return opts;
-  }, [hasPrimaryEmail, categoryOptions, intl]);
+  }, [primaryEmail, categoryRecipientOptions, isRecipientOrphaned, currentEmailTo, intl]);
 
-  // Auto-select on mount: primary email if available, else only category option
+  // Auto-select on mount: primary email's address if available, else the only option
   useEffect(() => {
-    if (currentRecipient) return;
+    if (currentEmailTo) return;
 
-    if (hasPrimaryEmail) {
-      change(`${ediEmailPath}.recipient`, RECIPIENT_PRIMARY_EMAIL);
-    } else if (categoryOptions.length === 1) {
-      change(`${ediEmailPath}.recipient`, categoryOptions[0].value);
+    if (primaryEmail) {
+      change(`${ediEmailPath}.emailTo`, primaryEmail.value);
+    } else if (categoryRecipientOptions.length === 1) {
+      change(`${ediEmailPath}.emailTo`, categoryRecipientOptions[0].value);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -288,7 +316,7 @@ export const EmailForm = ({ organizationEmails }) => {
         <Col xs={4}>
           <Field
             label={<FormattedMessage id="ui-organizations.integration.email.recipient" />}
-            name={`${ediEmailPath}.recipient`}
+            name={`${ediEmailPath}.emailTo`}
             component={Select}
             fullWidth
             required={isMethodEmail}

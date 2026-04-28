@@ -65,6 +65,12 @@ export const EmailForm = ({ organizationEmails }) => {
     ?.ediEmail
     ?.emailFrom;
 
+  const currentEmailBcc = values
+    ?.exportTypeSpecificParameters
+    ?.vendorEdiOrdersExportConfig
+    ?.ediEmail
+    ?.emailBcc;
+
   const { categories } = useCategories();
 
   // Resolve recipient tokens to actual addresses on the client (mod-data-export-spring
@@ -253,6 +259,71 @@ export const EmailForm = ({ organizationEmails }) => {
 
   const hasNoSender = isMethodEmail && !isSmtpLoading && senderOptions.length === 0;
 
+  const isEmailBccOrphaned = Boolean(
+    isMethodEmail
+    && currentEmailBcc
+    && senderOptions.length > 0
+    && !senderOptions.some(o => o.address === currentEmailBcc),
+  );
+
+  // Reactive Self-BCC correction: if the sender is changed to an address that's
+  // currently set as BCC, clear the BCC. Otherwise the form would silently hold
+  // an invalid combination (sender == BCC) until next save.
+  useEffect(() => {
+    if (currentEmailBcc && currentEmailBcc === currentEmailFrom) {
+      change(`${ediEmailPath}.emailBcc`, '');
+    }
+  }, [currentEmailFrom, currentEmailBcc, change]);
+
+  // The BCC select reuses senderOptions but excludes the currently selected
+  // sender (no point in BCC'ing yourself). When nothing is left to pick, the
+  // field stays visible but disabled so admins can see the feature exists.
+  const bccSelectChildren = useMemo(() => {
+    const opts = [<option key="empty" value="" aria-label="empty" />];
+
+    if (isEmailBccOrphaned && currentEmailBcc) {
+      opts.push(
+        <option key="orphan" value={currentEmailBcc}>
+          {currentEmailBcc}
+        </option>,
+      );
+    }
+
+    const availableSenders = senderOptions.filter(o => o.address !== currentEmailFrom);
+    const defaultAddress = smtpConfig?.from;
+    const defaultOption = availableSenders.find(o => o.address === defaultAddress);
+    const aliasOptions = availableSenders.filter(o => o.address !== defaultAddress);
+
+    if (defaultOption) {
+      opts.push(
+        <option key="default" value={defaultOption.address}>
+          {defaultOption.name
+            ? `${defaultOption.name} <${defaultOption.address}>`
+            : defaultOption.address}
+        </option>,
+      );
+    }
+
+    if (aliasOptions.length > 0) {
+      opts.push(
+        <optgroup key="aliases" label="──────────────────────────">
+          {aliasOptions.map(o => (
+            <option key={o.address} value={o.address}>
+              {o.name ? `${o.name} <${o.address}>` : o.address}
+            </option>
+          ))}
+        </optgroup>,
+      );
+    }
+
+    return opts;
+  }, [senderOptions, currentEmailFrom, isEmailBccOrphaned, currentEmailBcc, smtpConfig]);
+
+  const isBccSelectable = (
+    isEmailBccOrphaned
+    || senderOptions.some(o => o.address !== currentEmailFrom)
+  );
+
   const templateOptions = useMemo(() => {
     const options = [{ value: '', label: '' }];
     const templates = templatesData?.templates || [];
@@ -285,8 +356,13 @@ export const EmailForm = ({ organizationEmails }) => {
           <FormattedMessage id="ui-organizations.integration.email.senderAddress.orphanedWarning" />
         </MessageBanner>
       )}
+      {isEmailBccOrphaned && (
+        <MessageBanner type="warning">
+          <FormattedMessage id="ui-organizations.integration.email.bcc.orphanedWarning" />
+        </MessageBanner>
+      )}
       <Row>
-        <Col xs={4}>
+        <Col xs={3}>
           {senderOptions.length > 0 ? (
             <Field
               label={<FormattedMessage id="ui-organizations.integration.email.senderAddress" />}
@@ -313,7 +389,7 @@ export const EmailForm = ({ organizationEmails }) => {
             />
           )}
         </Col>
-        <Col xs={4}>
+        <Col xs={3}>
           <Field
             label={<FormattedMessage id="ui-organizations.integration.email.recipient" />}
             name={`${ediEmailPath}.emailTo`}
@@ -326,7 +402,19 @@ export const EmailForm = ({ organizationEmails }) => {
             {recipientSelectChildren}
           </Field>
         </Col>
-        <Col xs={4}>
+        <Col xs={3}>
+          <Field
+            label={<FormattedMessage id="ui-organizations.integration.email.bcc" />}
+            name={`${ediEmailPath}.emailBcc`}
+            component={Select}
+            disabled={!isBccSelectable}
+            fullWidth
+            validateFields={[]}
+          >
+            {bccSelectChildren}
+          </Field>
+        </Col>
+        <Col xs={3}>
           <Field
             label={<FormattedMessage id="ui-organizations.integration.email.emailTemplate" />}
             name={`${ediEmailPath}.emailTemplate`}

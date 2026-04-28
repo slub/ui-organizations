@@ -36,6 +36,16 @@ export const EmailView = ({ ediEmail = {} }) => {
           />
         </Col>
         <Col
+          data-test-bcc
+          xs={6}
+          md={3}
+        >
+          <KeyValue
+            label={<FormattedMessage id="ui-organizations.integration.email.bcc" />}
+            value={ediEmail.emailBcc || '-'}
+          />
+        </Col>
+        <Col
           data-test-email-template
           xs={6}
           md={3}

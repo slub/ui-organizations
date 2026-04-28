@@ -423,6 +423,8 @@
   "integration.email.recipient.categoriesGroup": "Categories",
   "integration.email.recipient.noRecipientsWarning": "No email address configured for this organization. Please add an email address in the Contact information tab.",
   "integration.email.recipient.orphanedWarning": "The previously selected recipient is no longer configured on this organization's email addresses. Please select a new recipient.",
+  "integration.email.bcc": "Archive copy (BCC)",
+  "integration.email.bcc.orphanedWarning": "The previously selected archive address is no longer configured in the email settings. Please select a different address or clear the field.",
   "integration.scheduling": "Scheduling",
   "integration.scheduling.scheduleEDI": "Schedule EDI",
   "integration.scheduling.schedulePeriod": "Schedule period",

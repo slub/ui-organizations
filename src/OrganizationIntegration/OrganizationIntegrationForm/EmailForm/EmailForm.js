@@ -17,7 +17,7 @@ import {
   Select,
   TextField,
 } from '@folio/stripes/components';
-import { useCategories, validateRequired } from '@folio/stripes-acq-components';
+import { validateRequired } from '@folio/stripes-acq-components';
 
 import {
   createConditionalValidator,
@@ -71,47 +71,30 @@ export const EmailForm = ({ organizationEmails }) => {
     ?.ediEmail
     ?.emailBcc;
 
-  const { categories } = useCategories();
-
-  // Resolve recipient tokens to actual addresses on the client (mod-data-export-spring
-  // does not resolve `recipient` server-side, so `emailTo` carries the literal address).
-  // Each option carries a group flag so the Select can render primary above an optgroup
-  // separator and the categories below.
-  const primaryEmail = useMemo(
-    () => organizationEmails?.find(e => e.isPrimary && e.value),
+  // Interim: single-select over the flat list of organization emails, Primary
+  // pinned first and tagged. `emailTo` stays a single resolved address string
+  // (mod-data-export-spring doesn't resolve tokens server-side). Once the
+  // backend accepts multiple recipients, this becomes a multi-select over the
+  // same list and `emailTo` becomes an array.
+  const recipientOptions = useMemo(
+    () => (organizationEmails || []).filter(e => e.value),
     [organizationEmails],
   );
 
-  const categoryRecipientOptions = useMemo(() => {
-    const seen = new Set(primaryEmail ? [primaryEmail.value] : []);
+  const primaryEmail = useMemo(
+    () => recipientOptions.find(e => e.isPrimary),
+    [recipientOptions],
+  );
 
-    return categories
-      .map(category => {
-        // First email assigned to this category wins; backend rule for now.
-        const match = organizationEmails?.find(
-          e => e.value && (e.categories || []).includes(category.id),
-        );
+  const otherRecipientOptions = useMemo(
+    () => recipientOptions.filter(e => e !== primaryEmail),
+    [recipientOptions, primaryEmail],
+  );
 
-        if (!match || seen.has(match.value)) return null;
-        seen.add(match.value);
-
-        return {
-          key: `cat-${category.id}`,
-          value: match.value,
-          label: `${category.value} <${match.value}>`,
-        };
-      })
-      .filter(Boolean);
-  }, [categories, organizationEmails, primaryEmail]);
-
-  const recipientAddresses = useMemo(() => {
-    const addresses = new Set();
-
-    if (primaryEmail) addresses.add(primaryEmail.value);
-    categoryRecipientOptions.forEach(o => addresses.add(o.value));
-
-    return addresses;
-  }, [primaryEmail, categoryRecipientOptions]);
+  const recipientAddresses = useMemo(
+    () => new Set(recipientOptions.map(e => e.value)),
+    [recipientOptions],
+  );
 
   const hasNoRecipients = recipientAddresses.size === 0;
 
@@ -120,6 +103,8 @@ export const EmailForm = ({ organizationEmails }) => {
     && recipientAddresses.size > 0
     && !recipientAddresses.has(currentEmailTo),
   );
+
+  const primaryLabel = intl.formatMessage({ id: 'ui-organizations.primaryItem' });
 
   // Build children array without falsy values — React.Children.map in stripes Select
   // iterates over false/null children and crashes on child.type
@@ -136,27 +121,22 @@ export const EmailForm = ({ organizationEmails }) => {
 
     if (primaryEmail) {
       opts.push(
-        <option key="primary" value={primaryEmail.value}>
-          {`${intl.formatMessage({ id: 'ui-organizations.integration.email.recipient.primaryEmail' })} <${primaryEmail.value}>`}
+        <option key={primaryEmail.value} value={primaryEmail.value}>
+          {`${primaryEmail.value} (${primaryLabel})`}
         </option>,
       );
     }
 
-    if (categoryRecipientOptions.length > 0) {
+    otherRecipientOptions.forEach(email => {
       opts.push(
-        <optgroup
-          key="categories"
-          label={`── ${intl.formatMessage({ id: 'ui-organizations.integration.email.recipient.categoriesGroup' })} ──────────────`}
-        >
-          {categoryRecipientOptions.map(o => (
-            <option key={o.key} value={o.value}>{o.label}</option>
-          ))}
-        </optgroup>,
+        <option key={email.value} value={email.value}>
+          {email.value}
+        </option>,
       );
-    }
+    });
 
     return opts;
-  }, [primaryEmail, categoryRecipientOptions, isRecipientOrphaned, currentEmailTo, intl]);
+  }, [primaryEmail, otherRecipientOptions, isRecipientOrphaned, currentEmailTo, primaryLabel]);
 
   // Auto-select on mount: primary email's address if available, else the only option
   useEffect(() => {
@@ -164,8 +144,8 @@ export const EmailForm = ({ organizationEmails }) => {
 
     if (primaryEmail) {
       change(`${ediEmailPath}.emailTo`, primaryEmail.value);
-    } else if (categoryRecipientOptions.length === 1) {
-      change(`${ediEmailPath}.emailTo`, categoryRecipientOptions[0].value);
+    } else if (recipientOptions.length === 1) {
+      change(`${ediEmailPath}.emailTo`, recipientOptions[0].value);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -188,18 +168,18 @@ export const EmailForm = ({ organizationEmails }) => {
 
   const smtpConfig = smtpData?.settings?.[0]?.value;
 
-  // Dedupe by address; aliases override `from` only if they add a name
+  // Dedupe by address; identities override `from` only if they add a name
   const senderOptions = useMemo(() => {
     if (!smtpConfig?.from) return [];
 
     const byAddress = new Map();
 
     byAddress.set(smtpConfig.from, { address: smtpConfig.from });
-    (smtpConfig.fromAliases || []).forEach(alias => {
-      const existing = byAddress.get(alias.address);
+    (smtpConfig.identities || []).forEach(identity => {
+      const existing = byAddress.get(identity.address);
 
-      if (!existing || (alias.name && !existing.name)) {
-        byAddress.set(alias.address, alias);
+      if (!existing || (identity.name && !existing.name)) {
+        byAddress.set(identity.address, identity);
       }
     });
 
@@ -213,8 +193,10 @@ export const EmailForm = ({ organizationEmails }) => {
     && !senderOptions.some(o => o.address === currentEmailFrom),
   );
 
-  // No auto-select for sender: the user must pick consciously (separator layout
-  // mirrors the Recipient field, so admins treat both fields the same way).
+  const defaultLabel = intl.formatMessage({ id: 'ui-organizations.integration.email.defaultLabel' });
+
+  // No auto-select for sender: the user must pick consciously (Markus's
+  // requirement, so admins treat this field differently from Recipient).
   const senderSelectChildren = useMemo(() => {
     if (senderOptions.length === 0) return null;
 
@@ -230,32 +212,30 @@ export const EmailForm = ({ organizationEmails }) => {
 
     const defaultAddress = smtpConfig?.from;
     const defaultOption = senderOptions.find(o => o.address === defaultAddress);
-    const aliasOptions = senderOptions.filter(o => o.address !== defaultAddress);
+    const otherOptions = senderOptions.filter(o => o.address !== defaultAddress);
 
     if (defaultOption) {
+      const label = defaultOption.name
+        ? `${defaultOption.name} <${defaultOption.address}>`
+        : defaultOption.address;
+
       opts.push(
         <option key="default" value={defaultOption.address}>
-          {defaultOption.name
-            ? `${defaultOption.name} <${defaultOption.address}>`
-            : defaultOption.address}
+          {`${label} (${defaultLabel})`}
         </option>,
       );
     }
 
-    if (aliasOptions.length > 0) {
+    otherOptions.forEach(o => {
       opts.push(
-        <optgroup key="aliases" label="──────────────────────────">
-          {aliasOptions.map(o => (
-            <option key={o.address} value={o.address}>
-              {o.name ? `${o.name} <${o.address}>` : o.address}
-            </option>
-          ))}
-        </optgroup>,
+        <option key={o.address} value={o.address}>
+          {o.name ? `${o.name} <${o.address}>` : o.address}
+        </option>,
       );
-    }
+    });
 
     return opts;
-  }, [senderOptions, isEmailFromOrphaned, currentEmailFrom, smtpConfig]);
+  }, [senderOptions, isEmailFromOrphaned, currentEmailFrom, smtpConfig, defaultLabel]);
 
   const hasNoSender = isMethodEmail && !isSmtpLoading && senderOptions.length === 0;
 
@@ -292,32 +272,30 @@ export const EmailForm = ({ organizationEmails }) => {
     const availableSenders = senderOptions.filter(o => o.address !== currentEmailFrom);
     const defaultAddress = smtpConfig?.from;
     const defaultOption = availableSenders.find(o => o.address === defaultAddress);
-    const aliasOptions = availableSenders.filter(o => o.address !== defaultAddress);
+    const otherOptions = availableSenders.filter(o => o.address !== defaultAddress);
 
     if (defaultOption) {
+      const label = defaultOption.name
+        ? `${defaultOption.name} <${defaultOption.address}>`
+        : defaultOption.address;
+
       opts.push(
         <option key="default" value={defaultOption.address}>
-          {defaultOption.name
-            ? `${defaultOption.name} <${defaultOption.address}>`
-            : defaultOption.address}
+          {`${label} (${defaultLabel})`}
         </option>,
       );
     }
 
-    if (aliasOptions.length > 0) {
+    otherOptions.forEach(o => {
       opts.push(
-        <optgroup key="aliases" label="──────────────────────────">
-          {aliasOptions.map(o => (
-            <option key={o.address} value={o.address}>
-              {o.name ? `${o.name} <${o.address}>` : o.address}
-            </option>
-          ))}
-        </optgroup>,
+        <option key={o.address} value={o.address}>
+          {o.name ? `${o.name} <${o.address}>` : o.address}
+        </option>,
       );
-    }
+    });
 
     return opts;
-  }, [senderOptions, currentEmailFrom, isEmailBccOrphaned, currentEmailBcc, smtpConfig]);
+  }, [senderOptions, currentEmailFrom, isEmailBccOrphaned, currentEmailBcc, smtpConfig, defaultLabel]);
 
   const isBccSelectable = (
     isEmailBccOrphaned
@@ -436,7 +414,6 @@ EmailForm.propTypes = {
   organizationEmails: PropTypes.arrayOf(PropTypes.shape({
     value: PropTypes.string,
     isPrimary: PropTypes.bool,
-    categories: PropTypes.arrayOf(PropTypes.string),
   })),
 };
 

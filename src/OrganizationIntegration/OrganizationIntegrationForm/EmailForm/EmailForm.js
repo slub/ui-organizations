@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
@@ -13,11 +13,12 @@ import {
   Accordion,
   Col,
   MessageBanner,
+  OptionSegment,
   Row,
   Select,
   TextField,
 } from '@folio/stripes/components';
-import { validateRequired } from '@folio/stripes-acq-components';
+import { FieldMultiSelectionFinal, validateRequired } from '@folio/stripes-acq-components';
 
 import {
   createConditionalValidator,
@@ -71,11 +72,8 @@ export const EmailForm = ({ organizationEmails }) => {
     ?.ediEmail
     ?.emailBcc;
 
-  // Interim: single-select over the flat list of organization emails, Primary
-  // pinned first and tagged. `emailTo` stays a single resolved address string
-  // (mod-data-export-spring doesn't resolve tokens server-side). Once the
-  // backend accepts multiple recipients, this becomes a multi-select over the
-  // same list and `emailTo` becomes an array.
+  // emailTo stays a single string by design, not an array: an order has
+  // exactly one handler, and the field predates this feature.
   const recipientOptions = useMemo(
     () => (organizationEmails || []).filter(e => e.value),
     [organizationEmails],
@@ -106,8 +104,8 @@ export const EmailForm = ({ organizationEmails }) => {
 
   const primaryLabel = intl.formatMessage({ id: 'ui-organizations.primaryItem' });
 
-  // Build children array without falsy values — React.Children.map in stripes Select
-  // iterates over false/null children and crashes on child.type
+  // No falsy children: stripes Select's React.Children.map crashes on child.type
+  // if a child is false/null.
   const recipientSelectChildren = useMemo(() => {
     const opts = [<option key="empty" value="" aria-label="empty" />];
 
@@ -138,7 +136,6 @@ export const EmailForm = ({ organizationEmails }) => {
     return opts;
   }, [primaryEmail, otherRecipientOptions, isRecipientOrphaned, currentEmailTo, primaryLabel]);
 
-  // Auto-select on mount: primary email's address if available, else the only option
   useEffect(() => {
     if (currentEmailTo) return;
 
@@ -195,8 +192,7 @@ export const EmailForm = ({ organizationEmails }) => {
 
   const defaultLabel = intl.formatMessage({ id: 'ui-organizations.integration.email.defaultLabel' });
 
-  // No auto-select for sender: the user must pick consciously (Markus's
-  // requirement, so admins treat this field differently from Recipient).
+  // No auto-select for sender, unlike Recipient: must be picked deliberately.
   const senderSelectChildren = useMemo(() => {
     if (senderOptions.length === 0) return null;
 
@@ -239,68 +235,74 @@ export const EmailForm = ({ organizationEmails }) => {
 
   const hasNoSender = isMethodEmail && !isSmtpLoading && senderOptions.length === 0;
 
-  const isEmailBccOrphaned = Boolean(
-    isMethodEmail
-    && currentEmailBcc
-    && senderOptions.length > 0
-    && !senderOptions.some(o => o.address === currentEmailBcc),
+  // BCC pool merges our identities (minus the chosen sender) with the
+  // vendor's addresses (minus the chosen recipient); no default/primary
+  // markers here, unlike Sender/Recipient.
+  const allValidBccAddresses = useMemo(() => {
+    const addresses = new Set(senderOptions.map(o => o.address));
+
+    recipientOptions.forEach(e => addresses.add(e.value));
+
+    return addresses;
+  }, [senderOptions, recipientOptions]);
+
+  const orphanedBccAddresses = useMemo(
+    () => (currentEmailBcc || []).filter(addr => !allValidBccAddresses.has(addr)),
+    [currentEmailBcc, allValidBccAddresses],
   );
 
-  // Reactive Self-BCC correction: if the sender is changed to an address that's
-  // currently set as BCC, clear the BCC. Otherwise the form would silently hold
-  // an invalid combination (sender == BCC) until next save.
+  const isEmailBccOrphaned = isMethodEmail && orphanedBccAddresses.length > 0;
+
+  // Drop a BCC address if it later becomes the sender or recipient, so the
+  // form can't silently hold that invalid combination until save.
   useEffect(() => {
-    if (currentEmailBcc && currentEmailBcc === currentEmailFrom) {
-      change(`${ediEmailPath}.emailBcc`, '');
+    if (!currentEmailBcc?.length) return;
+
+    const filtered = currentEmailBcc.filter(
+      addr => addr !== currentEmailFrom && addr !== currentEmailTo,
+    );
+
+    if (filtered.length !== currentEmailBcc.length) {
+      change(`${ediEmailPath}.emailBcc`, filtered);
     }
-  }, [currentEmailFrom, currentEmailBcc, change]);
+  }, [currentEmailFrom, currentEmailTo, currentEmailBcc, change]);
 
-  // The BCC select reuses senderOptions but excludes the currently selected
-  // sender (no point in BCC'ing yourself). When nothing is left to pick, the
-  // field stays visible but disabled so admins can see the feature exists.
-  const bccSelectChildren = useMemo(() => {
-    const opts = [<option key="empty" value="" aria-label="empty" />];
+  // Plain address strings, not {value, label}: MultiSelection's default
+  // filter/formatter expect option.label, so filterBccOptions/formatBccOption
+  // below read the option itself instead.
+  const bccOptions = useMemo(() => {
+    const seen = new Set();
+    const addresses = [];
 
-    if (isEmailBccOrphaned && currentEmailBcc) {
-      opts.push(
-        <option key="orphan" value={currentEmailBcc}>
-          {currentEmailBcc}
-        </option>,
-      );
-    }
+    const addAddress = (address) => {
+      if (!address || seen.has(address)) return;
+      seen.add(address);
+      addresses.push(address);
+    };
 
-    const availableSenders = senderOptions.filter(o => o.address !== currentEmailFrom);
-    const defaultAddress = smtpConfig?.from;
-    const defaultOption = availableSenders.find(o => o.address === defaultAddress);
-    const otherOptions = availableSenders.filter(o => o.address !== defaultAddress);
+    orphanedBccAddresses.forEach(addAddress);
+    senderOptions.forEach(o => { if (o.address !== currentEmailFrom) addAddress(o.address); });
+    recipientOptions.forEach(e => { if (e.value !== currentEmailTo) addAddress(e.value); });
 
-    if (defaultOption) {
-      const label = defaultOption.name
-        ? `${defaultOption.name} <${defaultOption.address}>`
-        : defaultOption.address;
+    return addresses;
+  }, [orphanedBccAddresses, senderOptions, currentEmailFrom, recipientOptions, currentEmailTo]);
 
-      opts.push(
-        <option key="default" value={defaultOption.address}>
-          {`${label} (${defaultLabel})`}
-        </option>,
-      );
-    }
+  const isBccSelectable = bccOptions.length > 0;
 
-    otherOptions.forEach(o => {
-      opts.push(
-        <option key={o.address} value={o.address}>
-          {o.name ? `${o.name} <${o.address}>` : o.address}
-        </option>,
-      );
-    });
+  const bccItemToString = useCallback(option => option || '', []);
 
-    return opts;
-  }, [senderOptions, currentEmailFrom, isEmailBccOrphaned, currentEmailBcc, smtpConfig, defaultLabel]);
+  const formatBccOption = useCallback(({ option, searchTerm }) => (
+    <OptionSegment searchTerm={searchTerm}>{option}</OptionSegment>
+  ), []);
 
-  const isBccSelectable = (
-    isEmailBccOrphaned
-    || senderOptions.some(o => o.address !== currentEmailFrom)
-  );
+  const filterBccOptions = useCallback((filterText, list) => {
+    const escapedFilterText = filterText?.replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&');
+    const filterRegExp = new RegExp(`^${escapedFilterText}`, 'i');
+    const renderedItems = filterText ? list.filter(item => item.search(filterRegExp) !== -1) : list;
+    const exactMatch = filterText ? renderedItems.filter(item => item === filterText).length === 1 : false;
+
+    return { renderedItems, exactMatch };
+  }, []);
 
   const templateOptions = useMemo(() => {
     const options = [{ value: '', label: '' }];
@@ -381,16 +383,16 @@ export const EmailForm = ({ organizationEmails }) => {
           </Field>
         </Col>
         <Col xs={3}>
-          <Field
+          <FieldMultiSelectionFinal
             label={<FormattedMessage id="ui-organizations.integration.email.bcc" />}
             name={`${ediEmailPath}.emailBcc`}
-            component={Select}
+            dataOptions={bccOptions}
+            itemToString={bccItemToString}
+            formatter={formatBccOption}
+            filter={filterBccOptions}
             disabled={!isBccSelectable}
-            fullWidth
             validateFields={[]}
-          >
-            {bccSelectChildren}
-          </Field>
+          />
         </Col>
         <Col xs={3}>
           <Field

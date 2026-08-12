@@ -18,7 +18,11 @@ import {
   Select,
   TextField,
 } from '@folio/stripes/components';
-import { FieldMultiSelectionFinal, validateRequired } from '@folio/stripes-acq-components';
+import {
+  FieldMultiSelectionFinal,
+  LIMIT_MAX,
+  validateRequired,
+} from '@folio/stripes-acq-components';
 
 import {
   createConditionalValidator,
@@ -38,10 +42,6 @@ const validateEmailFrom = (...params) => {
 };
 
 const validateRecipient = (...params) => {
-  return createConditionalValidator(isTransmissionMethodEmail, validateRequired)(...params);
-};
-
-const validateEmailTemplate = (...params) => {
   return createConditionalValidator(isTransmissionMethodEmail, validateRequired)(...params);
 };
 
@@ -71,6 +71,12 @@ export const EmailForm = ({ organizationEmails }) => {
     ?.vendorEdiOrdersExportConfig
     ?.ediEmail
     ?.emailBcc;
+
+  const currentEmailTemplate = values
+    ?.exportTypeSpecificParameters
+    ?.vendorEdiOrdersExportConfig
+    ?.ediEmail
+    ?.emailTemplate;
 
   // emailTo stays a single string by design, not an array: an order has
   // exactly one handler, and the field predates this feature.
@@ -150,7 +156,10 @@ export const EmailForm = ({ organizationEmails }) => {
   const { data: templatesData, isLoading: isTemplatesLoading } = useQuery(
     ['ui-organizations', 'email-templates', TEMPLATE_SCOPE],
     () => ky.get(TEMPLATES_API, {
-      searchParams: { query: `scope=="${TEMPLATE_SCOPE}"` },
+      searchParams: {
+        query: `scope=="${TEMPLATE_SCOPE}"`,
+        limit: LIMIT_MAX,
+      },
     }).json(),
     { enabled: isMethodEmail },
   );
@@ -304,12 +313,54 @@ export const EmailForm = ({ organizationEmails }) => {
     return { renderedItems, exactMatch };
   }, []);
 
+  const inactiveLabel = intl.formatMessage({ id: 'ui-organizations.integration.email.emailTemplate.inactiveLabel' });
+
+  // An inactive template is only offered while it is the stored one, so
+  // deactivating a template never drops the assignment of an existing
+  // integration without the user noticing.
   const templateOptions = useMemo(() => {
     const options = [{ value: '', label: '' }];
-    const templates = templatesData?.templates || [];
 
-    return options.concat(templates.map(t => ({ value: t.id, label: t.name })));
-  }, [templatesData]);
+    (templatesData?.templates || []).forEach(template => {
+      if (template.active) {
+        options.push({ value: template.id, label: template.name });
+      } else if (template.id === currentEmailTemplate) {
+        options.push({ value: template.id, label: `${template.name} (${inactiveLabel})` });
+      }
+    });
+
+    return options;
+  }, [templatesData, currentEmailTemplate, inactiveLabel]);
+
+  const isTemplateInactive = Boolean(
+    isMethodEmail
+    && currentEmailTemplate
+    && templatesData?.templates?.some(t => t.id === currentEmailTemplate && !t.active),
+  );
+
+  // A deleted template cannot be rendered by the backend anymore, so it is not
+  // offered as an option. The stored id is kept as is and the validator below
+  // blocks saving until a valid template is picked.
+  const isTemplateDeleted = Boolean(
+    isMethodEmail
+    && currentEmailTemplate
+    && !isTemplatesLoading
+    && templatesData
+    && !templatesData.templates?.some(t => t.id === currentEmailTemplate),
+  );
+
+  const validateEmailTemplate = useCallback((value, allValues, meta) => {
+    const requiredError = createConditionalValidator(
+      isTransmissionMethodEmail,
+      validateRequired,
+    )(value, allValues, meta);
+
+    if (requiredError) return requiredError;
+
+    return isTemplateDeleted
+      ? <FormattedMessage id="ui-organizations.integration.email.emailTemplate.deletedError" />
+      : undefined;
+  }, [isTemplateDeleted]);
 
   return (
     <Accordion
@@ -339,6 +390,16 @@ export const EmailForm = ({ organizationEmails }) => {
       {isEmailBccOrphaned && (
         <MessageBanner type="warning">
           <FormattedMessage id="ui-organizations.integration.email.bcc.orphanedWarning" />
+        </MessageBanner>
+      )}
+      {isTemplateInactive && (
+        <MessageBanner type="warning">
+          <FormattedMessage id="ui-organizations.integration.email.emailTemplate.inactiveWarning" />
+        </MessageBanner>
+      )}
+      {isTemplateDeleted && (
+        <MessageBanner type="warning">
+          <FormattedMessage id="ui-organizations.integration.email.emailTemplate.deletedWarning" />
         </MessageBanner>
       )}
       <Row>

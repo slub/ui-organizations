@@ -426,6 +426,7 @@
   "integration.email.bcc.orphanedWarning": "The previously selected archive address is no longer configured in the email settings. Please select a different address or clear the field.",
   "integration.scheduling": "Scheduling",
   "integration.scheduling.scheduleEDI": "Schedule EDI",
+  "integration.scheduling.scheduleEmail": "Schedule email",
   "integration.scheduling.schedulePeriod": "Schedule period",
   "integration.scheduling.schedulePeriod.none": "Please select schedule period",
   "integration.scheduling.schedulePeriod.hours": "Hourly",

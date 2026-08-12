@@ -28,6 +28,7 @@ import {
   SCHEDULE_PERIODS,
   WEEKDAYS,
 } from '../../constants';
+import { isTransmissionMethodEmail } from '../../utils';
 import {
   ALLOWED_SCHEDULE_PERIODS,
   MAX_DAYS_OF_MONTHLY_SCHEDULE,
@@ -47,6 +48,9 @@ export const SchedulingForm = () => {
   const ediSchedule = formValues?.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig?.ediSchedule || {};
   const isScheduleEnabled = ediSchedule.enableScheduledExport;
   const schedulePeriod = ediSchedule.scheduleParameters?.schedulePeriod;
+  const scheduleLabelId = isTransmissionMethodEmail(formValues)
+    ? 'ui-organizations.integration.scheduling.scheduleEmail'
+    : 'ui-organizations.integration.scheduling.scheduleEDI';
 
   useEffect(() => {
     if (schedulePeriod && !ALLOWED_SCHEDULE_PERIODS.includes(schedulePeriod)) {
@@ -96,7 +100,7 @@ export const SchedulingForm = () => {
             component={Checkbox}
             type="checkbox"
             fullWidth
-            label={<FormattedMessage id="ui-organizations.integration.scheduling.scheduleEDI" />}
+            label={<FormattedMessage id={scheduleLabelId} />}
             name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediSchedule.enableScheduledExport"
             vertical
             onChange={toggleSchedule}

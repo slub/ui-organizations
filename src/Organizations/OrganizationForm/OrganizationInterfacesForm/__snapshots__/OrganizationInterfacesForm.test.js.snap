@@ -9,75 +9,95 @@ exports[`OrganizationInterfacesForm should render correct structure 1`] = `
       <div
         class="col-xs-12"
       >
-        <div>
+        <div
+          class="mclContainer"
+          style="position: relative; overflow: hidden; height: auto; width: 100%;"
+          tabindex="-1"
+        >
           <div
-            class="mclContainer"
-            style="position: relative; overflow: hidden; height: auto; width: 100%;"
+            aria-live="assertive"
+            aria-relevant="additions"
+            class="sr-only"
+          />
+          <div
+            aria-rowcount="2"
+            class="mclGridBody"
+            data-total-count="0"
+            id="interface-list"
+            role="grid"
+            tabindex="0"
           >
             <div
-              aria-live="assertive"
-              aria-relevant="additions"
-              class="sr-only"
-            />
-            <div
-              aria-rowcount="2"
-              class=""
-              data-total-count="0"
-              id="interface-list"
-              role="grid"
-              tabindex="0"
+              class="mclHeaderContainer"
+              role="rowgroup"
             >
               <div
-                class="mclHeaderContainer"
+                aria-rowindex="1"
+                class="mclHeaderRow"
+                role="row"
+                style="display: flex; width: 17px;"
               >
                 <div
-                  aria-rowindex="1"
-                  class="mclHeaderRow"
-                  role="row"
-                  style="display: flex; width: 17px;"
+                  aria-sort="none"
+                  class="mclHeader"
+                  id="list-column-interfacename"
+                  role="columnheader"
+                  style="flex: 0 0 auto;"
                 >
-                  <div
-                    aria-sort="none"
-                    class="mclHeader"
-                    id="list-column-interfacename"
-                    role="columnheader"
-                    style="flex: 0 0 auto;"
-                  >
-                    ui-organizations.interface.name
-                  </div>
-                  <div
-                    aria-sort="none"
-                    class="mclHeader"
-                    id="list-column-interfaceurl"
-                    role="columnheader"
-                    style="flex: 0 0 auto;"
-                  >
-                    ui-organizations.interface.url
-                  </div>
-                  <div
-                    aria-sort="none"
-                    class="mclHeader"
-                    id="list-column-unassigninterface"
-                    role="columnheader"
-                    style="flex: 0 0 auto;"
-                  />
+                  ui-organizations.interface.name
                 </div>
+                <div
+                  aria-sort="none"
+                  class="mclHeader"
+                  id="list-column-interfaceurl"
+                  role="columnheader"
+                  style="flex: 0 0 auto;"
+                >
+                  ui-organizations.interface.url
+                </div>
+                <div
+                  aria-sort="none"
+                  class="mclHeader"
+                  id="list-column-unassigninterface"
+                  role="columnheader"
+                  style="flex: 0 0 auto;"
+                />
               </div>
+            </div>
+            <div
+              class="mclScrollable"
+              role="rowgroup"
+              style="position: static; width: 100%;"
+            >
               <div
-                class="mclScrollable"
-                style="position: static; width: 100%;"
+                class="mclRowContainer"
+                style="position: static;"
               >
                 <div
-                  class="mclRowContainer"
-                  role="rowgroup"
+                  aria-rowindex="2"
+                  class="mclRowFormatterContainer"
+                  data-row-index="row-0"
+                  role="row"
                   style="position: static;"
                 >
+                  <a
+                    aria-label=""
+                    class="mclRow mclIsOdd mclIsInteractive alignLastColToEnd"
+                    data-row-inner="0"
+                    href="/organizations/interface/793b9d42-ae12-41d7-a36a-f33e5b9e82c5/view"
+                    style="min-width: 0px;"
+                    tabindex="0"
+                  >
+                    <div
+                      class="mclCell mclCellStyle"
+                      role="gridcell"
+                    >
+                      GOBI
+                    </div>
+                  </a>
                   <div
-                    aria-rowindex="2"
-                    class="mclRowFormatterContainer"
-                    data-row-index="row-0"
-                    role="row"
-                    style="position: static;"
+                    class="mclCell mclCellStyle"
+                    role="gridcell"
                   >
                     <a
                       aria-label=""
@@ -86,76 +106,56 @@ exports[`OrganizationInterfacesForm should render correct structure 1`] = `
                       href="/organizations/interface/793b9d42-ae12-41d7-a36a-f33e5b9e82c5/view"
                       style="min-width: 0px;"
                       tabindex="0"
+                    />
+                    <a
+                      class="root"
+                      data-test-text-link="true"
+                      href="www.gobi3.com"
+                      rel="noopener noreferrer"
+                      target="_blank"
                     >
-                      <div
-                        class="mclCell mclCellStyle"
-                        role="gridcell"
-                      >
-                        GOBI
-                      </div>
+                      www.gobi3.com
                     </a>
-                    <div
-                      class="mclCell mclCellStyle"
-                      role="gridcell"
-                    >
-                      <a
-                        aria-label=""
-                        class="mclRow mclIsOdd mclIsInteractive alignLastColToEnd"
-                        data-row-inner="0"
-                        href="/organizations/interface/793b9d42-ae12-41d7-a36a-f33e5b9e82c5/view"
-                        style="min-width: 0px;"
-                        tabindex="0"
-                      />
-                      <a
-                        class="root"
-                        data-test-text-link="true"
-                        href="www.gobi3.com"
-                        rel="noopener noreferrer"
-                        target="_blank"
-                      >
-                        www.gobi3.com
-                      </a>
-                    </div>
-                    <div
-                      class="mclCell mclCellStyle"
-                      role="gridcell"
-                    >
-                      <button
-                        aria-label="ui-organizations.interface.button.unassign"
-                        class="button fieldControl align-end"
-                        data-test-unassign-interface="true"
-                        type="button"
-                      >
-                        <span
-                          class="inner"
-                        >
-                          <span>
-                            Icon
-                          </span>
-                        </span>
-                      </button>
-                    </div>
                   </div>
                   <div
-                    class="mclEndOfListContainer"
-                    data-end-of-list="1"
+                    class="mclCell mclCellStyle"
+                    role="gridcell"
+                  >
+                    <button
+                      aria-label="ui-organizations.interface.button.unassign"
+                      class="button fieldControl align-end"
+                      data-test-unassign-interface="true"
+                      type="button"
+                    >
+                      <span
+                        class="inner"
+                      >
+                        <span>
+                          Icon
+                        </span>
+                      </span>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="mclEndOfListContainer"
+                  data-end-of-list="1"
+                >
+                  <div
+                    class="mclCenteredContainer"
+                    style="visibility: hidden; height: 0px; padding: 0px; width: 0px;"
                   >
                     <div
-                      class="mclCenteredContainer"
-                      style="visibility: hidden; height: 0px; padding: 0px; width: 0px;"
+                      class="textCentered"
+                      data-test-layout="true"
                     >
                       <div
-                        class="textCentered"
+                        class="mclEndOfList"
                         data-test-layout="true"
                       >
-                        <div
-                          class="mclEndOfList"
-                          data-test-layout="true"
-                        >
-                          <span>
-                            Icon
-                          </span>
-                        </div>
+                        <span>
+                          Icon
+                        </span>
                       </div>
                     </div>
                   </div>

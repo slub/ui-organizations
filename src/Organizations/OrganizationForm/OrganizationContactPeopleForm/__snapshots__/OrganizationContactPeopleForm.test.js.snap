@@ -9,170 +9,170 @@ exports[`OrganizationContactPeopleForm should render correct structure 1`] = `
       <div
         class="col-xs-12"
       >
-        <div>
+        <div
+          class="mclContainer"
+          style="position: relative; overflow: hidden; height: auto; width: 100%;"
+          tabindex="-1"
+        >
           <div
-            class="mclContainer"
-            style="position: relative; overflow: hidden; height: auto; width: 100%;"
+            aria-live="assertive"
+            aria-relevant="additions"
+            class="sr-only"
+          />
+          <div
+            aria-rowcount="2"
+            class="mclGridBody"
+            data-total-count="0"
+            id="contact-list"
+            role="grid"
+            tabindex="0"
           >
             <div
-              aria-live="assertive"
-              aria-relevant="additions"
-              class="sr-only"
-            />
-            <div
-              aria-rowcount="2"
-              class=""
-              data-total-count="0"
-              id="contact-list"
-              role="grid"
-              tabindex="0"
+              class="mclHeaderContainer"
+              role="rowgroup"
             >
               <div
-                class="mclHeaderContainer"
+                aria-rowindex="1"
+                class="mclHeaderRow"
+                role="row"
+                style="display: flex; width: 17px;"
               >
                 <div
-                  aria-rowindex="1"
-                  class="mclHeaderRow"
-                  role="row"
-                  style="display: flex; width: 17px;"
+                  aria-sort="none"
+                  class="mclHeader"
+                  id="list-column-contactname"
+                  role="columnheader"
+                  style="flex: 0 0 auto;"
                 >
-                  <div
-                    aria-sort="none"
-                    class="mclHeader"
-                    id="list-column-contactname"
-                    role="columnheader"
-                    style="flex: 0 0 auto;"
-                  >
-                    ui-organizations.contactPeople.name
-                  </div>
-                  <div
-                    aria-sort="none"
-                    class="mclHeader"
-                    id="list-column-contactcategories"
-                    role="columnheader"
-                    style="flex: 0 0 auto;"
-                  >
-                    ui-organizations.contactPeople.categories
-                  </div>
-                  <div
-                    aria-sort="none"
-                    class="mclHeader"
-                    id="list-column-contactemails"
-                    role="columnheader"
-                    style="flex: 0 0 auto;"
-                  >
-                    ui-organizations.contactPeople.emails
-                  </div>
-                  <div
-                    aria-sort="none"
-                    class="mclHeader"
-                    id="list-column-notes"
-                    role="columnheader"
-                    style="flex: 0 0 auto;"
-                  >
-                    ui-organizations.contactPeople.note
-                  </div>
-                  <div
-                    aria-sort="none"
-                    class="mclHeader"
-                    id="list-column-unassigncontact"
-                    role="columnheader"
-                    style="flex: 0 0 auto;"
-                  />
+                  ui-organizations.contactPeople.name
                 </div>
+                <div
+                  aria-sort="none"
+                  class="mclHeader"
+                  id="list-column-contactcategories"
+                  role="columnheader"
+                  style="flex: 0 0 auto;"
+                >
+                  ui-organizations.contactPeople.categories
+                </div>
+                <div
+                  aria-sort="none"
+                  class="mclHeader"
+                  id="list-column-contactemails"
+                  role="columnheader"
+                  style="flex: 0 0 auto;"
+                >
+                  ui-organizations.contactPeople.emails
+                </div>
+                <div
+                  aria-sort="none"
+                  class="mclHeader"
+                  id="list-column-notes"
+                  role="columnheader"
+                  style="flex: 0 0 auto;"
+                >
+                  ui-organizations.contactPeople.note
+                </div>
+                <div
+                  aria-sort="none"
+                  class="mclHeader"
+                  id="list-column-unassigncontact"
+                  role="columnheader"
+                  style="flex: 0 0 auto;"
+                />
               </div>
+            </div>
+            <div
+              class="mclScrollable"
+              role="rowgroup"
+              style="position: static; width: 100%;"
+            >
               <div
-                class="mclScrollable"
-                style="position: static; width: 100%;"
+                class="mclRowContainer"
+                style="position: static;"
               >
                 <div
-                  class="mclRowContainer"
-                  role="rowgroup"
+                  aria-rowindex="2"
+                  class="mclRowFormatterContainer"
+                  data-row-index="row-0"
+                  role="row"
                   style="position: static;"
                 >
-                  <div
-                    aria-rowindex="2"
-                    class="mclRowFormatterContainer"
-                    data-row-index="row-0"
-                    role="row"
-                    style="position: static;"
-                  >
-                    <a
-                      aria-label=""
-                      class="mclRow mclIsOdd mclIsInteractive alignLastColToEnd"
-                      data-row-inner="0"
-                      href="/organizations/contacts/e0fb5df2-cdf1-11e8-a8d5-f2801f1b9fd1/view"
-                      style="min-width: 0px;"
-                      tabindex="0"
-                    >
-                      <div
-                        class="mclCell mclCellStyle"
-                        role="gridcell"
-                      >
-                        Brownstein, Carrie
-                      </div>
-                      <div
-                        class="mclCell mclCellStyle"
-                        role="gridcell"
-                      />
-                      <div
-                        class="mclCell mclCellStyle"
-                        role="gridcell"
-                      >
-                        cust.service03@amazon.com
-                      </div>
-                      <div
-                        class="mclCell mclCellStyle"
-                        role="gridcell"
-                      >
-                        <span
-                          class="text"
-                          title="notes"
-                        >
-                          notes
-                        </span>
-                      </div>
-                      <div
-                        class="mclCell mclCellStyle"
-                        role="gridcell"
-                      >
-                        <button
-                          aria-label="ui-organizations.contacts.button.unassign"
-                          class="button fieldControl align-end"
-                          data-test-unassign-contact="true"
-                          type="button"
-                        >
-                          <span
-                            class="inner"
-                          >
-                            <span>
-                              Icon
-                            </span>
-                          </span>
-                        </button>
-                      </div>
-                    </a>
-                  </div>
-                  <div
-                    class="mclEndOfListContainer"
-                    data-end-of-list="1"
+                  <a
+                    aria-label=""
+                    class="mclRow mclIsOdd mclIsInteractive alignLastColToEnd"
+                    data-row-inner="0"
+                    href="/organizations/contacts/e0fb5df2-cdf1-11e8-a8d5-f2801f1b9fd1/view"
+                    style="min-width: 0px;"
+                    tabindex="0"
                   >
                     <div
-                      class="mclCenteredContainer"
-                      style="visibility: hidden; height: 0px; padding: 0px; width: 0px;"
+                      class="mclCell mclCellStyle"
+                      role="gridcell"
                     >
-                      <div
-                        class="textCentered"
-                        data-test-layout="true"
+                      Brownstein, Carrie
+                    </div>
+                    <div
+                      class="mclCell mclCellStyle"
+                      role="gridcell"
+                    />
+                    <div
+                      class="mclCell mclCellStyle"
+                      role="gridcell"
+                    >
+                      cust.service03@amazon.com
+                    </div>
+                    <div
+                      class="mclCell mclCellStyle"
+                      role="gridcell"
+                    >
+                      <span
+                        class="text"
+                        title="notes"
                       >
-                        <div
-                          class="mclEndOfList"
-                          data-test-layout="true"
+                        notes
+                      </span>
+                    </div>
+                    <div
+                      class="mclCell mclCellStyle"
+                      role="gridcell"
+                    >
+                      <button
+                        aria-label="ui-organizations.contacts.button.unassign"
+                        class="button fieldControl align-end"
+                        data-test-unassign-contact="true"
+                        type="button"
+                      >
+                        <span
+                          class="inner"
                         >
                           <span>
                             Icon
                           </span>
-                        </div>
+                        </span>
+                      </button>
+                    </div>
+                  </a>
+                </div>
+                <div
+                  class="mclEndOfListContainer"
+                  data-end-of-list="1"
+                >
+                  <div
+                    class="mclCenteredContainer"
+                    style="visibility: hidden; height: 0px; padding: 0px; width: 0px;"
+                  >
+                    <div
+                      class="textCentered"
+                      data-test-layout="true"
+                    >
+                      <div
+                        class="mclEndOfList"
+                        data-test-layout="true"
+                      >
+                        <span>
+                          Icon
+                        </span>
                       </div>
                     </div>
                   </div>

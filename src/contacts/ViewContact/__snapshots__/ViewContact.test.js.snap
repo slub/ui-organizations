@@ -149,7 +149,7 @@ exports[`ViewContact should render correct structure 1`] = `
       <div
         class="paneContent hasPadding"
         id="view-contact-content"
-        tabindex="-1"
+        tabindex="0"
       >
         <div
           class="row"
@@ -187,46 +187,45 @@ exports[`ViewContact should render correct structure 1`] = `
                 data-test-accordion-section="true"
                 id="contact-name"
               >
-                <div>
+                <div
+                  style="width: 100%; display: flex;"
+                  tabindex="-1"
+                >
                   <div
-                    style="width: 100%; display: flex;"
+                    class="headerWrapper"
                   >
                     <div
-                      class="headerWrapper"
+                      class="header default"
                     >
-                      <div
-                        class="header default"
+                      <h3
+                        class="headline size-medium margin-none font-weight-bold block"
+                        data-test-headline="true"
                       >
-                        <h3
-                          class="headline size-medium margin-none font-weight-bold block"
-                          data-test-headline="true"
+                        <button
+                          aria-controls="accordion1"
+                          aria-expanded="true"
+                          class="defaultCollapseButton"
+                          id="accordion-toggle-button-contact-name"
+                          type="button"
                         >
-                          <button
-                            aria-controls="accordion1"
-                            aria-expanded="true"
-                            class="defaultCollapseButton"
-                            id="accordion-toggle-button-contact-name"
-                            type="button"
+                          <span
+                            class="headerInner"
                           >
                             <span
-                              class="headerInner"
+                              class="defaultHeaderIcon"
                             >
-                              <span
-                                class="defaultHeaderIcon"
-                              >
-                                <span>
-                                  Icon
-                                </span>
+                              <span>
+                                Icon
                               </span>
-                              <div
-                                class="labelArea"
-                              >
-                                ui-organizations.contactPeople.name
-                              </div>
                             </span>
-                          </button>
-                        </h3>
-                      </div>
+                            <div
+                              class="labelArea"
+                            >
+                              ui-organizations.contactPeople.name
+                            </div>
+                          </span>
+                        </button>
+                      </h3>
                     </div>
                   </div>
                 </div>
@@ -394,46 +393,45 @@ exports[`ViewContact should render correct structure 1`] = `
                 data-test-accordion-section="true"
                 id="contact-emails"
               >
-                <div>
+                <div
+                  style="width: 100%; display: flex;"
+                  tabindex="-1"
+                >
                   <div
-                    style="width: 100%; display: flex;"
+                    class="headerWrapper"
                   >
                     <div
-                      class="headerWrapper"
+                      class="header default"
                     >
-                      <div
-                        class="header default"
+                      <h3
+                        class="headline size-medium margin-none font-weight-bold block"
+                        data-test-headline="true"
                       >
-                        <h3
-                          class="headline size-medium margin-none font-weight-bold block"
-                          data-test-headline="true"
+                        <button
+                          aria-controls="accordion2"
+                          aria-expanded="true"
+                          class="defaultCollapseButton"
+                          id="accordion-toggle-button-contact-emails"
+                          type="button"
                         >
-                          <button
-                            aria-controls="accordion2"
-                            aria-expanded="true"
-                            class="defaultCollapseButton"
-                            id="accordion-toggle-button-contact-emails"
-                            type="button"
+                          <span
+                            class="headerInner"
                           >
                             <span
-                              class="headerInner"
+                              class="defaultHeaderIcon"
                             >
-                              <span
-                                class="defaultHeaderIcon"
-                              >
-                                <span>
-                                  Icon
-                                </span>
+                              <span>
+                                Icon
                               </span>
-                              <div
-                                class="labelArea"
-                              >
-                                ui-organizations.contactPeople.emails
-                              </div>
                             </span>
-                          </button>
-                        </h3>
-                      </div>
+                            <div
+                              class="labelArea"
+                            >
+                              ui-organizations.contactPeople.emails
+                            </div>
+                          </span>
+                        </button>
+                      </h3>
                     </div>
                   </div>
                 </div>
@@ -448,153 +446,153 @@ exports[`ViewContact should render correct structure 1`] = `
                     id="accordion2"
                     role="region"
                   >
-                    <div>
+                    <div
+                      class="mclContainer"
+                      style="position: relative; overflow: hidden; height: auto; width: 100%;"
+                      tabindex="-1"
+                    >
                       <div
-                        class="mclContainer"
-                        style="position: relative; overflow: hidden; height: auto; width: 100%;"
+                        aria-live="assertive"
+                        aria-relevant="additions"
+                        class="sr-only"
+                      />
+                      <div
+                        aria-rowcount="2"
+                        class="mclGridBody"
+                        data-total-count="0"
+                        role="grid"
+                        tabindex="0"
                       >
                         <div
-                          aria-live="assertive"
-                          aria-relevant="additions"
-                          class="sr-only"
-                        />
+                          class="mclHeaderContainer"
+                          role="rowgroup"
+                        >
+                          <div
+                            aria-rowindex="1"
+                            class="mclHeaderRow"
+                            role="row"
+                            style="display: flex; width: 17px;"
+                          >
+                            <div
+                              aria-sort="none"
+                              class="mclHeader"
+                              id="list-column-email"
+                              role="columnheader"
+                              style="flex: 0 0 auto;"
+                            >
+                              ui-organizations.contactPeople.email
+                            </div>
+                            <div
+                              aria-sort="none"
+                              class="mclHeader"
+                              id="list-column-emaildescription"
+                              role="columnheader"
+                              style="flex: 0 0 auto;"
+                            >
+                              ui-organizations.contactPeople.description
+                            </div>
+                            <div
+                              aria-sort="none"
+                              class="mclHeader"
+                              id="list-column-emaillanguage"
+                              role="columnheader"
+                              style="flex: 0 0 auto;"
+                            >
+                              ui-organizations.contactPeople.language
+                            </div>
+                            <div
+                              aria-sort="none"
+                              class="mclHeader"
+                              id="list-column-emailcategories"
+                              role="columnheader"
+                              style="flex: 0 0 auto;"
+                            >
+                              ui-organizations.contactPeople.categories
+                            </div>
+                            <div
+                              aria-sort="none"
+                              class="mclHeader"
+                              id="list-column-emailprimary"
+                              role="columnheader"
+                              style="flex: 0 0 auto;"
+                            >
+                              ui-organizations.primaryItem
+                            </div>
+                          </div>
+                        </div>
                         <div
-                          aria-rowcount="2"
-                          class=""
-                          data-total-count="0"
-                          role="grid"
+                          class="mclScrollable"
+                          role="rowgroup"
+                          style="position: static; width: 100%;"
                           tabindex="0"
                         >
                           <div
-                            class="mclHeaderContainer"
+                            class="mclRowContainer"
+                            style="position: static;"
                           >
                             <div
-                              aria-rowindex="1"
-                              class="mclHeaderRow"
+                              aria-rowindex="2"
+                              class="mclRowFormatterContainer"
+                              data-row-index="row-0"
                               role="row"
-                              style="display: flex; width: 17px;"
-                            >
-                              <div
-                                aria-sort="none"
-                                class="mclHeader"
-                                id="list-column-email"
-                                role="columnheader"
-                                style="flex: 0 0 auto;"
-                              >
-                                ui-organizations.contactPeople.email
-                              </div>
-                              <div
-                                aria-sort="none"
-                                class="mclHeader"
-                                id="list-column-emaildescription"
-                                role="columnheader"
-                                style="flex: 0 0 auto;"
-                              >
-                                ui-organizations.contactPeople.description
-                              </div>
-                              <div
-                                aria-sort="none"
-                                class="mclHeader"
-                                id="list-column-emaillanguage"
-                                role="columnheader"
-                                style="flex: 0 0 auto;"
-                              >
-                                ui-organizations.contactPeople.language
-                              </div>
-                              <div
-                                aria-sort="none"
-                                class="mclHeader"
-                                id="list-column-emailcategories"
-                                role="columnheader"
-                                style="flex: 0 0 auto;"
-                              >
-                                ui-organizations.contactPeople.categories
-                              </div>
-                              <div
-                                aria-sort="none"
-                                class="mclHeader"
-                                id="list-column-emailprimary"
-                                role="columnheader"
-                                style="flex: 0 0 auto;"
-                              >
-                                ui-organizations.primaryItem
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="mclScrollable"
-                            style="position: static; width: 100%;"
-                            tabindex="0"
-                          >
-                            <div
-                              class="mclRowContainer"
-                              role="rowgroup"
                               style="position: static;"
                             >
                               <div
-                                aria-rowindex="2"
-                                class="mclRowFormatterContainer"
-                                data-row-index="row-0"
-                                role="row"
-                                style="position: static;"
+                                class="mclRow mclIsOdd"
+                                data-row-inner="0"
+                                style="min-width: 0px;"
                               >
                                 <div
-                                  class="mclRow mclIsOdd"
-                                  data-row-inner="0"
-                                  style="min-width: 0px;"
+                                  class="mclCell mclCellStyle"
+                                  role="gridcell"
                                 >
-                                  <div
-                                    class="mclCell mclCellStyle"
-                                    role="gridcell"
-                                  >
-                                    cust.service03@amazon.com
-                                  </div>
-                                  <div
-                                    class="mclCell mclCellStyle"
-                                    role="gridcell"
-                                  >
-                                    customer service
-                                  </div>
-                                  <div
-                                    class="mclCell mclCellStyle"
-                                    role="gridcell"
-                                  >
-                                    English
-                                  </div>
-                                  <div
-                                    class="mclCell mclCellStyle"
-                                    role="gridcell"
-                                  >
-                                    Customer Service
-                                  </div>
-                                  <div
-                                    class="mclCell mclCellStyle"
-                                    role="gridcell"
-                                  >
-                                    ui-organizations.primaryItem
-                                  </div>
+                                  cust.service03@amazon.com
+                                </div>
+                                <div
+                                  class="mclCell mclCellStyle"
+                                  role="gridcell"
+                                >
+                                  customer service
+                                </div>
+                                <div
+                                  class="mclCell mclCellStyle"
+                                  role="gridcell"
+                                >
+                                  English
+                                </div>
+                                <div
+                                  class="mclCell mclCellStyle"
+                                  role="gridcell"
+                                >
+                                  Customer Service
+                                </div>
+                                <div
+                                  class="mclCell mclCellStyle"
+                                  role="gridcell"
+                                >
+                                  ui-organizations.primaryItem
                                 </div>
                               </div>
+                            </div>
+                            <div
+                              class="mclEndOfListContainer"
+                              data-end-of-list="1"
+                            >
                               <div
-                                class="mclEndOfListContainer"
-                                data-end-of-list="1"
+                                class="mclCenteredContainer"
+                                style="visibility: hidden; height: 0px; padding: 0px; width: 0px;"
                               >
                                 <div
-                                  class="mclCenteredContainer"
-                                  style="visibility: hidden; height: 0px; padding: 0px; width: 0px;"
+                                  class="textCentered"
+                                  data-test-layout="true"
                                 >
                                   <div
-                                    class="textCentered"
+                                    class="mclEndOfList"
                                     data-test-layout="true"
                                   >
-                                    <div
-                                      class="mclEndOfList"
-                                      data-test-layout="true"
-                                    >
-                                      <span>
-                                        Icon
-                                      </span>
-                                    </div>
+                                    <span>
+                                      Icon
+                                    </span>
                                   </div>
                                 </div>
                               </div>
@@ -611,46 +609,45 @@ exports[`ViewContact should render correct structure 1`] = `
                 data-test-accordion-section="true"
                 id="contact-phones"
               >
-                <div>
+                <div
+                  style="width: 100%; display: flex;"
+                  tabindex="-1"
+                >
                   <div
-                    style="width: 100%; display: flex;"
+                    class="headerWrapper"
                   >
                     <div
-                      class="headerWrapper"
+                      class="header default"
                     >
-                      <div
-                        class="header default"
+                      <h3
+                        class="headline size-medium margin-none font-weight-bold block"
+                        data-test-headline="true"
                       >
-                        <h3
-                          class="headline size-medium margin-none font-weight-bold block"
-                          data-test-headline="true"
+                        <button
+                          aria-controls="accordion3"
+                          aria-expanded="true"
+                          class="defaultCollapseButton"
+                          id="accordion-toggle-button-contact-phones"
+                          type="button"
                         >
-                          <button
-                            aria-controls="accordion3"
-                            aria-expanded="true"
-                            class="defaultCollapseButton"
-                            id="accordion-toggle-button-contact-phones"
-                            type="button"
+                          <span
+                            class="headerInner"
                           >
                             <span
-                              class="headerInner"
+                              class="defaultHeaderIcon"
                             >
-                              <span
-                                class="defaultHeaderIcon"
-                              >
-                                <span>
-                                  Icon
-                                </span>
+                              <span>
+                                Icon
                               </span>
-                              <div
-                                class="labelArea"
-                              >
-                                ui-organizations.contactPeople.phoneNumbers
-                              </div>
                             </span>
-                          </button>
-                        </h3>
-                      </div>
+                            <div
+                              class="labelArea"
+                            >
+                              ui-organizations.contactPeople.phoneNumbers
+                            </div>
+                          </span>
+                        </button>
+                      </h3>
                     </div>
                   </div>
                 </div>
@@ -665,153 +662,153 @@ exports[`ViewContact should render correct structure 1`] = `
                     id="accordion3"
                     role="region"
                   >
-                    <div>
+                    <div
+                      class="mclContainer"
+                      style="position: relative; overflow: hidden; height: auto; width: 100%;"
+                      tabindex="-1"
+                    >
                       <div
-                        class="mclContainer"
-                        style="position: relative; overflow: hidden; height: auto; width: 100%;"
+                        aria-live="assertive"
+                        aria-relevant="additions"
+                        class="sr-only"
+                      />
+                      <div
+                        aria-rowcount="2"
+                        class="mclGridBody"
+                        data-total-count="0"
+                        role="grid"
+                        tabindex="0"
                       >
                         <div
-                          aria-live="assertive"
-                          aria-relevant="additions"
-                          class="sr-only"
-                        />
+                          class="mclHeaderContainer"
+                          role="rowgroup"
+                        >
+                          <div
+                            aria-rowindex="1"
+                            class="mclHeaderRow"
+                            role="row"
+                            style="display: flex; width: 17px;"
+                          >
+                            <div
+                              aria-sort="none"
+                              class="mclHeader"
+                              id="list-column-phonenumber"
+                              role="columnheader"
+                              style="flex: 0 0 auto;"
+                            >
+                              ui-organizations.contactPeople.phoneNumber
+                            </div>
+                            <div
+                              aria-sort="none"
+                              class="mclHeader"
+                              id="list-column-phonetype"
+                              role="columnheader"
+                              style="flex: 0 0 auto;"
+                            >
+                              ui-organizations.contactPeople.type
+                            </div>
+                            <div
+                              aria-sort="none"
+                              class="mclHeader"
+                              id="list-column-phonelanguage"
+                              role="columnheader"
+                              style="flex: 0 0 auto;"
+                            >
+                              ui-organizations.contactPeople.language
+                            </div>
+                            <div
+                              aria-sort="none"
+                              class="mclHeader"
+                              id="list-column-phonecategories"
+                              role="columnheader"
+                              style="flex: 0 0 auto;"
+                            >
+                              ui-organizations.contactPeople.categories
+                            </div>
+                            <div
+                              aria-sort="none"
+                              class="mclHeader"
+                              id="list-column-phoneprimary"
+                              role="columnheader"
+                              style="flex: 0 0 auto;"
+                            >
+                              ui-organizations.primaryItem
+                            </div>
+                          </div>
+                        </div>
                         <div
-                          aria-rowcount="2"
-                          class=""
-                          data-total-count="0"
-                          role="grid"
+                          class="mclScrollable"
+                          role="rowgroup"
+                          style="position: static; width: 100%;"
                           tabindex="0"
                         >
                           <div
-                            class="mclHeaderContainer"
+                            class="mclRowContainer"
+                            style="position: static;"
                           >
                             <div
-                              aria-rowindex="1"
-                              class="mclHeaderRow"
+                              aria-rowindex="2"
+                              class="mclRowFormatterContainer"
+                              data-row-index="row-0"
                               role="row"
-                              style="display: flex; width: 17px;"
-                            >
-                              <div
-                                aria-sort="none"
-                                class="mclHeader"
-                                id="list-column-phonenumber"
-                                role="columnheader"
-                                style="flex: 0 0 auto;"
-                              >
-                                ui-organizations.contactPeople.phoneNumber
-                              </div>
-                              <div
-                                aria-sort="none"
-                                class="mclHeader"
-                                id="list-column-phonetype"
-                                role="columnheader"
-                                style="flex: 0 0 auto;"
-                              >
-                                ui-organizations.contactPeople.type
-                              </div>
-                              <div
-                                aria-sort="none"
-                                class="mclHeader"
-                                id="list-column-phonelanguage"
-                                role="columnheader"
-                                style="flex: 0 0 auto;"
-                              >
-                                ui-organizations.contactPeople.language
-                              </div>
-                              <div
-                                aria-sort="none"
-                                class="mclHeader"
-                                id="list-column-phonecategories"
-                                role="columnheader"
-                                style="flex: 0 0 auto;"
-                              >
-                                ui-organizations.contactPeople.categories
-                              </div>
-                              <div
-                                aria-sort="none"
-                                class="mclHeader"
-                                id="list-column-phoneprimary"
-                                role="columnheader"
-                                style="flex: 0 0 auto;"
-                              >
-                                ui-organizations.primaryItem
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="mclScrollable"
-                            style="position: static; width: 100%;"
-                            tabindex="0"
-                          >
-                            <div
-                              class="mclRowContainer"
-                              role="rowgroup"
                               style="position: static;"
                             >
                               <div
-                                aria-rowindex="2"
-                                class="mclRowFormatterContainer"
-                                data-row-index="row-0"
-                                role="row"
-                                style="position: static;"
+                                class="mclRow mclIsOdd"
+                                data-row-inner="0"
+                                style="min-width: 0px;"
                               >
                                 <div
-                                  class="mclRow mclIsOdd"
-                                  data-row-inner="0"
-                                  style="min-width: 0px;"
+                                  class="mclCell mclCellStyle"
+                                  role="gridcell"
                                 >
-                                  <div
-                                    class="mclCell mclCellStyle"
-                                    role="gridcell"
-                                  >
-                                    1-888-238-22090
-                                  </div>
-                                  <div
-                                    class="mclCell mclCellStyle"
-                                    role="gridcell"
-                                  >
-                                    Mobile
-                                  </div>
-                                  <div
-                                    class="mclCell mclCellStyle"
-                                    role="gridcell"
-                                  >
-                                    English
-                                  </div>
-                                  <div
-                                    class="mclCell mclCellStyle"
-                                    role="gridcell"
-                                  >
-                                    Customer Service
-                                  </div>
-                                  <div
-                                    class="mclCell mclCellStyle"
-                                    role="gridcell"
-                                  >
-                                    ui-organizations.primaryItem
-                                  </div>
+                                  1-888-238-22090
+                                </div>
+                                <div
+                                  class="mclCell mclCellStyle"
+                                  role="gridcell"
+                                >
+                                  Mobile
+                                </div>
+                                <div
+                                  class="mclCell mclCellStyle"
+                                  role="gridcell"
+                                >
+                                  English
+                                </div>
+                                <div
+                                  class="mclCell mclCellStyle"
+                                  role="gridcell"
+                                >
+                                  Customer Service
+                                </div>
+                                <div
+                                  class="mclCell mclCellStyle"
+                                  role="gridcell"
+                                >
+                                  ui-organizations.primaryItem
                                 </div>
                               </div>
+                            </div>
+                            <div
+                              class="mclEndOfListContainer"
+                              data-end-of-list="1"
+                            >
                               <div
-                                class="mclEndOfListContainer"
-                                data-end-of-list="1"
+                                class="mclCenteredContainer"
+                                style="visibility: hidden; height: 0px; padding: 0px; width: 0px;"
                               >
                                 <div
-                                  class="mclCenteredContainer"
-                                  style="visibility: hidden; height: 0px; padding: 0px; width: 0px;"
+                                  class="textCentered"
+                                  data-test-layout="true"
                                 >
                                   <div
-                                    class="textCentered"
+                                    class="mclEndOfList"
                                     data-test-layout="true"
                                   >
-                                    <div
-                                      class="mclEndOfList"
-                                      data-test-layout="true"
-                                    >
-                                      <span>
-                                        Icon
-                                      </span>
-                                    </div>
+                                    <span>
+                                      Icon
+                                    </span>
                                   </div>
                                 </div>
                               </div>
@@ -828,46 +825,45 @@ exports[`ViewContact should render correct structure 1`] = `
                 data-test-accordion-section="true"
                 id="contact-urls"
               >
-                <div>
+                <div
+                  style="width: 100%; display: flex;"
+                  tabindex="-1"
+                >
                   <div
-                    style="width: 100%; display: flex;"
+                    class="headerWrapper"
                   >
                     <div
-                      class="headerWrapper"
+                      class="header default"
                     >
-                      <div
-                        class="header default"
+                      <h3
+                        class="headline size-medium margin-none font-weight-bold block"
+                        data-test-headline="true"
                       >
-                        <h3
-                          class="headline size-medium margin-none font-weight-bold block"
-                          data-test-headline="true"
+                        <button
+                          aria-controls="accordion4"
+                          aria-expanded="true"
+                          class="defaultCollapseButton"
+                          id="accordion-toggle-button-contact-urls"
+                          type="button"
                         >
-                          <button
-                            aria-controls="accordion4"
-                            aria-expanded="true"
-                            class="defaultCollapseButton"
-                            id="accordion-toggle-button-contact-urls"
-                            type="button"
+                          <span
+                            class="headerInner"
                           >
                             <span
-                              class="headerInner"
+                              class="defaultHeaderIcon"
                             >
-                              <span
-                                class="defaultHeaderIcon"
-                              >
-                                <span>
-                                  Icon
-                                </span>
+                              <span>
+                                Icon
                               </span>
-                              <div
-                                class="labelArea"
-                              >
-                                ui-organizations.contactPeople.urls
-                              </div>
                             </span>
-                          </button>
-                        </h3>
-                      </div>
+                            <div
+                              class="labelArea"
+                            >
+                              ui-organizations.contactPeople.urls
+                            </div>
+                          </span>
+                        </button>
+                      </h3>
                     </div>
                   </div>
                 </div>
@@ -882,160 +878,160 @@ exports[`ViewContact should render correct structure 1`] = `
                     id="accordion4"
                     role="region"
                   >
-                    <div>
+                    <div
+                      class="mclContainer"
+                      style="position: relative; overflow: hidden; height: auto; width: 100%;"
+                      tabindex="-1"
+                    >
                       <div
-                        class="mclContainer"
-                        style="position: relative; overflow: hidden; height: auto; width: 100%;"
+                        aria-live="assertive"
+                        aria-relevant="additions"
+                        class="sr-only"
+                      />
+                      <div
+                        aria-rowcount="2"
+                        class="mclGridBody"
+                        data-total-count="0"
+                        role="grid"
+                        tabindex="0"
                       >
                         <div
-                          aria-live="assertive"
-                          aria-relevant="additions"
-                          class="sr-only"
-                        />
-                        <div
-                          aria-rowcount="2"
-                          class=""
-                          data-total-count="0"
-                          role="grid"
-                          tabindex="0"
+                          class="mclHeaderContainer"
+                          role="rowgroup"
                         >
                           <div
-                            class="mclHeaderContainer"
+                            aria-rowindex="1"
+                            class="mclHeaderRow"
+                            role="row"
+                            style="display: flex; width: 17px;"
                           >
                             <div
-                              aria-rowindex="1"
-                              class="mclHeaderRow"
-                              role="row"
-                              style="display: flex; width: 17px;"
+                              aria-sort="none"
+                              class="mclHeader"
+                              id="list-column-url"
+                              role="columnheader"
+                              style="flex: 0 0 auto;"
                             >
-                              <div
-                                aria-sort="none"
-                                class="mclHeader"
-                                id="list-column-url"
-                                role="columnheader"
-                                style="flex: 0 0 auto;"
-                              >
-                                ui-organizations.contactPeople.name
-                              </div>
-                              <div
-                                aria-sort="none"
-                                class="mclHeader"
-                                id="list-column-urldescription"
-                                role="columnheader"
-                                style="flex: 0 0 auto;"
-                              >
-                                ui-organizations.contactPeople.description
-                              </div>
-                              <div
-                                aria-sort="none"
-                                class="mclHeader"
-                                id="list-column-urllanguage"
-                                role="columnheader"
-                                style="flex: 0 0 auto;"
-                              >
-                                ui-organizations.contactPeople.language
-                              </div>
-                              <div
-                                aria-sort="none"
-                                class="mclHeader"
-                                id="list-column-urlcategories"
-                                role="columnheader"
-                                style="flex: 0 0 auto;"
-                              >
-                                ui-organizations.contactPeople.categories
-                              </div>
-                              <div
-                                aria-sort="none"
-                                class="mclHeader"
-                                id="list-column-urlprimary"
-                                role="columnheader"
-                                style="flex: 0 0 auto;"
-                              >
-                                ui-organizations.primaryItem
-                              </div>
+                              ui-organizations.contactPeople.name
+                            </div>
+                            <div
+                              aria-sort="none"
+                              class="mclHeader"
+                              id="list-column-urldescription"
+                              role="columnheader"
+                              style="flex: 0 0 auto;"
+                            >
+                              ui-organizations.contactPeople.description
+                            </div>
+                            <div
+                              aria-sort="none"
+                              class="mclHeader"
+                              id="list-column-urllanguage"
+                              role="columnheader"
+                              style="flex: 0 0 auto;"
+                            >
+                              ui-organizations.contactPeople.language
+                            </div>
+                            <div
+                              aria-sort="none"
+                              class="mclHeader"
+                              id="list-column-urlcategories"
+                              role="columnheader"
+                              style="flex: 0 0 auto;"
+                            >
+                              ui-organizations.contactPeople.categories
+                            </div>
+                            <div
+                              aria-sort="none"
+                              class="mclHeader"
+                              id="list-column-urlprimary"
+                              role="columnheader"
+                              style="flex: 0 0 auto;"
+                            >
+                              ui-organizations.primaryItem
                             </div>
                           </div>
+                        </div>
+                        <div
+                          class="mclScrollable"
+                          role="rowgroup"
+                          style="position: static; width: 100%;"
+                        >
                           <div
-                            class="mclScrollable"
-                            style="position: static; width: 100%;"
+                            class="mclRowContainer"
+                            style="position: static;"
                           >
                             <div
-                              class="mclRowContainer"
-                              role="rowgroup"
+                              aria-rowindex="2"
+                              class="mclRowFormatterContainer"
+                              data-row-index="row-0"
+                              role="row"
                               style="position: static;"
                             >
                               <div
-                                aria-rowindex="2"
-                                class="mclRowFormatterContainer"
-                                data-row-index="row-0"
-                                role="row"
-                                style="position: static;"
+                                class="mclRow mclIsOdd"
+                                data-row-inner="0"
+                                style="min-width: 0px;"
                               >
                                 <div
-                                  class="mclRow mclIsOdd"
-                                  data-row-inner="0"
-                                  style="min-width: 0px;"
+                                  class="mclCell mclCellStyle"
+                                  role="gridcell"
                                 >
-                                  <div
-                                    class="mclCell mclCellStyle"
-                                    role="gridcell"
+                                  <a
+                                    class="root"
+                                    data-test-text-link="true"
+                                    href="https://www.amazon.com"
+                                    rel="noopener noreferrer"
+                                    target="_blank"
                                   >
-                                    <a
-                                      class="root"
-                                      data-test-text-link="true"
-                                      href="https://www.amazon.com"
-                                      rel="noopener noreferrer"
-                                      target="_blank"
-                                    >
-                                      https://www.amazon.com
-                                    </a>
-                                  </div>
-                                  <div
-                                    class="mclCell mclCellStyle"
-                                    role="gridcell"
-                                  >
-                                    main website
-                                  </div>
-                                  <div
-                                    class="mclCell mclCellStyle"
-                                    role="gridcell"
-                                  >
-                                    en-us
-                                  </div>
-                                  <div
-                                    class="mclCell mclCellStyle"
-                                    role="gridcell"
-                                  >
-                                    Customer Service
-                                  </div>
-                                  <div
-                                    class="mclCell mclCellStyle"
-                                    role="gridcell"
-                                  >
-                                    ui-organizations.primaryItem
-                                  </div>
+                                    https://www.amazon.com
+                                  </a>
+                                </div>
+                                <div
+                                  class="mclCell mclCellStyle"
+                                  role="gridcell"
+                                >
+                                  main website
+                                </div>
+                                <div
+                                  class="mclCell mclCellStyle"
+                                  role="gridcell"
+                                >
+                                  en-us
+                                </div>
+                                <div
+                                  class="mclCell mclCellStyle"
+                                  role="gridcell"
+                                >
+                                  Customer Service
+                                </div>
+                                <div
+                                  class="mclCell mclCellStyle"
+                                  role="gridcell"
+                                >
+                                  ui-organizations.primaryItem
                                 </div>
                               </div>
+                            </div>
+                            <div
+                              class="mclEndOfListContainer"
+                              data-end-of-list="1"
+                            >
                               <div
-                                class="mclEndOfListContainer"
-                                data-end-of-list="1"
+                                class="mclCenteredContainer"
+                                style="visibility: hidden; height: 0px; padding: 0px; width: 0px;"
                               >
                                 <div
-                                  class="mclCenteredContainer"
-                                  style="visibility: hidden; height: 0px; padding: 0px; width: 0px;"
+                                  class="textCentered"
+                                  data-test-layout="true"
                                 >
                                   <div
-                                    class="textCentered"
+                                    class="mclEndOfList"
                                     data-test-layout="true"
                                   >
-                                    <div
-                                      class="mclEndOfList"
-                                      data-test-layout="true"
-                                    >
-                                      <span>
-                                        Icon
-                                      </span>
-                                    </div>
+                                    <span>
+                                      Icon
+                                    </span>
                                   </div>
                                 </div>
                               </div>
@@ -1052,46 +1048,45 @@ exports[`ViewContact should render correct structure 1`] = `
                 data-test-accordion-section="true"
                 id="contact-addresses"
               >
-                <div>
+                <div
+                  style="width: 100%; display: flex;"
+                  tabindex="-1"
+                >
                   <div
-                    style="width: 100%; display: flex;"
+                    class="headerWrapper"
                   >
                     <div
-                      class="headerWrapper"
+                      class="header default"
                     >
-                      <div
-                        class="header default"
+                      <h3
+                        class="headline size-medium margin-none font-weight-bold block"
+                        data-test-headline="true"
                       >
-                        <h3
-                          class="headline size-medium margin-none font-weight-bold block"
-                          data-test-headline="true"
+                        <button
+                          aria-controls="accordion5"
+                          aria-expanded="true"
+                          class="defaultCollapseButton"
+                          id="accordion-toggle-button-contact-addresses"
+                          type="button"
                         >
-                          <button
-                            aria-controls="accordion5"
-                            aria-expanded="true"
-                            class="defaultCollapseButton"
-                            id="accordion-toggle-button-contact-addresses"
-                            type="button"
+                          <span
+                            class="headerInner"
                           >
                             <span
-                              class="headerInner"
+                              class="defaultHeaderIcon"
                             >
-                              <span
-                                class="defaultHeaderIcon"
-                              >
-                                <span>
-                                  Icon
-                                </span>
+                              <span>
+                                Icon
                               </span>
-                              <div
-                                class="labelArea"
-                              >
-                                ui-organizations.contactPeople.addresses
-                              </div>
                             </span>
-                          </button>
-                        </h3>
-                      </div>
+                            <div
+                              class="labelArea"
+                            >
+                              ui-organizations.contactPeople.addresses
+                            </div>
+                          </span>
+                        </button>
+                      </h3>
                     </div>
                   </div>
                 </div>

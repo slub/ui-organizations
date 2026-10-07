@@ -596,46 +596,45 @@ exports[`OrganizationVendorInfoForm should render correct structure 1`] = `
             data-test-accordion-section="true"
             id="taxSection"
           >
-            <div>
+            <div
+              style="width: 100%; display: flex;"
+              tabindex="-1"
+            >
               <div
-                style="width: 100%; display: flex;"
+                class="headerWrapper"
               >
                 <div
-                  class="headerWrapper"
+                  class="header default"
                 >
-                  <div
-                    class="header default"
+                  <h3
+                    class="headline size-medium margin-none font-weight-bold block"
+                    data-test-headline="true"
                   >
-                    <h3
-                      class="headline size-medium margin-none font-weight-bold block"
-                      data-test-headline="true"
+                    <button
+                      aria-controls="accordion1"
+                      aria-expanded="true"
+                      class="defaultCollapseButton"
+                      id="accordion-toggle-button-taxSection"
+                      type="button"
                     >
-                      <button
-                        aria-controls="accordion1"
-                        aria-expanded="true"
-                        class="defaultCollapseButton"
-                        id="accordion-toggle-button-taxSection"
-                        type="button"
+                      <span
+                        class="headerInner"
                       >
                         <span
-                          class="headerInner"
+                          class="defaultHeaderIcon"
                         >
-                          <span
-                            class="defaultHeaderIcon"
-                          >
-                            <span>
-                              Icon
-                            </span>
+                          <span>
+                            Icon
                           </span>
-                          <div
-                            class="labelArea"
-                          >
-                            ui-organizations.vendorInfo.tax
-                          </div>
                         </span>
-                      </button>
-                    </h3>
-                  </div>
+                        <div
+                          class="labelArea"
+                        >
+                          ui-organizations.vendorInfo.tax
+                        </div>
+                      </span>
+                    </button>
+                  </h3>
                 </div>
               </div>
             </div>

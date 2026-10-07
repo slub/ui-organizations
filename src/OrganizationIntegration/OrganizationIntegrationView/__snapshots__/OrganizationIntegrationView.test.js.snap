@@ -190,46 +190,45 @@ exports[`OrganizationIntegrationView should render correct view structure 1`] = 
                 data-test-accordion-section="true"
                 id="integrationInfo"
               >
-                <div>
+                <div
+                  style="width: 100%; display: flex;"
+                  tabindex="-1"
+                >
                   <div
-                    style="width: 100%; display: flex;"
+                    class="headerWrapper"
                   >
                     <div
-                      class="headerWrapper"
+                      class="header default"
                     >
-                      <div
-                        class="header default"
+                      <h3
+                        class="headline size-medium margin-none font-weight-bold block"
+                        data-test-headline="true"
                       >
-                        <h3
-                          class="headline size-medium margin-none font-weight-bold block"
-                          data-test-headline="true"
+                        <button
+                          aria-controls="accordion1"
+                          aria-expanded="true"
+                          class="defaultCollapseButton"
+                          id="accordion-toggle-button-integrationInfo"
+                          type="button"
                         >
-                          <button
-                            aria-controls="accordion1"
-                            aria-expanded="true"
-                            class="defaultCollapseButton"
-                            id="accordion-toggle-button-integrationInfo"
-                            type="button"
+                          <span
+                            class="headerInner"
                           >
                             <span
-                              class="headerInner"
+                              class="defaultHeaderIcon"
                             >
-                              <span
-                                class="defaultHeaderIcon"
-                              >
-                                <span>
-                                  Icon
-                                </span>
+                              <span>
+                                Icon
                               </span>
-                              <div
-                                class="labelArea"
-                              >
-                                ui-organizations.integration.info
-                              </div>
                             </span>
-                          </button>
-                        </h3>
-                      </div>
+                            <div
+                              class="labelArea"
+                            >
+                              ui-organizations.integration.info
+                            </div>
+                          </span>
+                        </button>
+                      </h3>
                     </div>
                   </div>
                 </div>
@@ -294,7 +293,7 @@ exports[`OrganizationIntegrationView should render correct view structure 1`] = 
                         >
                           <label
                             class="label label"
-                            for="checkbox-5"
+                            for="checkbox-6"
                           >
                             <span
                               class="labelText"
@@ -308,7 +307,7 @@ exports[`OrganizationIntegrationView should render correct view structure 1`] = 
                                 aria-invalid="false"
                                 class="input"
                                 disabled=""
-                                id="checkbox-5"
+                                id="checkbox-6"
                                 type="checkbox"
                                 value=""
                               />
@@ -407,28 +406,6 @@ exports[`OrganizationIntegrationView should render correct view structure 1`] = 
                       </div>
                       <div
                         class="col-xs-6 col-md-3"
-                        data-test-edi-acq-methods="true"
-                      >
-                        <div
-                          class="kvRoot"
-                        >
-                          <div
-                            class="kvLabel"
-                          >
-                            ui-organizations.integration.edi.defaultAcquisitionMethods
-                          </div>
-                          <div
-                            class="kvValue"
-                            data-test-kv-value="true"
-                          >
-                            <span>
-                              NoValue
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        class="col-xs-6 col-md-3"
                         data-test-edi-account-numbers="true"
                       >
                         <div
@@ -458,46 +435,45 @@ exports[`OrganizationIntegrationView should render correct view structure 1`] = 
                 data-test-accordion-section="true"
                 id="edi"
               >
-                <div>
+                <div
+                  style="width: 100%; display: flex;"
+                  tabindex="-1"
+                >
                   <div
-                    style="width: 100%; display: flex;"
+                    class="headerWrapper"
                   >
                     <div
-                      class="headerWrapper"
+                      class="header default"
                     >
-                      <div
-                        class="header default"
+                      <h3
+                        class="headline size-medium margin-none font-weight-bold block"
+                        data-test-headline="true"
                       >
-                        <h3
-                          class="headline size-medium margin-none font-weight-bold block"
-                          data-test-headline="true"
+                        <button
+                          aria-controls="accordion2"
+                          aria-expanded="true"
+                          class="defaultCollapseButton"
+                          id="accordion-toggle-button-edi"
+                          type="button"
                         >
-                          <button
-                            aria-controls="accordion2"
-                            aria-expanded="true"
-                            class="defaultCollapseButton"
-                            id="accordion-toggle-button-edi"
-                            type="button"
+                          <span
+                            class="headerInner"
                           >
                             <span
-                              class="headerInner"
+                              class="defaultHeaderIcon"
                             >
-                              <span
-                                class="defaultHeaderIcon"
-                              >
-                                <span>
-                                  Icon
-                                </span>
+                              <span>
+                                Icon
                               </span>
-                              <div
-                                class="labelArea"
-                              >
-                                ui-organizations.integration.edi
-                              </div>
                             </span>
-                          </button>
-                        </h3>
-                      </div>
+                            <div
+                              class="labelArea"
+                            >
+                              ui-organizations.integration.edi
+                            </div>
+                          </span>
+                        </button>
+                      </h3>
                     </div>
                   </div>
                 </div>
@@ -515,6 +491,28 @@ exports[`OrganizationIntegrationView should render correct view structure 1`] = 
                     <div
                       class="row"
                     >
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-edi-acq-methods="true"
+                      >
+                        <div
+                          class="kvRoot"
+                        >
+                          <div
+                            class="kvLabel"
+                          >
+                            ui-organizations.integration.edi.defaultAcquisitionMethods
+                          </div>
+                          <div
+                            class="kvValue"
+                            data-test-kv-value="true"
+                          >
+                            <span>
+                              NoValue
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                       <div
                         class="col-xs-6 col-md-3"
                         data-test-vendor-edi-code="true"
@@ -631,66 +629,12 @@ exports[`OrganizationIntegrationView should render correct view structure 1`] = 
                         >
                           <label
                             class="label label"
-                            for="checkbox-6"
-                          >
-                            <span
-                              class="labelText"
-                            >
-                              ui-organizations.integration.edi.sendAccountNumber
-                            </span>
-                            <span
-                              class="inner disabledLabel"
-                            >
-                              <input
-                                aria-invalid="false"
-                                class="input"
-                                disabled=""
-                                id="checkbox-6"
-                                type="checkbox"
-                                value=""
-                              />
-                              <span
-                                class="checkboxIcon"
-                              >
-                                <svg
-                                  height="10"
-                                  viewBox="0 0 14 14"
-                                  width="10"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                    d="M10.395 4.617L5.63 9.383 3.605 7.358"
-                                    fill="none"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-miterlimit="10"
-                                    stroke-width="1.5"
-                                  />
-                                </svg>
-                              </span>
-                            </span>
-                          </label>
-                          <div
-                            role="alert"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="col-xs-6 col-md-3"
-                        data-test-notifications-orders="true"
-                      >
-                        <div
-                          class="checkbox inline vertical disabled"
-                          data-test-checkbox="true"
-                        >
-                          <label
-                            class="label label"
                             for="checkbox-7"
                           >
                             <span
                               class="labelText"
                             >
-                              ui-organizations.integration.edi.orders
+                              ui-organizations.integration.edi.sendAccountNumber
                             </span>
                             <span
                               class="inner disabledLabel"
@@ -731,7 +675,7 @@ exports[`OrganizationIntegrationView should render correct view structure 1`] = 
                       </div>
                       <div
                         class="col-xs-6 col-md-3"
-                        data-test-notifications-invoices="true"
+                        data-test-notifications-orders="true"
                       >
                         <div
                           class="checkbox inline vertical disabled"
@@ -740,6 +684,60 @@ exports[`OrganizationIntegrationView should render correct view structure 1`] = 
                           <label
                             class="label label"
                             for="checkbox-8"
+                          >
+                            <span
+                              class="labelText"
+                            >
+                              ui-organizations.integration.edi.orders
+                            </span>
+                            <span
+                              class="inner disabledLabel"
+                            >
+                              <input
+                                aria-invalid="false"
+                                class="input"
+                                disabled=""
+                                id="checkbox-8"
+                                type="checkbox"
+                                value=""
+                              />
+                              <span
+                                class="checkboxIcon"
+                              >
+                                <svg
+                                  height="10"
+                                  viewBox="0 0 14 14"
+                                  width="10"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    d="M10.395 4.617L5.63 9.383 3.605 7.358"
+                                    fill="none"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-miterlimit="10"
+                                    stroke-width="1.5"
+                                  />
+                                </svg>
+                              </span>
+                            </span>
+                          </label>
+                          <div
+                            role="alert"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-notifications-invoices="true"
+                      >
+                        <div
+                          class="checkbox inline vertical disabled"
+                          data-test-checkbox="true"
+                        >
+                          <label
+                            class="label label"
+                            for="checkbox-9"
                           >
                             <span
                               class="labelText"
@@ -753,7 +751,7 @@ exports[`OrganizationIntegrationView should render correct view structure 1`] = 
                                 aria-invalid="false"
                                 class="input"
                                 disabled=""
-                                id="checkbox-8"
+                                id="checkbox-9"
                                 type="checkbox"
                                 value=""
                               />
@@ -812,48 +810,47 @@ exports[`OrganizationIntegrationView should render correct view structure 1`] = 
               <section
                 class="accordion hasSeparator"
                 data-test-accordion-section="true"
-                id="scheduling"
+                id="ftp"
               >
-                <div>
+                <div
+                  style="width: 100%; display: flex;"
+                  tabindex="-1"
+                >
                   <div
-                    style="width: 100%; display: flex;"
+                    class="headerWrapper"
                   >
                     <div
-                      class="headerWrapper"
+                      class="header default"
                     >
-                      <div
-                        class="header default"
+                      <h3
+                        class="headline size-medium margin-none font-weight-bold block"
+                        data-test-headline="true"
                       >
-                        <h3
-                          class="headline size-medium margin-none font-weight-bold block"
-                          data-test-headline="true"
+                        <button
+                          aria-controls="accordion3"
+                          aria-expanded="true"
+                          class="defaultCollapseButton"
+                          id="accordion-toggle-button-ftp"
+                          type="button"
                         >
-                          <button
-                            aria-controls="accordion3"
-                            aria-expanded="true"
-                            class="defaultCollapseButton"
-                            id="accordion-toggle-button-scheduling"
-                            type="button"
+                          <span
+                            class="headerInner"
                           >
                             <span
-                              class="headerInner"
+                              class="defaultHeaderIcon"
                             >
-                              <span
-                                class="defaultHeaderIcon"
-                              >
-                                <span>
-                                  Icon
-                                </span>
+                              <span>
+                                Icon
                               </span>
-                              <div
-                                class="labelArea"
-                              >
-                                ui-organizations.integration.scheduling
-                              </div>
                             </span>
-                          </button>
-                        </h3>
-                      </div>
+                            <div
+                              class="labelArea"
+                            >
+                              ui-organizations.integration.ftp
+                            </div>
+                          </span>
+                        </button>
+                      </h3>
                     </div>
                   </div>
                 </div>
@@ -862,10 +859,311 @@ exports[`OrganizationIntegrationView should render correct view structure 1`] = 
                   style="z-index: 2;"
                 >
                   <div
-                    aria-labelledby="accordion-toggle-button-scheduling"
+                    aria-labelledby="accordion-toggle-button-ftp"
                     class="content-region expanded"
                     data-test-accordion-wrapper="true"
                     id="accordion3"
+                    role="region"
+                  >
+                    <div
+                      class="row"
+                    >
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-edit-ftp="true"
+                      >
+                        <div
+                          class="kvRoot"
+                        >
+                          <div
+                            class="kvLabel"
+                          >
+                            ui-organizations.integration.ftp.ftpFormat
+                          </div>
+                          <div
+                            class="kvValue"
+                            data-test-kv-value="true"
+                          >
+                            SFTP
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-ftp-mode="true"
+                      >
+                        <div
+                          class="kvRoot"
+                        >
+                          <div
+                            class="kvLabel"
+                          >
+                            ui-organizations.integration.ftp.ftpMode
+                          </div>
+                          <div
+                            class="kvValue"
+                            data-test-kv-value="true"
+                          >
+                            ASCII
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-server-address="true"
+                      >
+                        <div
+                          class="kvRoot"
+                        >
+                          <div
+                            class="kvLabel"
+                          >
+                            ui-organizations.integration.ftp.serverAddress
+                          </div>
+                          <div
+                            class="kvValue"
+                            data-test-kv-value="true"
+                          >
+                            <span>
+                              NoValue
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-ftp-connection-mode="true"
+                      >
+                        <div
+                          class="kvRoot"
+                        >
+                          <div
+                            class="kvLabel"
+                          >
+                            ui-organizations.integration.ftp.ftpConnectionMode
+                          </div>
+                          <div
+                            class="kvValue"
+                            data-test-kv-value="true"
+                          >
+                            Active
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="row"
+                    >
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-username="true"
+                      >
+                        <div
+                          class="kvRoot"
+                        >
+                          <div
+                            class="kvLabel"
+                          >
+                            ui-organizations.integration.ftp.username
+                          </div>
+                          <div
+                            class="kvValue"
+                            data-test-kv-value="true"
+                          >
+                            ********
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-password="true"
+                      >
+                        <div
+                          class="kvRoot"
+                        >
+                          <div
+                            class="kvLabel"
+                          >
+                            ui-organizations.edit.password
+                          </div>
+                          <div
+                            class="kvValue"
+                            data-test-kv-value="true"
+                          >
+                            ********
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                      >
+                        <div
+                          class="toggle"
+                        >
+                          <button
+                            class="button default"
+                            type="button"
+                          >
+                            <span
+                              class="inner"
+                            >
+                              ui-organizations.edit.showCredentials
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-ftp-port="true"
+                      >
+                        <div
+                          class="kvRoot"
+                        >
+                          <div
+                            class="kvLabel"
+                          >
+                            ui-organizations.integration.ftp.ftpPort
+                          </div>
+                          <div
+                            class="kvValue"
+                            data-test-kv-value="true"
+                          >
+                            <span>
+                              NoValue
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-order-directory="true"
+                      >
+                        <div
+                          class="kvRoot"
+                        >
+                          <div
+                            class="kvLabel"
+                          >
+                            ui-organizations.integration.ftp.orderDirectory
+                          </div>
+                          <div
+                            class="kvValue"
+                            data-test-kv-value="true"
+                          >
+                            <span>
+                              NoValue
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="row"
+                    >
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-invoice-directory="true"
+                      >
+                        <div
+                          class="kvRoot"
+                        >
+                          <div
+                            class="kvLabel"
+                          >
+                            ui-organizations.integration.ftp.invoiceDirectory
+                          </div>
+                          <div
+                            class="kvValue"
+                            data-test-kv-value="true"
+                          >
+                            <span>
+                              NoValue
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-notes="true"
+                      >
+                        <div
+                          class="kvRoot"
+                        >
+                          <div
+                            class="kvLabel"
+                          >
+                            ui-organizations.integration.ftp.notes
+                          </div>
+                          <div
+                            class="kvValue"
+                            data-test-kv-value="true"
+                          >
+                            <span>
+                              NoValue
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="accordion hasSeparator"
+                data-test-accordion-section="true"
+                id="scheduling"
+              >
+                <div
+                  style="width: 100%; display: flex;"
+                  tabindex="-1"
+                >
+                  <div
+                    class="headerWrapper"
+                  >
+                    <div
+                      class="header default"
+                    >
+                      <h3
+                        class="headline size-medium margin-none font-weight-bold block"
+                        data-test-headline="true"
+                      >
+                        <button
+                          aria-controls="accordion4"
+                          aria-expanded="true"
+                          class="defaultCollapseButton"
+                          id="accordion-toggle-button-scheduling"
+                          type="button"
+                        >
+                          <span
+                            class="headerInner"
+                          >
+                            <span
+                              class="defaultHeaderIcon"
+                            >
+                              <span>
+                                Icon
+                              </span>
+                            </span>
+                            <div
+                              class="labelArea"
+                            >
+                              ui-organizations.integration.scheduling
+                            </div>
+                          </span>
+                        </button>
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="content-wrap expanded"
+                  style="z-index: 3;"
+                >
+                  <div
+                    aria-labelledby="accordion-toggle-button-scheduling"
+                    class="content-region expanded"
+                    data-test-accordion-wrapper="true"
+                    id="accordion4"
                     role="region"
                   >
                     <div
@@ -880,7 +1178,7 @@ exports[`OrganizationIntegrationView should render correct view structure 1`] = 
                         >
                           <label
                             class="label label"
-                            for="checkbox-9"
+                            for="checkbox-10"
                           >
                             <span
                               class="labelText"
@@ -895,7 +1193,7 @@ exports[`OrganizationIntegrationView should render correct view structure 1`] = 
                                 checked=""
                                 class="input"
                                 disabled=""
-                                id="checkbox-9"
+                                id="checkbox-10"
                                 type="checkbox"
                                 value=""
                               />

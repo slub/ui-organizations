@@ -25,6 +25,16 @@ describe('SchedulingView', () => {
     expect(screen.getByText('ui-organizations.integration.scheduling.schedulePeriod')).toBeInTheDocument();
   });
 
+  it('should render email schedule label when transmission method is Email', () => {
+    renderSchedulingView({
+      ...defaultProps,
+      isMethodEmail: true,
+    });
+
+    expect(screen.getByText('ui-organizations.integration.scheduling.scheduleEmail')).toBeInTheDocument();
+    expect(screen.queryByText('ui-organizations.integration.scheduling.scheduleEDI')).toBeNull();
+  });
+
   it('should render only Schedule Enabled checkbox', () => {
     renderSchedulingView({
       ediSchedule: {

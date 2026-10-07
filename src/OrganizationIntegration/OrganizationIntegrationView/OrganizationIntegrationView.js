@@ -317,10 +317,12 @@ const OrganizationIntegrationView = ({ orgId }) => {
                 )}
 
                 {(!isClaimingType || isMethodEmail) && (
-                  <SchedulingView ediSchedule={integrationConfig
-                    ?.exportTypeSpecificParameters
-                    ?.vendorEdiOrdersExportConfig
-                    ?.ediSchedule}
+                  <SchedulingView
+                    ediSchedule={integrationConfig
+                      ?.exportTypeSpecificParameters
+                      ?.vendorEdiOrdersExportConfig
+                      ?.ediSchedule}
+                    isMethodEmail={isMethodEmail}
                   />
                 )}
               </AccordionSet>

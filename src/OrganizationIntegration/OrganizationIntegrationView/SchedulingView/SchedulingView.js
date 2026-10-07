@@ -17,10 +17,13 @@ import {
 } from '../../constants';
 import { getTenantTime } from '../../utils';
 
-const SchedulingView = ({ ediSchedule = {} }) => {
+const SchedulingView = ({ ediSchedule = {}, isMethodEmail = false }) => {
   const { timeZone } = useIntl();
   const isScheduleEnabled = ediSchedule.enableScheduledExport;
   const schedulePeriod = ediSchedule.scheduleParameters?.schedulePeriod;
+  const scheduleLabelId = isMethodEmail
+    ? 'ui-organizations.integration.scheduling.scheduleEmail'
+    : 'ui-organizations.integration.scheduling.scheduleEDI';
   const schedulePeriodValue = Object.keys(SCHEDULE_PERIODS).find(key => SCHEDULE_PERIODS[key] === schedulePeriod);
 
   const getTime = useCallback(() => (
@@ -38,7 +41,7 @@ const SchedulingView = ({ ediSchedule = {} }) => {
       <Row>
         <Col xs={3}>
           <Checkbox
-            label={<FormattedMessage id="ui-organizations.integration.scheduling.scheduleEDI" />}
+            label={<FormattedMessage id={scheduleLabelId} />}
             checked={ediSchedule.enableScheduledExport}
             vertical
             disabled
@@ -118,6 +121,7 @@ const SchedulingView = ({ ediSchedule = {} }) => {
 
 SchedulingView.propTypes = {
   ediSchedule: PropTypes.object,
+  isMethodEmail: PropTypes.bool,
 };
 
 export default SchedulingView;

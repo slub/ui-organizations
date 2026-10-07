@@ -56,7 +56,7 @@ export const EmailView = ({ ediEmail = {} }) => {
         >
           <KeyValue
             label={<FormattedMessage id="ui-organizations.integration.email.bcc" />}
-            value={ediEmail.emailBcc || '-'}
+            value={ediEmail.emailBcc?.length ? ediEmail.emailBcc.join(', ') : '-'}
           />
         </Col>
         <Col

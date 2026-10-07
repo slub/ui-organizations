@@ -387,6 +387,7 @@
   "integration.info.fileFormat": "File format",
   "integration.edi": "EDI configuration",
   "integration.edi.accountNumbers": "Account numbers",
+  "integration.edi.accountNumbers.inUseWarning": "The following account numbers are also assigned to another integration of the same type: {accounts}. An account number should be assigned to only one integration.",
   "integration.edi.defaultAcquisitionMethods": "Automate order export for acquisition methods",
   "integration.edi.vendorEDICode": "Vendor EDI code",
   "integration.edi.vendorEDIType": "Vendor EDI type",

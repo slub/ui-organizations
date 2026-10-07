@@ -29,7 +29,6 @@ import {
 } from '../constants';
 import { OrganizationIntegrationForm } from '../OrganizationIntegrationForm';
 import {
-  buildAvailableAccounts,
   findDefaultIntegration,
   getDefaultEdiNamingConvention,
 } from '../utils';
@@ -116,9 +115,10 @@ export const OrganizationIntegrationCreate = ({ orgId }) => {
   return (
     <OrganizationIntegrationForm
       acqMethods={acqMethods}
-      accounts={buildAvailableAccounts(organization, integrationConfigs)}
       defaultIntegration={findDefaultIntegration(integrationConfigs)}
       initialValues={initialValues}
+      integrationConfigs={integrationConfigs}
+      organization={organization}
       onSubmit={mutateIntegrationConfig}
       onClose={closeForm}
       paneTitle={<FormattedMessage id="ui-organizations.integration.create.paneTitle" />}

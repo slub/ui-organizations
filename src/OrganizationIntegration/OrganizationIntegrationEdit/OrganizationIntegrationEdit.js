@@ -16,7 +16,7 @@ import {
   useIntegrationConfigMutation,
 } from '../../common/hooks';
 
-import { buildAvailableAccounts, findDefaultIntegration } from '../utils';
+import { findDefaultIntegration } from '../utils';
 import { OrganizationIntegrationForm } from '../OrganizationIntegrationForm';
 
 export const OrganizationIntegrationEdit = ({ orgId }) => {
@@ -64,9 +64,10 @@ export const OrganizationIntegrationEdit = ({ orgId }) => {
   return (
     <OrganizationIntegrationForm
       acqMethods={acqMethods}
-      accounts={buildAvailableAccounts(organization, integrationConfigs, integrationConfig)}
       defaultIntegration={findDefaultIntegration(integrationConfigs, integrationConfig)}
       initialValues={integrationConfig}
+      integrationConfigs={integrationConfigs}
+      organization={organization}
       onSubmit={mutateIntegrationConfig}
       onClose={closeForm}
       paneTitle={

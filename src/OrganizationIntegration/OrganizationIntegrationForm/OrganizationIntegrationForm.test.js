@@ -1,6 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 import set from 'lodash/set';
 
+import { FormattedMessage } from 'react-intl';
 import {
   useHistory,
   MemoryRouter,
@@ -22,6 +23,7 @@ import {
   FTP_TYPES,
   TRANSMISSION_MODES,
   CONNECTION_MODES,
+  EXPORT_TYPES,
   INTEGRATION_TYPE,
 } from '../constants';
 import OrganizationIntegrationForm from './OrganizationIntegrationForm';
@@ -62,9 +64,26 @@ const initialValues = {
   },
 };
 
+const ACCOUNT_NO_LIST_PATH = 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.accountNoList';
+const IN_USE_WARNING = 'ui-organizations.integration.edi.accountNumbers.inUseWarning';
+
+const buildInitialValues = (accountNoList) => set(cloneDeep(initialValues), ACCOUNT_NO_LIST_PATH, accountNoList);
+
+const buildOtherIntegration = (type, accountNoList) => ({
+  id: 'other-integration-id',
+  type,
+  exportTypeSpecificParameters: {
+    vendorEdiOrdersExportConfig: {
+      configName: 'Other integration',
+      ediConfig: { accountNoList },
+    },
+  },
+});
+
 const defaultProps = {
   acqMethods: [],
-  accounts: ['123', '456'],
+  organization: { accounts: [{ accountNo: '123' }, { accountNo: '456' }] },
+  integrationConfigs: [],
   defaultIntegration: undefined,
   onSubmit: jest.fn(),
   initialValues,
@@ -129,6 +148,104 @@ describe('OrganizationIntegrationForm', () => {
 
     expect(screen.getByRole('combobox', { name: 'ui-organizations.integration.info.transmissionMethod' })).toBeDisabled();
     expect(screen.getByRole('combobox', { name: 'ui-organizations.integration.info.fileFormat' })).toBeDisabled();
+  });
+
+  describe('Account numbers', () => {
+    const getAccountNumbersField = () => screen.getByRole('listbox', { name: 'ui-organizations.integration.edi.accountNumbers' });
+
+    it('should not offer account numbers that another integration of the same type uses', () => {
+      renderOrganizationIntegrationForm({
+        integrationConfigs: [buildOtherIntegration(EXPORT_TYPES.edifactOrders, ['123'])],
+      });
+
+      expect(screen.queryByRole('option', { name: '123' })).not.toBeInTheDocument();
+      expect(screen.getByRole('option', { name: '456' })).toBeInTheDocument();
+    });
+
+    it('should offer stored account numbers that another integration of the same type uses', () => {
+      renderOrganizationIntegrationForm({
+        initialValues: buildInitialValues(['123']),
+        integrationConfigs: [buildOtherIntegration(EXPORT_TYPES.edifactOrders, ['123'])],
+      });
+
+      expect(screen.getByRole('option', { name: '123' }).selected).toBe(true);
+    });
+
+    it('should warn about selected account numbers that another integration of the same type uses', () => {
+      renderOrganizationIntegrationForm({
+        initialValues: buildInitialValues(['123']),
+        integrationConfigs: [buildOtherIntegration(EXPORT_TYPES.edifactOrders, ['123'])],
+      });
+
+      expect(screen.getByText(IN_USE_WARNING)).toBeInTheDocument();
+      expect(FormattedMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: IN_USE_WARNING,
+          values: { accounts: '123 (Other integration)' },
+        }),
+        expect.anything(),
+      );
+    });
+
+    it('should not warn when no other integration uses the selected account numbers', () => {
+      renderOrganizationIntegrationForm({
+        initialValues: buildInitialValues(['123']),
+        integrationConfigs: [buildOtherIntegration(EXPORT_TYPES.edifactOrders, ['456'])],
+      });
+
+      expect(screen.queryByText(IN_USE_WARNING)).not.toBeInTheDocument();
+    });
+
+    it('should not warn when the other integration has another type', () => {
+      renderOrganizationIntegrationForm({
+        initialValues: buildInitialValues(['123']),
+        integrationConfigs: [buildOtherIntegration(EXPORT_TYPES.claims, ['123'])],
+      });
+
+      expect(screen.queryByText(IN_USE_WARNING)).not.toBeInTheDocument();
+    });
+
+    it('should not warn for the default integration', () => {
+      const defaultIntegrationValues = set(
+        buildInitialValues(['123']),
+        'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.isDefaultConfig',
+        true,
+      );
+
+      renderOrganizationIntegrationForm({
+        initialValues: defaultIntegrationValues,
+        integrationConfigs: [buildOtherIntegration(EXPORT_TYPES.edifactOrders, ['123'])],
+      });
+
+      expect(screen.queryByText(IN_USE_WARNING)).not.toBeInTheDocument();
+    });
+
+    it('should not warn when the account number is deselected', async () => {
+      renderOrganizationIntegrationForm({
+        initialValues: buildInitialValues(['123']),
+        integrationConfigs: [buildOtherIntegration(EXPORT_TYPES.edifactOrders, ['123'])],
+      });
+
+      await user.deselectOptions(getAccountNumbersField(), '123');
+
+      expect(screen.queryByText(IN_USE_WARNING)).not.toBeInTheDocument();
+      expect(screen.getByRole('option', { name: '123' })).toBeInTheDocument();
+    });
+
+    it('should keep a selected account number and warn when the integration type changes', async () => {
+      renderOrganizationIntegrationForm({
+        integrationConfigs: [buildOtherIntegration(EXPORT_TYPES.claims, ['123'])],
+      });
+
+      await user.selectOptions(getAccountNumbersField(), '123');
+
+      expect(screen.queryByText(IN_USE_WARNING)).not.toBeInTheDocument();
+
+      await user.selectOptions(screen.getByRole('combobox', { name: 'ui-organizations.integration.info.integrationType' }), INTEGRATION_TYPE.claiming);
+
+      expect(screen.getByRole('option', { name: '123' }).selected).toBe(true);
+      expect(screen.getByText(IN_USE_WARNING)).toBeInTheDocument();
+    });
   });
 
   describe('Sections toggle', () => {

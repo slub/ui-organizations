@@ -47,7 +47,7 @@ jest.mock('@folio/stripes-components/lib/Commander', () => ({
 }));
 jest.mock('@folio/stripes-acq-components', () => ({
   ...jest.requireActual('@folio/stripes-acq-components'),
-  useIntegrationConfigs: jest.fn().mockReturnValue({ integrationConfigs: [], isLoading: false }),
+  useIntegrationConfigs: jest.fn(),
   useOrganization: jest.fn(),
 }));
 jest.mock('../../common/hooks', () => ({
@@ -96,6 +96,7 @@ describe('OrganizationIntegrationView', () => {
     });
     useIntegrationConfigMutation.mockReturnValue({ mutateIntegrationConfig });
     useIntegrationConfig.mockReturnValue({ integrationConfig });
+    useIntegrationConfigs.mockReturnValue({ integrationConfigs: [], isFetching: false });
   });
 
   afterEach(() => {

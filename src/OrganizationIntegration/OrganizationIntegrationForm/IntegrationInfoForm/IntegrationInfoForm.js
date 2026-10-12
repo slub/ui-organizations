@@ -139,12 +139,10 @@ export const IntegrationInfoForm = ({
       id="integrationInfo"
       label={<FormattedMessage id="ui-organizations.integration.info" />}
     >
-      {!isDefaultConfig && (
-        <AccountNumbersInUseBanner
-          integrationConfigs={integrationConfigs}
-          integrationConfig={formValues}
-        />
-      )}
+      <AccountNumbersInUseBanner
+        integrationConfigs={integrationConfigs}
+        integrationConfig={formValues}
+      />
       <Row>
         <Col xs={3}>
           <Field

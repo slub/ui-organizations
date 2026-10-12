@@ -75,7 +75,7 @@ export const OrganizationIntegrationCreate = ({ orgId }) => {
 
   const { organization, isLoading } = useOrganization(orgId);
   const { acqMethods, isLoading: isAcqMethodsLoading } = useAcqMethods();
-  const { integrationConfigs, isLoading: isIntegrationsLoading } = useIntegrationConfigs({ organizationId: orgId });
+  const { integrationConfigs, isFetching: isIntegrationsLoading } = useIntegrationConfigs({ organizationId: orgId });
 
   const closeForm = () => {
     history.push({

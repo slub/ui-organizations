@@ -151,6 +151,20 @@ describe('OrganizationIntegration utils', () => {
       expect(getAccountNumbersInUseMessage(typedIntegrations, integration)).toBe('123 (Ordering, Ordering copy)');
     });
 
+    it('should separate account numbers with a semicolon', () => {
+      const integration = buildIntegration('ordering-3', EXPORT_TYPES.edifactOrders, 'New', ['123', '789']);
+      const integrations = [...typedIntegrations, buildIntegration('ordering-4', EXPORT_TYPES.edifactOrders, 'Fourth', ['789'])];
+
+      expect(getAccountNumbersInUseMessage(integrations, integration)).toBe('123 (Ordering, Ordering copy); 789 (Fourth)');
+    });
+
+    it('should fall back to the id of an integration without a name', () => {
+      const integration = buildIntegration('ordering-3', EXPORT_TYPES.edifactOrders, 'New', ['123']);
+      const nameless = buildIntegration('nameless-id', EXPORT_TYPES.edifactOrders, undefined, ['123']);
+
+      expect(getAccountNumbersInUseMessage([nameless], integration)).toBe('123 (nameless-id)');
+    });
+
     it('should return an empty string without conflicts', () => {
       expect(getAccountNumbersInUseMessage(typedIntegrations, claimingIntegration)).toBe('');
     });

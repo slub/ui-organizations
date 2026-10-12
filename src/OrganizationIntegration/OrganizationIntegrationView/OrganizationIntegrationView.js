@@ -81,7 +81,6 @@ const OrganizationIntegrationView = ({ orgId }) => {
   const { integrationConfigs } = useIntegrationConfigs({ organizationId: orgId });
 
   const configName = get(integrationConfig, CONFIG_NAME_PATH);
-  const isDefaultConfig = integrationConfig?.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig?.isDefaultConfig;
   const isClaimingType = isClaimingIntegration(integrationConfig);
   const isMethodFTP = isTransmissionMethodFTP(integrationConfig);
   const isMethodEmail = isTransmissionMethodEmail(integrationConfig);
@@ -281,12 +280,10 @@ const OrganizationIntegrationView = ({ orgId }) => {
             md={8}
             mdOffset={2}
           >
-            {!isDefaultConfig && (
-              <AccountNumbersInUseBanner
-                integrationConfigs={integrationConfigs}
-                integrationConfig={integrationConfig}
-              />
-            )}
+            <AccountNumbersInUseBanner
+              integrationConfigs={integrationConfigs}
+              integrationConfig={integrationConfig}
+            />
             <AccordionStatus ref={accordionStatusRef}>
               <Row end="xs">
                 <Col xs={12}>

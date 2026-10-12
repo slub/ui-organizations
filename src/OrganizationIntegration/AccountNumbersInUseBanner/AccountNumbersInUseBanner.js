@@ -7,10 +7,12 @@ import { getAccountNumbersInUseMessage } from '../utils';
 
 import css from './AccountNumbersInUseBanner.css';
 
+// Default integrations have no account numbers field, so they never warn.
 export const AccountNumbersInUseBanner = ({ integrationConfigs, integrationConfig }) => {
+  const isDefaultConfig = integrationConfig?.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig?.isDefaultConfig;
   const accounts = getAccountNumbersInUseMessage(integrationConfigs, integrationConfig);
 
-  if (!accounts) return null;
+  if (isDefaultConfig || !accounts) return null;
 
   return (
     <div className={css.marginBottomGutter}>

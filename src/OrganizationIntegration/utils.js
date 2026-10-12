@@ -32,14 +32,15 @@ export const getAccountNumbersInUse = (integrations = [], currentIntegration) =>
       const { configName, ediConfig } = integration.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig || {};
 
       (ediConfig?.accountNoList || []).forEach(accountNo => {
-        accountsInUse.set(accountNo, [...(accountsInUse.get(accountNo) || []), configName]);
+        accountsInUse.set(accountNo, [...(accountsInUse.get(accountNo) || []), configName || integration.id]);
       });
     });
 
   return accountsInUse;
 };
 
-// Lists the integration's account numbers that other integrations of the same type also use, e.g. "123 (Name A, Name B)".
+// Lists the integration's account numbers that other integrations of the same type also use,
+// e.g. "123 (Name A, Name B); 456 (Name C)".
 export const getAccountNumbersInUseMessage = (integrations, integration) => {
   const accountsInUse = getAccountNumbersInUse(integrations, integration);
   const { ediConfig } = integration?.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig || {};
@@ -47,7 +48,7 @@ export const getAccountNumbersInUseMessage = (integrations, integration) => {
   return (ediConfig?.accountNoList || [])
     .filter(accountNo => accountsInUse.has(accountNo))
     .map(accountNo => `${accountNo} (${accountsInUse.get(accountNo).join(', ')})`)
-    .join(', ');
+    .join('; ');
 };
 
 // `assignedAccounts` stay available even if they are in use elsewhere or no longer exist in the organization.

@@ -2,6 +2,8 @@
 
 ## 7.1.0 (IN PROGRESS)
 
+* Keep assigned account numbers editable in the integration form and warn about duplicates. Refs UIORGS-481.
+
 ## [7.0.0](https://github.com/folio-org/ui-organizations/tree/v7.0.0) (2026-04-17)
 [Full Changelog](https://github.com/folio-org/ui-organizations/compare/v6.0.1...v7.0.0)
 

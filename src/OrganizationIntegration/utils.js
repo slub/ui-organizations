@@ -20,10 +20,10 @@ const isSameExportType = (integration, currentIntegration) => (
 );
 
 // Account numbers held by other integrations of the same type, mapped to the names of those integrations.
-export const getAccountNumbersInUse = (integrations = [], currentIntegration) => {
+export const getAccountNumbersInUse = (integrations, currentIntegration) => {
   const accountsInUse = new Map();
 
-  integrations
+  (integrations || [])
     .filter(integration => (
       integration.id !== currentIntegration?.id
       && isSameExportType(integration, currentIntegration)

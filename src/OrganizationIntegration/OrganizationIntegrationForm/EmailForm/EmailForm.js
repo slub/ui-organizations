@@ -30,7 +30,7 @@ import {
 } from '../../utils';
 
 const TEMPLATES_API = 'templates';
-const TEMPLATE_SCOPE = 'orders';
+const TEMPLATE_SCOPE = 'orders-email';
 
 const EMAIL_SETTINGS_API = 'email/settings';
 const SMTP_CONFIG_QUERY = 'scope==mod-email and key==smtp-configuration';

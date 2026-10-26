@@ -24,6 +24,7 @@ import {
   TRANSMISSION_MODES,
   CONNECTION_MODES,
   EXPORT_TYPES,
+  FILE_FORMAT,
   INTEGRATION_TYPE,
   TRANSMISSION_METHOD,
 } from '../constants';
@@ -250,7 +251,9 @@ describe('OrganizationIntegrationForm', () => {
     });
 
     it('should keep a selected account number and warn when the integration type changes', async () => {
+      // Claiming shows account numbers only for EDI, so the field must stay visible after the switch.
       renderOrganizationIntegrationForm({
+        initialValues: set(cloneDeep(initialValues), 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.fileFormat', FILE_FORMAT.edi),
         integrationConfigs: [buildOtherIntegration(EXPORT_TYPES.claims, ['123'])],
       });
 

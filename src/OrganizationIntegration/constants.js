@@ -54,6 +54,17 @@ export const TRANSMISSION_METHOD = {
   email: 'Email',
 };
 
+// Shown for claiming integrations as a preview only: the backend enum does not accept it yet.
+export const PLANNED_TRANSMISSION_METHOD = {
+  print: 'Print',
+};
+
+// Email templates are filtered by scope, one per integration type (mod-template-engine `scope`).
+export const TEMPLATE_SCOPE = {
+  ordering: 'orders-email',
+  claiming: 'claims-email',
+};
+
 export const FILE_FORMAT = {
   csv: 'CSV',
   edi: 'EDI',

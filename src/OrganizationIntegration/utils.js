@@ -1,4 +1,5 @@
 import { flow, join, map, pick, values } from 'lodash/fp';
+import { FormattedMessage } from 'react-intl';
 
 import { dayjs } from '@folio/stripes/components';
 import {
@@ -8,8 +9,11 @@ import {
 
 import {
   EDI_NAMING_TOKENS,
+  EXPORT_TYPES,
   FILE_FORMAT,
   INTEGRATION_TYPE,
+  PLANNED_TRANSMISSION_METHOD,
+  TEMPLATE_SCOPE,
   TRANSMISSION_METHOD,
 } from './constants';
 
@@ -132,6 +136,17 @@ export const getTransmissionMethodOptions = (intl) => {
   }));
 };
 
+// Claiming offers every method plus the planned ones as disabled options, so they show up in discussions.
+export const getClaimingTransmissionMethodOptions = (intl) => {
+  const plannedOptions = Object.entries(PLANNED_TRANSMISSION_METHOD).map(([key, value]) => ({
+    label: intl.formatMessage({ id: `ui-organizations.integration.info.transmissionMethod.${key}` }),
+    value,
+    disabled: true,
+  }));
+
+  return [...getTransmissionMethodOptions(intl), ...plannedOptions];
+};
+
 export const getFileFormatOptions = () => {
   return Object.values(FILE_FORMAT).map((value) => ({
     label: value,
@@ -186,6 +201,55 @@ export const isOrderingIntegration = (config) => {
   return isIntegrationType(config, INTEGRATION_TYPE.ordering);
 };
 
+export const getTemplateScope = (config) => {
+  return isClaimingIntegration(config) ? TEMPLATE_SCOPE.claiming : TEMPLATE_SCOPE.ordering;
+};
+
+// Acquisition methods that other claiming integrations of the vendor with the same transmission method
+// already cover, mapped to the names of those integrations. One channel should resolve to one integration.
+export const getAcquisitionMethodsInUse = (integrations, currentIntegration) => {
+  const methodsInUse = new Map();
+  const currentConfig = currentIntegration?.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig;
+
+  (integrations || [])
+    .filter(integration => {
+      const config = integration.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig;
+
+      return (
+        integration.id !== currentIntegration?.id
+        && integration.type === EXPORT_TYPES.claims
+        && config?.transmissionMethod === currentConfig?.transmissionMethod
+      );
+    })
+    .forEach(integration => {
+      const { configName, ediConfig } = integration.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig || {};
+
+      (ediConfig?.defaultAcquisitionMethods || []).forEach(methodId => {
+        methodsInUse.set(methodId, [...(methodsInUse.get(methodId) || []), configName || integration.id]);
+      });
+    });
+
+  return methodsInUse;
+};
+
+// Lists the claiming integration's acquisition methods that overlap with other claiming integrations,
+// e.g. "Purchase (Name A, Name B); Gift (Name C)".
+export const getAcquisitionMethodsInUseMessage = (integrations, integration, acqMethods = []) => {
+  if (!isClaimingIntegration(integration)) return '';
+
+  const methodsInUse = getAcquisitionMethodsInUse(integrations, integration);
+  const { ediConfig } = integration?.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig || {};
+
+  return (ediConfig?.defaultAcquisitionMethods || [])
+    .filter(methodId => methodsInUse.has(methodId))
+    .map(methodId => {
+      const methodName = acqMethods.find(({ id }) => id === methodId)?.value || methodId;
+
+      return `${methodName} (${methodsInUse.get(methodId).join(', ')})`;
+    })
+    .join('; ');
+};
+
 export const getDuplicateTimestamp = ({ intl }) => {
   const timestamp = intl.formatDate(Date.now(), {
     year: 'numeric',
@@ -213,6 +277,16 @@ export const createConditionalValidator = (condition, validator) => {
 
 export const validateAccountNumbersField = (...params) => {
   return createConditionalValidator(isFileFormatEDI, validateRequired)(...params);
+};
+
+// `validateRequired` lets an empty array pass, so multi-selects need their own check.
+const validateRequiredList = (value) => {
+  return value?.length ? undefined : <FormattedMessage id="stripes-acq-components.validation.required" />;
+};
+
+// Claiming resolves the integration by acquisition method, so the list must not be empty there.
+export const validateAcquisitionMethodsField = (...params) => {
+  return createConditionalValidator(isClaimingIntegration, validateRequiredList)(...params);
 };
 
 export const validateVendorEDICode = (...params) => {

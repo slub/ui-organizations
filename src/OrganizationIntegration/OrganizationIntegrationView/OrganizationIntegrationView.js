@@ -85,6 +85,8 @@ const OrganizationIntegrationView = ({ orgId }) => {
   const isMethodFTP = isTransmissionMethodFTP(integrationConfig);
   const isMethodEmail = isTransmissionMethodEmail(integrationConfig);
   const isFormatEDI = isFileFormatEDI(integrationConfig);
+  // Claiming shows the EDI section only for EDI files; ordering keeps the upstream behaviour.
+  const showEdiSection = isClaimingType ? isFormatEDI : (!isMethodEmail || isFormatEDI);
 
   const onEdit = useCallback(
     () => {
@@ -298,7 +300,7 @@ const OrganizationIntegrationView = ({ orgId }) => {
                   }
                   acqMethods={acqMethods}
                 />
-                {(!isMethodEmail || isFormatEDI) && (
+                {showEdiSection && (
                   <EdiView
                     vendorEdiOrdersExportConfig={integrationConfig
                       ?.exportTypeSpecificParameters

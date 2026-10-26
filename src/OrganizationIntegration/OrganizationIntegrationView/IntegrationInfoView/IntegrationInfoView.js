@@ -11,6 +11,7 @@ import {
 } from '@folio/stripes/components';
 
 import {
+  FILE_FORMAT,
   INTEGRATION_TYPE,
   TRANSMISSION_METHOD,
 } from '../../constants';
@@ -20,6 +21,11 @@ const IntegrationInfoView = ({
   acqMethods = [],
 }) => {
   const isDefaultConfig = integrationConfig?.isDefaultConfig;
+  const isClaimingType = integrationConfig?.integrationType === INTEGRATION_TYPE.claiming;
+  const isFormatEDI = integrationConfig?.fileFormat === FILE_FORMAT.edi;
+
+  // Same rule as in the form: claiming shows account numbers only for EDI.
+  const showAccountNumbers = !isDefaultConfig && (!isClaimingType || isFormatEDI);
 
   const defaultAcquisitionMethodsLabels = useMemo(() => {
     const defaultAcquisitionMethods = integrationConfig?.ediConfig?.defaultAcquisitionMethods || [];
@@ -122,7 +128,7 @@ const IntegrationInfoView = ({
         </Col>
 
         {
-          !isDefaultConfig && (
+          showAccountNumbers && (
             <Col
               data-test-edi-account-numbers
               xs={6}

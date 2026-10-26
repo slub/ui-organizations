@@ -28,18 +28,22 @@ import {
   TRANSMISSION_METHOD,
 } from '../../constants';
 import { AccountNumbersInUseBanner } from '../../AccountNumbersInUseBanner';
+import { AcquisitionMethodsInUseBanner } from '../../AcquisitionMethodsInUseBanner';
 import {
   buildAvailableAccounts,
   getAccountOptions,
   getAcqMethodOptions,
+  getClaimingTransmissionMethodOptions,
   getFileFormatOptions,
   getIntegrationTypeOptions,
   getTransmissionMethodOptions,
+  isClaimingIntegration,
   isFileFormatEDI,
   isOrderingIntegration,
   isTransmissionMethodEmail,
   isTransmissionMethodFTP,
   validateAccountNumbersField,
+  validateAcquisitionMethodsField,
 } from '../../utils';
 
 const ACCOUNT_NO_LIST_FIELD = 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.accountNoList';
@@ -64,6 +68,7 @@ export const IntegrationInfoForm = ({
   } = getState() || {};
 
   const isFormatEDI = isFileFormatEDI(formValues);
+  const isClaimingType = isClaimingIntegration(formValues);
   const isOrderingType = isOrderingIntegration(formValues);
   const isMethodEmail = isTransmissionMethodEmail(formValues);
   const isMethodFTP = isTransmissionMethodFTP(formValues);
@@ -72,6 +77,9 @@ export const IntegrationInfoForm = ({
     ?.exportTypeSpecificParameters
     ?.vendorEdiOrdersExportConfig
     ?.isDefaultConfig;
+
+  // Claiming ignores account numbers; only the backend's EDI validation still demands them.
+  const showAccountNumbers = !isDefaultConfig && (!isClaimingType || isFormatEDI);
 
   const { id, type } = formValues || {};
   const storedAccounts = get(initialValues, ACCOUNT_NO_LIST_FIELD) || NO_ACCOUNTS;
@@ -92,6 +100,7 @@ export const IntegrationInfoForm = ({
     () => transmissionMethodOptions.filter(o => o.value !== TRANSMISSION_METHOD.fileDownLoad),
     [transmissionMethodOptions],
   );
+  const claimingTransmissionMethodOptions = useMemo(() => getClaimingTransmissionMethodOptions(intl), [intl]);
   const fileFormatOptions = useMemo(() => getFileFormatOptions(), []);
   // For email: CSV and EDI only (no EML), CSV is the default
   const emailFileFormatOptions = useMemo(
@@ -104,6 +113,8 @@ export const IntegrationInfoForm = ({
   const handleIntegrationTypeChange = ({ target: { value } }) => {
     batch(() => {
       change(`${configPath}.integrationType`, value);
+      // Templates are scoped per integration type, so the previous choice would be invalid.
+      change(`${configPath}.ediEmail.emailTemplate`, undefined);
 
       switch (value) {
         case INTEGRATION_TYPE.ordering: {
@@ -139,10 +150,19 @@ export const IntegrationInfoForm = ({
       id="integrationInfo"
       label={<FormattedMessage id="ui-organizations.integration.info" />}
     >
-      <AccountNumbersInUseBanner
-        integrationConfigs={integrationConfigs}
-        integrationConfig={formValues}
-      />
+      {showAccountNumbers && (
+        <AccountNumbersInUseBanner
+          integrationConfigs={integrationConfigs}
+          integrationConfig={formValues}
+        />
+      )}
+      {isClaimingType && (
+        <AcquisitionMethodsInUseBanner
+          acqMethods={acqMethods}
+          integrationConfigs={integrationConfigs}
+          integrationConfig={formValues}
+        />
+      )}
       <Row>
         <Col xs={3}>
           <Field
@@ -190,7 +210,7 @@ export const IntegrationInfoForm = ({
         <Col xs={3}>
           <Field
             component={Select}
-            dataOptions={isOrderingType ? orderingTransmissionMethodOptions : transmissionMethodOptions}
+            dataOptions={isOrderingType ? orderingTransmissionMethodOptions : claimingTransmissionMethodOptions}
             fullWidth
             label={<FormattedMessage id="ui-organizations.integration.info.transmissionMethod" />}
             name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.transmissionMethod"
@@ -223,10 +243,13 @@ export const IntegrationInfoForm = ({
             dataOptions={acqMethodOptions}
             fullWidth
             multiple
+            required={isClaimingType}
+            validate={validateAcquisitionMethodsField}
+            validateFields={[]}
           />
         </Col>
         {
-          !isDefaultConfig && (
+          showAccountNumbers && (
             <Col
               data-test-edi-account-numbers
               xs={6}

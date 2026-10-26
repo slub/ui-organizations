@@ -26,11 +26,11 @@ import {
 
 import {
   createConditionalValidator,
+  getTemplateScope,
   isTransmissionMethodEmail,
 } from '../../utils';
 
 const TEMPLATES_API = 'templates';
-const TEMPLATE_SCOPE = 'orders-email';
 
 const EMAIL_SETTINGS_API = 'email/settings';
 const SMTP_CONFIG_QUERY = 'scope==mod-email and key==smtp-configuration';
@@ -153,11 +153,14 @@ export const EmailForm = ({ organizationEmails }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Ordering and claiming integrations pick from different template scopes.
+  const templateScope = getTemplateScope(formValues);
+
   const { data: templatesData, isLoading: isTemplatesLoading } = useQuery(
-    ['ui-organizations', 'email-templates', TEMPLATE_SCOPE],
+    ['ui-organizations', 'email-templates', templateScope],
     () => ky.get(TEMPLATES_API, {
       searchParams: {
-        query: `scope=="${TEMPLATE_SCOPE}"`,
+        query: `scope=="${templateScope}"`,
         limit: LIMIT_MAX,
       },
     }).json(),

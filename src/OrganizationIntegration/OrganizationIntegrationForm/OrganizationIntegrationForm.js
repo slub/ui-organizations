@@ -121,6 +121,8 @@ const OrganizationIntegrationForm = ({
   const isMethodFTP = isTransmissionMethodFTP(formValues);
   const isMethodEmail = isTransmissionMethodEmail(formValues);
   const isFormatEDI = isFileFormatEDI(formValues);
+  // Claiming shows the EDI section only for EDI files; ordering keeps the upstream behaviour.
+  const showEdiSection = isClaimingType ? isFormatEDI : (!isMethodEmail || isFormatEDI);
 
   return (
     <HasCommand
@@ -162,7 +164,7 @@ const OrganizationIntegrationForm = ({
                   organization={organization}
                 />
 
-                {(!isMethodEmail || isFormatEDI) && <EdiForm />}
+                {showEdiSection && <EdiForm />}
 
                 {isMethodFTP && <FtpForm />}
 

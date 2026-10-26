@@ -34,6 +34,7 @@ import {
   EXPORT_TYPES,
   FILE_FORMAT,
   INTEGRATION_TYPE,
+  PLANNED_TRANSMISSION_METHOD,
   TRANSMISSION_METHOD,
 } from '../constants';
 import OrganizationIntegrationForm from './OrganizationIntegrationForm';
@@ -167,18 +168,23 @@ describe('OrganizationIntegrationForm', () => {
     expect(screen.getByRole('combobox', { name: 'ui-organizations.integration.info.fileFormat' })).toBeDisabled();
   });
 
-  it('should offer email only for ordering integrations', async () => {
+  it('should offer every transmission method plus the planned ones for claiming integrations', async () => {
     renderOrganizationIntegrationForm();
 
     const getMethodOptions = () => within(screen.getByRole('combobox', { name: 'ui-organizations.integration.info.transmissionMethod' }))
-      .getAllByRole('option')
-      .map(({ value }) => value);
+      .getAllByRole('option');
 
-    expect(getMethodOptions()).toEqual([TRANSMISSION_METHOD.ftp, TRANSMISSION_METHOD.email]);
+    expect(getMethodOptions().map(({ value }) => value)).toEqual([TRANSMISSION_METHOD.ftp, TRANSMISSION_METHOD.email]);
 
     await user.selectOptions(screen.getByRole('combobox', { name: 'ui-organizations.integration.info.integrationType' }), INTEGRATION_TYPE.claiming);
 
-    expect(getMethodOptions()).toEqual([TRANSMISSION_METHOD.fileDownLoad, TRANSMISSION_METHOD.ftp]);
+    expect(getMethodOptions().map(({ value }) => value)).toEqual([
+      TRANSMISSION_METHOD.fileDownLoad,
+      TRANSMISSION_METHOD.ftp,
+      TRANSMISSION_METHOD.email,
+      PLANNED_TRANSMISSION_METHOD.print,
+    ]);
+    expect(screen.getByRole('option', { name: 'ui-organizations.integration.info.transmissionMethod.print' })).toBeDisabled();
   });
 
   describe('Account numbers', () => {
@@ -264,7 +270,9 @@ describe('OrganizationIntegrationForm', () => {
     });
 
     it('should keep a selected account number and warn when the integration type changes', async () => {
+      // Claiming shows account numbers only for EDI, so the field must stay visible after the switch.
       renderOrganizationIntegrationForm({
+        initialValues: set(cloneDeep(initialValues), 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.fileFormat', FILE_FORMAT.edi),
         integrationConfigs: [buildOtherIntegration(EXPORT_TYPES.claims, ['123'])],
       });
 
@@ -328,13 +336,13 @@ describe('OrganizationIntegrationForm', () => {
       expect(screen.getByRole('listbox', { name: 'ui-organizations.integration.edi.accountNumbers' })).toBeInTheDocument();
     });
 
-    it('should fall back to FTP when the type of an email integration changes to claiming', async () => {
+    it('should keep email when the type of an email integration changes to claiming', async () => {
       renderOrganizationIntegrationForm({ initialValues: buildEmailValues() });
 
       await user.selectOptions(screen.getByRole('combobox', { name: 'ui-organizations.integration.info.integrationType' }), INTEGRATION_TYPE.claiming);
 
-      expect(screen.getByRole('combobox', { name: METHOD_SELECT }).value).toBe(TRANSMISSION_METHOD.ftp);
-      expect(screen.queryByText('ui-organizations.integration.email')).not.toBeInTheDocument();
+      expect(screen.getByRole('combobox', { name: METHOD_SELECT }).value).toBe(TRANSMISSION_METHOD.email);
+      expect(screen.getByText('ui-organizations.integration.email')).toBeInTheDocument();
     });
   });
 

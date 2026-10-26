@@ -22,7 +22,6 @@ import {
 import { validateRequired } from '@folio/stripes-acq-components';
 
 import {
-  CLAIMING_TRANSMISSION_METHODS,
   EXPORT_TYPES,
   FILE_FORMAT,
   INTEGRATION_TYPE,
@@ -30,13 +29,16 @@ import {
   TRANSMISSION_METHOD,
 } from '../../constants';
 import { AccountNumbersInUseBanner } from '../../AccountNumbersInUseBanner';
+import { AcquisitionMethodsInUseBanner } from '../../AcquisitionMethodsInUseBanner';
 import {
   buildAvailableAccounts,
   getAccountOptions,
   getAcqMethodOptions,
+  getClaimingTransmissionMethodOptions,
   getFileFormatOptions,
   getIntegrationTypeOptions,
   getTransmissionMethodOptions,
+  isClaimingIntegration,
   isFileFormatEDI,
   isOrderingIntegration,
   isTransmissionMethodEmail,
@@ -67,6 +69,7 @@ export const IntegrationInfoForm = ({
   } = getState() || {};
 
   const isFormatEDI = isFileFormatEDI(formValues);
+  const isClaimingType = isClaimingIntegration(formValues);
   const isOrderingType = isOrderingIntegration(formValues);
   const isMethodEmail = isTransmissionMethodEmail(formValues);
   const isMethodFTP = isTransmissionMethodFTP(formValues);
@@ -75,6 +78,9 @@ export const IntegrationInfoForm = ({
     ?.exportTypeSpecificParameters
     ?.vendorEdiOrdersExportConfig
     ?.isDefaultConfig;
+
+  // Claiming ignores account numbers; only the backend's EDI validation still demands them.
+  const showAccountNumbers = !isDefaultConfig && (!isClaimingType || isFormatEDI);
 
   const { id, type } = formValues || {};
   const storedAccounts = get(initialValues, ACCOUNT_NO_LIST_FIELD) || NO_ACCOUNTS;
@@ -89,10 +95,11 @@ export const IntegrationInfoForm = ({
   const acqMethodOptions = useMemo(() => getAcqMethodOptions(acqMethods), [acqMethods]);
 
   const integrationTypeOptions = useMemo(() => getIntegrationTypeOptions(intl), [intl]);
-  const transmissionMethods = isOrderingType ? ORDERING_TRANSMISSION_METHODS : CLAIMING_TRANSMISSION_METHODS;
   const transmissionMethodOptions = useMemo(
-    () => getTransmissionMethodOptions(intl, transmissionMethods),
-    [intl, transmissionMethods],
+    () => (isOrderingType
+      ? getTransmissionMethodOptions(intl, ORDERING_TRANSMISSION_METHODS)
+      : getClaimingTransmissionMethodOptions(intl)),
+    [intl, isOrderingType],
   );
   const fileFormatOptions = useMemo(() => getFileFormatOptions(), []);
 
@@ -101,6 +108,8 @@ export const IntegrationInfoForm = ({
   const handleIntegrationTypeChange = ({ target: { value } }) => {
     batch(() => {
       change(`${configPath}.integrationType`, value);
+      // Templates are scoped per integration type, so the previous choice would be invalid.
+      change(`${configPath}.ediEmail.emailTemplate`, undefined);
 
       switch (value) {
         case INTEGRATION_TYPE.ordering: {
@@ -112,10 +121,6 @@ export const IntegrationInfoForm = ({
         case INTEGRATION_TYPE.claiming: {
           change('type', EXPORT_TYPES.claims);
           change(`${configPath}.ediSchedule`, null);
-
-          if (isMethodEmail) {
-            change(`${configPath}.transmissionMethod`, TRANSMISSION_METHOD.ftp);
-          }
           break;
         }
         default: break;
@@ -140,10 +145,19 @@ export const IntegrationInfoForm = ({
       id="integrationInfo"
       label={<FormattedMessage id="ui-organizations.integration.info" />}
     >
-      <AccountNumbersInUseBanner
-        integrationConfigs={integrationConfigs}
-        integrationConfig={formValues}
-      />
+      {showAccountNumbers && (
+        <AccountNumbersInUseBanner
+          integrationConfigs={integrationConfigs}
+          integrationConfig={formValues}
+        />
+      )}
+      {isClaimingType && (
+        <AcquisitionMethodsInUseBanner
+          acqMethods={acqMethods}
+          integrationConfigs={integrationConfigs}
+          integrationConfig={formValues}
+        />
+      )}
       <Row>
         <Col xs={3}>
           <Field
@@ -230,7 +244,7 @@ export const IntegrationInfoForm = ({
           />
         </Col>
         {
-          !isDefaultConfig && (
+          showAccountNumbers && (
             <Col
               data-test-edi-account-numbers
               xs={6}

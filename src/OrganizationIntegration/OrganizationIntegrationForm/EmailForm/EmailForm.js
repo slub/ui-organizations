@@ -32,7 +32,7 @@ import {
   useEmailTemplates,
   useSmtpConfiguration,
 } from '../../../common/hooks';
-import { ORDERS_EMAIL_TEMPLATE_SCOPE } from '../../constants';
+import { getTemplateScope } from '../../utils';
 
 const EDI_EMAIL_PATH = 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediEmail';
 const EMPTY_OPTION = { value: '', label: '' };
@@ -56,7 +56,7 @@ export const EmailForm = ({ organizationEmails = [] }) => {
     templates,
     isLoading: isTemplatesLoading,
     isLoaded: areTemplatesLoaded,
-  } = useEmailTemplates(ORDERS_EMAIL_TEMPLATE_SCOPE);
+  } = useEmailTemplates(getTemplateScope(values)); // Ordering and claiming pick from different scopes.
 
   // Recipient: the organization's email addresses, the primary one first.
   const recipientEmails = useMemo(

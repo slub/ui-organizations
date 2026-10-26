@@ -1,0 +1,1 @@
+export { AcquisitionMethodsInUseBanner } from './AcquisitionMethodsInUseBanner';

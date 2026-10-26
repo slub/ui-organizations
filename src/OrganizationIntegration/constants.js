@@ -59,10 +59,17 @@ export const ORDERING_TRANSMISSION_METHODS = [
   TRANSMISSION_METHOD.email,
 ];
 
+// Claims go out through every channel, the claim stage picks one of them.
 export const CLAIMING_TRANSMISSION_METHODS = [
   TRANSMISSION_METHOD.fileDownLoad,
   TRANSMISSION_METHOD.ftp,
+  TRANSMISSION_METHOD.email,
 ];
+
+// Shown for claiming integrations as a preview only: the backend enum does not accept it yet.
+export const PLANNED_TRANSMISSION_METHOD = {
+  print: 'Print',
+};
 
 export const FILE_FORMAT = {
   csv: 'CSV',
@@ -70,3 +77,9 @@ export const FILE_FORMAT = {
 };
 
 export const ORDERS_EMAIL_TEMPLATE_SCOPE = 'orders-email';
+
+// Email templates are filtered by scope, one per integration type (mod-template-engine `scope`).
+export const TEMPLATE_SCOPE = {
+  ordering: ORDERS_EMAIL_TEMPLATE_SCOPE,
+  claiming: 'claims-email',
+};

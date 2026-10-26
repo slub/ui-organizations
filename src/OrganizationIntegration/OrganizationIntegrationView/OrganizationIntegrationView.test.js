@@ -16,10 +16,14 @@ import {
   expandAllSections,
   collapseAllSections,
 } from '@folio/stripes/components';
-import { useOrganization } from '@folio/stripes-acq-components';
+import {
+  useIntegrationConfigs,
+  useOrganization,
+} from '@folio/stripes-acq-components';
 
 import { integrationConfig } from 'fixtures';
 import { ORGANIZATIONS_ROUTE } from '../../common/constants';
+import { EXPORT_TYPES } from '../constants';
 import {
   useIntegrationConfig,
   useIntegrationConfigMutation,
@@ -43,7 +47,7 @@ jest.mock('@folio/stripes-components/lib/Commander', () => ({
 }));
 jest.mock('@folio/stripes-acq-components', () => ({
   ...jest.requireActual('@folio/stripes-acq-components'),
-  useIntegrationConfigs: jest.fn().mockReturnValue({ integrationConfigs: [], isLoading: false }),
+  useIntegrationConfigs: jest.fn(),
   useOrganization: jest.fn(),
 }));
 jest.mock('../../common/hooks', () => ({
@@ -59,6 +63,19 @@ jest.mock('../utils', () => ({
 const queryAllByClass = queryHelpers.queryAllByAttribute.bind(null, 'class');
 
 const orgId = 'orgId';
+const IN_USE_WARNING = 'ui-organizations.integration.edi.accountNumbers.inUseWarning';
+
+const buildIntegration = (id, type, accountNoList, isDefaultConfig = false) => ({
+  id,
+  type,
+  exportTypeSpecificParameters: {
+    vendorEdiOrdersExportConfig: {
+      configName: `${id} name`,
+      isDefaultConfig,
+      ediConfig: { accountNoList },
+    },
+  },
+});
 const defaultProps = { orgId };
 const renderOrganizationIntegrationView = (props = defaultProps) => render(
   <OrganizationIntegrationView {...props} />,
@@ -79,6 +96,7 @@ describe('OrganizationIntegrationView', () => {
     });
     useIntegrationConfigMutation.mockReturnValue({ mutateIntegrationConfig });
     useIntegrationConfig.mockReturnValue({ integrationConfig });
+    useIntegrationConfigs.mockReturnValue({ integrationConfigs: [], isFetching: false });
   });
 
   afterEach(() => {
@@ -92,6 +110,43 @@ describe('OrganizationIntegrationView', () => {
     container.querySelector('#org-integration-view-accordion-set').removeAttribute('aria-multiselectable');
 
     expect(asFragment()).toMatchSnapshot();
+  });
+
+  describe('Account numbers', () => {
+    const renderWithSibling = (current, sibling) => {
+      useParams.mockReturnValue({ id: current.id });
+      useIntegrationConfig.mockReturnValue({ integrationConfig: current });
+      useIntegrationConfigs.mockReturnValue({ integrationConfigs: [current, sibling], isLoading: false });
+
+      return renderOrganizationIntegrationView();
+    };
+
+    it('should warn about account numbers that another integration of the same type uses', () => {
+      renderWithSibling(
+        buildIntegration('current', EXPORT_TYPES.edifactOrders, ['123']),
+        buildIntegration('sibling', EXPORT_TYPES.edifactOrders, ['123']),
+      );
+
+      expect(screen.getByText(IN_USE_WARNING)).toBeInTheDocument();
+    });
+
+    it('should not warn when the other integration has another type', () => {
+      renderWithSibling(
+        buildIntegration('current', EXPORT_TYPES.edifactOrders, ['123']),
+        buildIntegration('sibling', EXPORT_TYPES.claims, ['123']),
+      );
+
+      expect(screen.queryByText(IN_USE_WARNING)).not.toBeInTheDocument();
+    });
+
+    it('should not warn for the default integration', () => {
+      renderWithSibling(
+        buildIntegration('current', EXPORT_TYPES.edifactOrders, ['123'], true),
+        buildIntegration('sibling', EXPORT_TYPES.edifactOrders, ['123']),
+      );
+
+      expect(screen.queryByText(IN_USE_WARNING)).not.toBeInTheDocument();
+    });
   });
 
   describe('Sections toggle', () => {

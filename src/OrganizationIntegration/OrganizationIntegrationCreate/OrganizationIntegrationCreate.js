@@ -29,7 +29,6 @@ import {
 } from '../constants';
 import { OrganizationIntegrationForm } from '../OrganizationIntegrationForm';
 import {
-  buildAvailableAccounts,
   findDefaultIntegration,
   getDefaultEdiNamingConvention,
 } from '../utils';
@@ -76,7 +75,7 @@ export const OrganizationIntegrationCreate = ({ orgId }) => {
 
   const { organization, isLoading } = useOrganization(orgId);
   const { acqMethods, isLoading: isAcqMethodsLoading } = useAcqMethods();
-  const { integrationConfigs, isLoading: isIntegrationsLoading } = useIntegrationConfigs({ organizationId: orgId });
+  const { integrationConfigs, isFetching: isIntegrationsLoading } = useIntegrationConfigs({ organizationId: orgId });
 
   const closeForm = () => {
     history.push({
@@ -116,9 +115,10 @@ export const OrganizationIntegrationCreate = ({ orgId }) => {
   return (
     <OrganizationIntegrationForm
       acqMethods={acqMethods}
-      accounts={buildAvailableAccounts(organization, integrationConfigs)}
       defaultIntegration={findDefaultIntegration(integrationConfigs)}
       initialValues={initialValues}
+      integrationConfigs={integrationConfigs}
+      organization={organization}
       onSubmit={mutateIntegrationConfig}
       onClose={closeForm}
       organizationEmails={organization?.emails}

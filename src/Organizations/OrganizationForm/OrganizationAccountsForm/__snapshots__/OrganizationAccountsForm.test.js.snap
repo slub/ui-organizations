@@ -278,6 +278,7 @@ exports[`OrganizationAccountsForm should render correct structure with defined a
                     required=""
                   >
                     <option
+                      data-placeholder="true"
                       disabled=""
                       value=""
                     >

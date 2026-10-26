@@ -2,7 +2,10 @@ import React from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { render, screen } from '@folio/jest-config-stripes/testing-library/react';
 
-import { useOrganization } from '@folio/stripes-acq-components';
+import {
+  useIntegrationConfigs,
+  useOrganization,
+} from '@folio/stripes-acq-components';
 
 import { organization } from 'fixtures';
 import { history, location } from '../../../test/jest/routerMocks';
@@ -23,7 +26,7 @@ jest.mock('react-router', () => ({
 }));
 jest.mock('@folio/stripes-acq-components', () => ({
   ...jest.requireActual('@folio/stripes-acq-components'),
-  useIntegrationConfigs: jest.fn().mockReturnValue({ integrationConfigs: [], isLoading: false }),
+  useIntegrationConfigs: jest.fn().mockReturnValue({ integrationConfigs: [], isFetching: false }),
   useOrganization: jest.fn(),
 }));
 jest.mock('../../common/hooks', () => ({
@@ -61,6 +64,14 @@ describe('OrganizationIntegrationEdit', () => {
     await screen.findByText('OrganizationIntegrationForm');
 
     expect(screen.getByText('OrganizationIntegrationForm')).toBeDefined();
+  });
+
+  it('should show the loading pane while integration configs are fetching', () => {
+    useIntegrationConfigs.mockReturnValueOnce({ integrationConfigs: [], isFetching: true });
+
+    renderOrganizationIntegrationEdit();
+
+    expect(screen.queryByText('OrganizationIntegrationForm')).not.toBeInTheDocument();
   });
 
   it('should redirect to org details when form is closed', async () => {

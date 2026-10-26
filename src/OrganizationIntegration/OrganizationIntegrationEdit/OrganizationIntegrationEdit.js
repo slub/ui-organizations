@@ -16,7 +16,7 @@ import {
   useIntegrationConfigMutation,
 } from '../../common/hooks';
 
-import { buildAvailableAccounts, findDefaultIntegration } from '../utils';
+import { findDefaultIntegration } from '../utils';
 import { OrganizationIntegrationForm } from '../OrganizationIntegrationForm';
 
 export const OrganizationIntegrationEdit = ({ orgId }) => {
@@ -28,7 +28,7 @@ export const OrganizationIntegrationEdit = ({ orgId }) => {
   const { integrationConfig, isLoading } = useIntegrationConfig(id);
   const { organization, isLoading: isOrgLoading } = useOrganization(orgId);
   const { acqMethods, isLoading: isAcqMethodsLoading } = useAcqMethods();
-  const { integrationConfigs, isLoading: isIntegrationsLoading } = useIntegrationConfigs({ organizationId: orgId });
+  const { integrationConfigs, isFetching: isIntegrationsLoading } = useIntegrationConfigs({ organizationId: orgId });
 
   const closeForm = () => {
     history.push({
@@ -64,9 +64,10 @@ export const OrganizationIntegrationEdit = ({ orgId }) => {
   return (
     <OrganizationIntegrationForm
       acqMethods={acqMethods}
-      accounts={buildAvailableAccounts(organization, integrationConfigs, integrationConfig)}
       defaultIntegration={findDefaultIntegration(integrationConfigs, integrationConfig)}
       initialValues={integrationConfig}
+      integrationConfigs={integrationConfigs}
+      organization={organization}
       onSubmit={mutateIntegrationConfig}
       onClose={closeForm}
       organizationEmails={organization?.emails}

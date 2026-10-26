@@ -107,46 +107,45 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                 data-test-accordion-section="true"
                 id="integrationInfo"
               >
-                <div>
+                <div
+                  style="width: 100%; display: flex;"
+                  tabindex="-1"
+                >
                   <div
-                    style="width: 100%; display: flex;"
+                    class="headerWrapper"
                   >
                     <div
-                      class="headerWrapper"
+                      class="header default"
                     >
-                      <div
-                        class="header default"
+                      <h3
+                        class="headline size-medium margin-none font-weight-bold block"
+                        data-test-headline="true"
                       >
-                        <h3
-                          class="headline size-medium margin-none font-weight-bold block"
-                          data-test-headline="true"
+                        <button
+                          aria-controls="accordion1"
+                          aria-expanded="true"
+                          class="defaultCollapseButton"
+                          id="accordion-toggle-button-integrationInfo"
+                          type="button"
                         >
-                          <button
-                            aria-controls="accordion1"
-                            aria-expanded="true"
-                            class="defaultCollapseButton"
-                            id="accordion-toggle-button-integrationInfo"
-                            type="button"
+                          <span
+                            class="headerInner"
                           >
                             <span
-                              class="headerInner"
+                              class="defaultHeaderIcon"
                             >
-                              <span
-                                class="defaultHeaderIcon"
-                              >
-                                <span>
-                                  Icon
-                                </span>
+                              <span>
+                                Icon
                               </span>
-                              <div
-                                class="labelArea"
-                              >
-                                ui-organizations.integration.info
-                              </div>
                             </span>
-                          </button>
-                        </h3>
-                      </div>
+                            <div
+                              class="labelArea"
+                            >
+                              ui-organizations.integration.info
+                            </div>
+                          </span>
+                        </button>
+                      </h3>
                     </div>
                   </div>
                 </div>
@@ -172,7 +171,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                         >
                           <label
                             class="label"
-                            for="text-input-6"
+                            for="text-input-7"
                           >
                             ui-organizations.integration.info.configName
                             <span
@@ -192,7 +191,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                               autocomplete="off"
                               autocorrect="off"
                               error=""
-                              id="text-input-6"
+                              id="text-input-7"
                               name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.configName"
                               required=""
                               spellcheck="false"
@@ -214,7 +213,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                         >
                           <label
                             class="label"
-                            for="textarea-input-7"
+                            for="textarea-input-8"
                           >
                             ui-organizations.integration.info.configDescription
                           </label>
@@ -224,7 +223,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                             <textarea
                               aria-invalid="false"
                               class="formControl"
-                              id="textarea-input-7"
+                              id="textarea-input-8"
                               name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.configDescription"
                             />
                             <div
@@ -242,7 +241,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                         >
                           <label
                             class="label label checkboxInteractionStylesControl"
-                            for="checkbox-8"
+                            for="checkbox-9"
                           >
                             <span
                               class="labelText"
@@ -255,7 +254,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                               <input
                                 aria-invalid="false"
                                 class="input"
-                                id="checkbox-8"
+                                id="checkbox-9"
                                 name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.isDefaultConfig"
                                 type="checkbox"
                                 value=""
@@ -298,8 +297,8 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                         >
                           <label
                             class="label"
-                            for="select-9"
-                            id="select-9-label"
+                            for="select-10"
+                            id="select-10-label"
                           >
                             ui-organizations.integration.info.integrationType
                             <span
@@ -314,10 +313,10 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                           >
                             <select
                               aria-invalid="false"
-                              aria-labelledby="select-9-label"
+                              aria-labelledby="select-10-label"
                               aria-required="true"
                               class="selectControl formControl"
-                              id="select-9"
+                              id="select-10"
                               name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.integrationType"
                               required=""
                             >
@@ -349,8 +348,8 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                         >
                           <label
                             class="label"
-                            for="select-10"
-                            id="select-10-label"
+                            for="select-11"
+                            id="select-11-label"
                           >
                             ui-organizations.integration.info.transmissionMethod
                             <span
@@ -365,22 +364,23 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                           >
                             <select
                               aria-invalid="false"
-                              aria-labelledby="select-10-label"
+                              aria-labelledby="select-11-label"
                               aria-required="true"
-                              class="selectControl formControl"
-                              id="select-10"
+                              class="selectControl formControl isDisabled"
+                              disabled=""
+                              id="select-11"
                               name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.transmissionMethod"
                               required=""
                             >
                               <option
+                                value="File download"
+                              >
+                                ui-organizations.integration.info.transmissionMethod.fileDownLoad
+                              </option>
+                              <option
                                 value="FTP"
                               >
                                 ui-organizations.integration.info.transmissionMethod.ftp
-                              </option>
-                              <option
-                                value="Email"
-                              >
-                                ui-organizations.integration.info.transmissionMethod.email
                               </option>
                             </select>
                             <span>
@@ -400,8 +400,8 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                         >
                           <label
                             class="label"
-                            for="select-11"
-                            id="select-11-label"
+                            for="select-12"
+                            id="select-12-label"
                           >
                             ui-organizations.integration.info.fileFormat
                             <span
@@ -416,10 +416,11 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                           >
                             <select
                               aria-invalid="false"
-                              aria-labelledby="select-11-label"
+                              aria-labelledby="select-12-label"
                               aria-required="true"
-                              class="selectControl formControl"
-                              id="select-11"
+                              class="selectControl formControl isDisabled"
+                              disabled=""
+                              id="select-12"
                               name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.fileFormat"
                               required=""
                             >
@@ -433,50 +434,10 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                               >
                                 EDI
                               </option>
-                              <option
-                                value="EML"
-                              >
-                                EML
-                              </option>
                             </select>
                             <span>
                               Icon
                             </span>
-                          </div>
-                          <div
-                            role="alert"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="row"
-                    >
-                      <div
-                        class="col-xs-6 col-md-3"
-                        data-test-edi-acq-methods="true"
-                      >
-                        <div
-                          class="select inputGroup fullWidth"
-                        >
-                          <label
-                            class="label"
-                            for="select-12"
-                            id="select-12-label"
-                          >
-                            ui-organizations.integration.edi.defaultAcquisitionMethods
-                          </label>
-                          <div
-                            class="selectWrap"
-                          >
-                            <select
-                              aria-invalid="false"
-                              aria-labelledby="select-12-label"
-                              class="selectControl formControl"
-                              id="select-12"
-                              multiple=""
-                              name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.defaultAcquisitionMethods"
-                            />
                           </div>
                           <div
                             role="alert"
@@ -535,46 +496,45 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                 data-test-accordion-section="true"
                 id="edi"
               >
-                <div>
+                <div
+                  style="width: 100%; display: flex;"
+                  tabindex="-1"
+                >
                   <div
-                    style="width: 100%; display: flex;"
+                    class="headerWrapper"
                   >
                     <div
-                      class="headerWrapper"
+                      class="header default"
                     >
-                      <div
-                        class="header default"
+                      <h3
+                        class="headline size-medium margin-none font-weight-bold block"
+                        data-test-headline="true"
                       >
-                        <h3
-                          class="headline size-medium margin-none font-weight-bold block"
-                          data-test-headline="true"
+                        <button
+                          aria-controls="accordion2"
+                          aria-expanded="true"
+                          class="defaultCollapseButton"
+                          id="accordion-toggle-button-edi"
+                          type="button"
                         >
-                          <button
-                            aria-controls="accordion2"
-                            aria-expanded="true"
-                            class="defaultCollapseButton"
-                            id="accordion-toggle-button-edi"
-                            type="button"
+                          <span
+                            class="headerInner"
                           >
                             <span
-                              class="headerInner"
+                              class="defaultHeaderIcon"
                             >
-                              <span
-                                class="defaultHeaderIcon"
-                              >
-                                <span>
-                                  Icon
-                                </span>
+                              <span>
+                                Icon
                               </span>
-                              <div
-                                class="labelArea"
-                              >
-                                ui-organizations.integration.edi
-                              </div>
                             </span>
-                          </button>
-                        </h3>
-                      </div>
+                            <div
+                              class="labelArea"
+                            >
+                              ui-organizations.integration.edi
+                            </div>
+                          </span>
+                        </button>
+                      </h3>
                     </div>
                   </div>
                 </div>
@@ -592,6 +552,37 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                     <div
                       class="row"
                     >
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-edi-acq-methods="true"
+                      >
+                        <div
+                          class="select inputGroup fullWidth"
+                        >
+                          <label
+                            class="label"
+                            for="select-14"
+                            id="select-14-label"
+                          >
+                            ui-organizations.integration.edi.defaultAcquisitionMethods
+                          </label>
+                          <div
+                            class="selectWrap"
+                          >
+                            <select
+                              aria-invalid="false"
+                              aria-labelledby="select-14-label"
+                              class="selectControl formControl"
+                              id="select-14"
+                              multiple=""
+                              name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.defaultAcquisitionMethods"
+                            />
+                          </div>
+                          <div
+                            role="alert"
+                          />
+                        </div>
+                      </div>
                       <div
                         class="col-xs-6 col-md-3"
                         data-test-vendor-edi-code="true"
@@ -637,8 +628,8 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                         >
                           <label
                             class="label"
-                            for="select-14"
-                            id="select-14-label"
+                            for="select-15"
+                            id="select-15-label"
                           >
                             ui-organizations.integration.edi.vendorEDIType
                           </label>
@@ -647,9 +638,9 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                           >
                             <select
                               aria-invalid="false"
-                              aria-labelledby="select-14-label"
+                              aria-labelledby="select-15-label"
                               class="selectControl formControl"
-                              id="select-14"
+                              id="select-15"
                               name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.vendorEdiType"
                             >
                               <option
@@ -727,8 +718,8 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                         >
                           <label
                             class="label"
-                            for="select-15"
-                            id="select-15-label"
+                            for="select-16"
+                            id="select-16-label"
                           >
                             ui-organizations.integration.edi.libraryEDIType
                           </label>
@@ -737,9 +728,9 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                           >
                             <select
                               aria-invalid="false"
-                              aria-labelledby="select-15-label"
+                              aria-labelledby="select-16-label"
                               class="selectControl formControl"
-                              id="select-15"
+                              id="select-16"
                               name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.libEdiType"
                             >
                               <option
@@ -802,7 +793,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                             </button>
                           </label>
                           <div
-                            class="formControl disabled inputGroup isDisabled"
+                            class="formControl isDisabled inputGroup isDisabled"
                           >
                             <input
                               aria-invalid="false"
@@ -834,7 +825,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                         >
                           <label
                             class="label label checkboxInteractionStylesControl"
-                            for="checkbox-16"
+                            for="checkbox-17"
                           >
                             <span
                               class="labelText"
@@ -847,7 +838,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                               <input
                                 aria-invalid="false"
                                 class="input"
-                                id="checkbox-16"
+                                id="checkbox-17"
                                 name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.sendAccountNumber"
                                 type="checkbox"
                                 value=""
@@ -889,7 +880,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                         >
                           <label
                             class="label label checkboxInteractionStylesControl"
-                            for="checkbox-17"
+                            for="checkbox-18"
                           >
                             <span
                               class="inner checkboxInteractionStyles"
@@ -897,7 +888,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                               <input
                                 aria-invalid="false"
                                 class="input"
-                                id="checkbox-17"
+                                id="checkbox-18"
                                 name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.supportOrder"
                                 type="checkbox"
                                 value=""
@@ -938,7 +929,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                         >
                           <label
                             class="label label checkboxInteractionStylesControl"
-                            for="checkbox-18"
+                            for="checkbox-19"
                           >
                             <span
                               class="inner checkboxInteractionStyles"
@@ -946,7 +937,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                               <input
                                 aria-invalid="false"
                                 class="input"
-                                id="checkbox-18"
+                                id="checkbox-19"
                                 name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.supportInvoice"
                                 type="checkbox"
                                 value=""
@@ -991,7 +982,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                         >
                           <label
                             class="label"
-                            for="textarea-input-19"
+                            for="textarea-input-20"
                           >
                             ui-organizations.integration.edi.notes
                           </label>
@@ -1001,8 +992,473 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                             <textarea
                               aria-invalid="false"
                               class="formControl"
-                              id="textarea-input-19"
+                              id="textarea-input-20"
                               name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.notes"
+                            />
+                            <div
+                              role="alert"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="accordion hasSeparator"
+                data-test-accordion-section="true"
+                id="ftp"
+              >
+                <div
+                  style="width: 100%; display: flex;"
+                  tabindex="-1"
+                >
+                  <div
+                    class="headerWrapper"
+                  >
+                    <div
+                      class="header default"
+                    >
+                      <h3
+                        class="headline size-medium margin-none font-weight-bold block"
+                        data-test-headline="true"
+                      >
+                        <button
+                          aria-controls="accordion3"
+                          aria-expanded="true"
+                          class="defaultCollapseButton"
+                          id="accordion-toggle-button-ftp"
+                          type="button"
+                        >
+                          <span
+                            class="headerInner"
+                          >
+                            <span
+                              class="defaultHeaderIcon"
+                            >
+                              <span>
+                                Icon
+                              </span>
+                            </span>
+                            <div
+                              class="labelArea"
+                            >
+                              ui-organizations.integration.ftp
+                            </div>
+                          </span>
+                        </button>
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="content-wrap expanded"
+                  style="z-index: 2;"
+                >
+                  <div
+                    aria-labelledby="accordion-toggle-button-ftp"
+                    class="content-region expanded"
+                    data-test-accordion-wrapper="true"
+                    id="accordion3"
+                    role="region"
+                  >
+                    <div
+                      class="row"
+                    >
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-edit-ftp="true"
+                      >
+                        <div
+                          class="select inputGroup fullWidth"
+                        >
+                          <label
+                            class="label"
+                            for="select-21"
+                            id="select-21-label"
+                          >
+                            ui-organizations.integration.ftp.ftpFormat
+                          </label>
+                          <div
+                            class="selectWrap"
+                          >
+                            <select
+                              aria-invalid="false"
+                              aria-labelledby="select-21-label"
+                              class="selectControl formControl"
+                              id="select-21"
+                              name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediFtp.ftpFormat"
+                            >
+                              <option
+                                value="SFTP"
+                              >
+                                SFTP
+                              </option>
+                              <option
+                                value="FTP"
+                              >
+                                FTP
+                              </option>
+                            </select>
+                            <span>
+                              Icon
+                            </span>
+                          </div>
+                          <div
+                            role="alert"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-ftp-mode="true"
+                      >
+                        <div
+                          class="select inputGroup fullWidth"
+                        >
+                          <label
+                            class="label"
+                            for="select-22"
+                            id="select-22-label"
+                          >
+                            ui-organizations.integration.ftp.ftpMode
+                          </label>
+                          <div
+                            class="selectWrap"
+                          >
+                            <select
+                              aria-invalid="false"
+                              aria-labelledby="select-22-label"
+                              class="selectControl formControl"
+                              id="select-22"
+                              name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediFtp.ftpMode"
+                            >
+                              <option
+                                value="ASCII"
+                              >
+                                ASCII
+                              </option>
+                              <option
+                                value="Binary"
+                              >
+                                Binary
+                              </option>
+                            </select>
+                            <span>
+                              Icon
+                            </span>
+                          </div>
+                          <div
+                            role="alert"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-server-address="true"
+                      >
+                        <div
+                          class="textField"
+                        >
+                          <label
+                            class="label"
+                            for="text-input-23"
+                          >
+                            ui-organizations.integration.ftp.serverAddress
+                          </label>
+                          <div
+                            class="formControl inputGroup"
+                          >
+                            <input
+                              aria-invalid="false"
+                              aria-required="false"
+                              autocapitalize="off"
+                              autocomplete="off"
+                              autocorrect="off"
+                              error=""
+                              id="text-input-23"
+                              name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediFtp.serverAddress"
+                              spellcheck="false"
+                              type="text"
+                              value=""
+                              warning=""
+                            />
+                          </div>
+                          <div
+                            role="alert"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-ftp-connection-mode="true"
+                      >
+                        <div
+                          class="select inputGroup fullWidth"
+                        >
+                          <label
+                            class="label"
+                            for="select-24"
+                            id="select-24-label"
+                          >
+                            ui-organizations.integration.ftp.ftpConnectionMode
+                          </label>
+                          <div
+                            class="selectWrap"
+                          >
+                            <select
+                              aria-invalid="false"
+                              aria-labelledby="select-24-label"
+                              class="selectControl formControl"
+                              id="select-24"
+                              name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediFtp.ftpConnMode"
+                            >
+                              <option
+                                value="Active"
+                              >
+                                Active
+                              </option>
+                              <option
+                                value="Passive"
+                              >
+                                Passive
+                              </option>
+                            </select>
+                            <span>
+                              Icon
+                            </span>
+                          </div>
+                          <div
+                            role="alert"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="row"
+                    >
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-username="true"
+                      >
+                        <div
+                          class="textField"
+                        >
+                          <label
+                            class="label"
+                            for="text-input-25"
+                          >
+                            ui-organizations.integration.ftp.username
+                          </label>
+                          <div
+                            class="formControl inputGroup"
+                          >
+                            <input
+                              aria-invalid="false"
+                              autocapitalize="off"
+                              autocomplete="off"
+                              autocorrect="off"
+                              data-testid="credentials-field"
+                              error=""
+                              id="text-input-25"
+                              name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediFtp.username"
+                              spellcheck="false"
+                              type="password"
+                              value=""
+                              warning=""
+                            />
+                          </div>
+                          <div
+                            role="alert"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-password="true"
+                      >
+                        <div
+                          class="textField"
+                        >
+                          <label
+                            class="label"
+                            for="text-input-26"
+                          >
+                            ui-organizations.edit.password
+                          </label>
+                          <div
+                            class="formControl inputGroup"
+                          >
+                            <input
+                              aria-invalid="false"
+                              autocapitalize="off"
+                              autocomplete="new-password"
+                              autocorrect="off"
+                              data-testid="credentials-field"
+                              error=""
+                              id="text-input-26"
+                              name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediFtp.password"
+                              spellcheck="false"
+                              type="password"
+                              value=""
+                              warning=""
+                            />
+                          </div>
+                          <div
+                            role="alert"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                      >
+                        <div
+                          class="toggle"
+                        >
+                          <button
+                            class="button default"
+                            type="button"
+                          >
+                            <span
+                              class="inner"
+                            >
+                              ui-organizations.edit.showCredentials
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="row"
+                    >
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-ftp-port="true"
+                      >
+                        <div
+                          class="textField"
+                        >
+                          <label
+                            class="label"
+                            for="text-input-27"
+                          >
+                            ui-organizations.integration.ftp.ftpPort
+                          </label>
+                          <div
+                            class="formControl inputGroup"
+                          >
+                            <input
+                              aria-invalid="false"
+                              aria-required="false"
+                              autocapitalize="off"
+                              autocomplete="off"
+                              autocorrect="off"
+                              error=""
+                              id="text-input-27"
+                              name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediFtp.ftpPort"
+                              spellcheck="false"
+                              type="number"
+                              value=""
+                              warning=""
+                            />
+                          </div>
+                          <div
+                            role="alert"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-order-directory="true"
+                      >
+                        <div
+                          class="textField"
+                        >
+                          <label
+                            class="label"
+                            for="text-input-28"
+                          >
+                            ui-organizations.integration.ftp.orderDirectory
+                          </label>
+                          <div
+                            class="formControl inputGroup"
+                          >
+                            <input
+                              aria-invalid="false"
+                              autocapitalize="off"
+                              autocomplete="off"
+                              autocorrect="off"
+                              error=""
+                              id="text-input-28"
+                              name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediFtp.orderDirectory"
+                              spellcheck="false"
+                              type="text"
+                              value=""
+                              warning=""
+                            />
+                          </div>
+                          <div
+                            role="alert"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-invoice-directory="true"
+                      >
+                        <div
+                          class="textField"
+                        >
+                          <label
+                            class="label"
+                            for="text-input-29"
+                          >
+                            ui-organizations.integration.ftp.invoiceDirectory
+                          </label>
+                          <div
+                            class="formControl inputGroup"
+                          >
+                            <input
+                              aria-invalid="false"
+                              autocapitalize="off"
+                              autocomplete="off"
+                              autocorrect="off"
+                              error=""
+                              id="text-input-29"
+                              name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediFtp.invoiceDirectory"
+                              spellcheck="false"
+                              type="text"
+                              value=""
+                              warning=""
+                            />
+                          </div>
+                          <div
+                            role="alert"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="col-xs-6 col-md-3"
+                        data-test-notes="true"
+                      >
+                        <div
+                          class="textArea fullWidth"
+                        >
+                          <label
+                            class="label"
+                            for="textarea-input-30"
+                          >
+                            ui-organizations.integration.ftp.notes
+                          </label>
+                          <div
+                            class="inputGroup"
+                          >
+                            <textarea
+                              aria-invalid="false"
+                              class="formControl"
+                              id="textarea-input-30"
+                              name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediFtp.notes"
                             />
                             <div
                               role="alert"
@@ -1019,58 +1475,57 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                 data-test-accordion-section="true"
                 id="scheduling"
               >
-                <div>
+                <div
+                  style="width: 100%; display: flex;"
+                  tabindex="-1"
+                >
                   <div
-                    style="width: 100%; display: flex;"
+                    class="headerWrapper"
                   >
                     <div
-                      class="headerWrapper"
+                      class="header default"
                     >
-                      <div
-                        class="header default"
+                      <h3
+                        class="headline size-medium margin-none font-weight-bold block"
+                        data-test-headline="true"
                       >
-                        <h3
-                          class="headline size-medium margin-none font-weight-bold block"
-                          data-test-headline="true"
+                        <button
+                          aria-controls="accordion4"
+                          aria-expanded="true"
+                          class="defaultCollapseButton"
+                          id="accordion-toggle-button-scheduling"
+                          type="button"
                         >
-                          <button
-                            aria-controls="accordion3"
-                            aria-expanded="true"
-                            class="defaultCollapseButton"
-                            id="accordion-toggle-button-scheduling"
-                            type="button"
+                          <span
+                            class="headerInner"
                           >
                             <span
-                              class="headerInner"
+                              class="defaultHeaderIcon"
                             >
-                              <span
-                                class="defaultHeaderIcon"
-                              >
-                                <span>
-                                  Icon
-                                </span>
+                              <span>
+                                Icon
                               </span>
-                              <div
-                                class="labelArea"
-                              >
-                                ui-organizations.integration.scheduling
-                              </div>
                             </span>
-                          </button>
-                        </h3>
-                      </div>
+                            <div
+                              class="labelArea"
+                            >
+                              ui-organizations.integration.scheduling
+                            </div>
+                          </span>
+                        </button>
+                      </h3>
                     </div>
                   </div>
                 </div>
                 <div
                   class="content-wrap expanded"
-                  style="z-index: 2;"
+                  style="z-index: 3;"
                 >
                   <div
                     aria-labelledby="accordion-toggle-button-scheduling"
                     class="content-region expanded"
                     data-test-accordion-wrapper="true"
-                    id="accordion3"
+                    id="accordion4"
                     role="region"
                   >
                     <div
@@ -1085,7 +1540,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                         >
                           <label
                             class="label label checkboxInteractionStylesControl"
-                            for="checkbox-20"
+                            for="checkbox-31"
                           >
                             <span
                               class="labelText"
@@ -1098,7 +1553,7 @@ exports[`OrganizationIntegrationForm should render correct form structure 1`] = 
                               <input
                                 aria-invalid="false"
                                 class="input"
-                                id="checkbox-20"
+                                id="checkbox-31"
                                 name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediSchedule.enableScheduledExport"
                                 type="checkbox"
                                 value=""

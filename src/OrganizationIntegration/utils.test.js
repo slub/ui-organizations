@@ -1,10 +1,15 @@
 import { NO_DST_TIMEZONES } from '@folio/stripes-acq-components/test/jest/fixtures';
 
-import { EDI_NAMING_TOKENS } from './constants';
+import {
+  EDI_NAMING_TOKENS,
+  EXPORT_TYPES,
+} from './constants';
 import {
   buildAvailableAccounts,
   findDefaultIntegration,
   getAcqMethodOptions,
+  getAccountNumbersInUse,
+  getAccountNumbersInUseMessage,
   getAccountOptions,
   getTenantTime,
   getDefaultEdiNamingConvention,
@@ -40,6 +45,22 @@ const integrationConfigs = [
   },
 ];
 
+const buildIntegration = (id, type, configName, accountNoList) => ({
+  id,
+  type,
+  exportTypeSpecificParameters: {
+    vendorEdiOrdersExportConfig: {
+      configName,
+      ediConfig: { accountNoList },
+    },
+  },
+});
+
+const orderingIntegration = buildIntegration('ordering-1', EXPORT_TYPES.edifactOrders, 'Ordering', ['123']);
+const orderingCopy = buildIntegration('ordering-2', EXPORT_TYPES.edifactOrders, 'Ordering copy', ['123']);
+const claimingIntegration = buildIntegration('claiming-1', EXPORT_TYPES.claims, 'Claiming', ['456']);
+const typedIntegrations = [orderingIntegration, orderingCopy, claimingIntegration];
+
 const acqMethods = [{ id: 'acqMethodId', value: 'acqMethod' }];
 const accounts = ['1'];
 
@@ -49,6 +70,58 @@ describe('OrganizationIntegration utils', () => {
       expect(
         buildAvailableAccounts(organization, integrationConfigs, integrationConfig),
       ).toEqual(['456', '789']);
+    });
+
+    it('should not return accounts used by integrations of the same type for a new integration', () => {
+      expect(
+        buildAvailableAccounts(organization, typedIntegrations, { type: EXPORT_TYPES.edifactOrders }),
+      ).toEqual(['456', '789']);
+    });
+
+    it('should return accounts used only by integrations of another type', () => {
+      expect(
+        buildAvailableAccounts(organization, typedIntegrations, { type: EXPORT_TYPES.claims }),
+      ).toEqual(['123', '789']);
+    });
+
+    it('should return assigned accounts that another integration of the same type uses', () => {
+      expect(
+        buildAvailableAccounts(organization, typedIntegrations, orderingCopy, ['123']),
+      ).toEqual(['123', '456', '789']);
+    });
+
+    it('should append assigned accounts that the organization no longer has', () => {
+      expect(
+        buildAvailableAccounts(organization, typedIntegrations, orderingCopy, ['123', 'removed']),
+      ).toEqual(['123', '456', '789', 'removed']);
+    });
+
+    it('should return only assigned accounts when the organization has no accounts', () => {
+      expect(buildAvailableAccounts({}, typedIntegrations, orderingCopy, ['123'])).toEqual(['123']);
+    });
+  });
+
+  describe('getAccountNumbersInUse', () => {
+    it('should map account numbers to the names of other integrations of the same type', () => {
+      expect(
+        [...getAccountNumbersInUse(typedIntegrations, orderingCopy)],
+      ).toEqual([['123', ['Ordering']]]);
+    });
+
+    it('should collect all integrations that use the same account number', () => {
+      expect(
+        getAccountNumbersInUse(typedIntegrations, { type: EXPORT_TYPES.edifactOrders }).get('123'),
+      ).toEqual(['Ordering', 'Ordering copy']);
+    });
+
+    it('should treat integrations without a type as the same type', () => {
+      expect(
+        [...getAccountNumbersInUse(integrationConfigs, orderingCopy).keys()],
+      ).toEqual(['456', '123']);
+    });
+
+    it('should return an empty map without integrations', () => {
+      expect(getAccountNumbersInUse().size).toBe(0);
     });
   });
 
@@ -68,6 +141,32 @@ describe('OrganizationIntegration utils', () => {
       };
 
       expect(findDefaultIntegration([currentConfig], currentConfig)).not.toBeDefined();
+    });
+  });
+
+  describe('getAccountNumbersInUseMessage', () => {
+    it('should list the account numbers with the names of the other integrations', () => {
+      const integration = buildIntegration('ordering-3', EXPORT_TYPES.edifactOrders, 'New', ['123', '789']);
+
+      expect(getAccountNumbersInUseMessage(typedIntegrations, integration)).toBe('123 (Ordering, Ordering copy)');
+    });
+
+    it('should separate account numbers with a semicolon', () => {
+      const integration = buildIntegration('ordering-3', EXPORT_TYPES.edifactOrders, 'New', ['123', '789']);
+      const integrations = [...typedIntegrations, buildIntegration('ordering-4', EXPORT_TYPES.edifactOrders, 'Fourth', ['789'])];
+
+      expect(getAccountNumbersInUseMessage(integrations, integration)).toBe('123 (Ordering, Ordering copy); 789 (Fourth)');
+    });
+
+    it('should fall back to the id of an integration without a name', () => {
+      const integration = buildIntegration('ordering-3', EXPORT_TYPES.edifactOrders, 'New', ['123']);
+      const nameless = buildIntegration('nameless-id', EXPORT_TYPES.edifactOrders, undefined, ['123']);
+
+      expect(getAccountNumbersInUseMessage([nameless], integration)).toBe('123 (nameless-id)');
+    });
+
+    it('should return an empty string without conflicts', () => {
+      expect(getAccountNumbersInUseMessage(typedIntegrations, claimingIntegration)).toBe('');
     });
   });
 

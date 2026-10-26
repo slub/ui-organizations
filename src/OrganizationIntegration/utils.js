@@ -13,18 +13,52 @@ import {
   TRANSMISSION_METHOD,
 } from './constants';
 
-export const buildAvailableAccounts = (organization, integrations, currentIntegration) => {
-  const accounts = organization.accounts.map(({ accountNo }) => accountNo);
-  const usedAccounts = integrations
-    .filter(({ id }) => id !== currentIntegration?.id)
-    .map(integration => (
-      integration?.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig?.ediConfig?.accountNoList
-      || []
-    ))
-    .flat();
-  const usedAccountsSet = new Set(usedAccounts);
+const isSameExportType = (integration, currentIntegration) => (
+  !integration?.type
+  || !currentIntegration?.type
+  || integration.type === currentIntegration.type
+);
 
-  return accounts.filter(account => !usedAccountsSet.has(account));
+// Account numbers held by other integrations of the same type, mapped to the names of those integrations.
+export const getAccountNumbersInUse = (integrations, currentIntegration) => {
+  const accountsInUse = new Map();
+
+  (integrations || [])
+    .filter(integration => (
+      integration.id !== currentIntegration?.id
+      && isSameExportType(integration, currentIntegration)
+    ))
+    .forEach(integration => {
+      const { configName, ediConfig } = integration.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig || {};
+
+      (ediConfig?.accountNoList || []).forEach(accountNo => {
+        accountsInUse.set(accountNo, [...(accountsInUse.get(accountNo) || []), configName || integration.id]);
+      });
+    });
+
+  return accountsInUse;
+};
+
+// Lists the integration's account numbers that other integrations of the same type also use,
+// e.g. "123 (Name A, Name B); 456 (Name C)".
+export const getAccountNumbersInUseMessage = (integrations, integration) => {
+  const accountsInUse = getAccountNumbersInUse(integrations, integration);
+  const { ediConfig } = integration?.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig || {};
+
+  return (ediConfig?.accountNoList || [])
+    .filter(accountNo => accountsInUse.has(accountNo))
+    .map(accountNo => `${accountNo} (${accountsInUse.get(accountNo).join(', ')})`)
+    .join('; ');
+};
+
+// `assignedAccounts` stay available even if they are in use elsewhere or no longer exist in the organization.
+export const buildAvailableAccounts = (organization, integrations, currentIntegration, assignedAccounts = []) => {
+  const accountsInUse = getAccountNumbersInUse(integrations, currentIntegration);
+  const availableAccounts = (organization?.accounts || [])
+    .map(({ accountNo }) => accountNo)
+    .filter(accountNo => !accountsInUse.has(accountNo) || assignedAccounts.includes(accountNo));
+
+  return [...new Set([...availableAccounts, ...assignedAccounts])];
 };
 
 export const findDefaultIntegration = (integrations, currentIntegration) => {

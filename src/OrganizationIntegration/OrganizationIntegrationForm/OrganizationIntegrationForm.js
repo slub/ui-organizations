@@ -42,11 +42,12 @@ import { SchedulingForm } from './SchedulingForm';
 
 const OrganizationIntegrationForm = ({
   acqMethods,
-  accounts,
   defaultIntegration,
   form: { getState },
+  integrationConfigs,
   onClose,
   organizationEmails,
+  organization,
   paneTitle,
   handleSubmit,
   pristine,
@@ -156,9 +157,10 @@ const OrganizationIntegrationForm = ({
               </Row>
               <AccordionSet id="org-integration-form-accordion-set">
                 <IntegrationInfoForm
-                  accounts={accounts}
                   acqMethods={acqMethods}
                   defaultIntegration={defaultIntegration}
+                  integrationConfigs={integrationConfigs}
+                  organization={organization}
                 />
 
                 {(!isMethodEmail || isFormatEDI) && <EdiForm />}
@@ -179,14 +181,15 @@ const OrganizationIntegrationForm = ({
 
 OrganizationIntegrationForm.propTypes = {
   acqMethods: PropTypes.arrayOf(PropTypes.object),
-  accounts: PropTypes.arrayOf(PropTypes.string),
   defaultIntegration: PropTypes.object,
   form: PropTypes.shape({
     getState: PropTypes.func.isRequired,
   }).isRequired,
   handleSubmit: PropTypes.func.isRequired,
+  integrationConfigs: PropTypes.arrayOf(PropTypes.object),
   onClose: PropTypes.func.isRequired,
   organizationEmails: PropTypes.arrayOf(PropTypes.object),
+  organization: PropTypes.object,
   paneTitle: PropTypes.node.isRequired,
   pristine: PropTypes.bool.isRequired,
   submitting: PropTypes.bool.isRequired,

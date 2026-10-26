@@ -1,12 +1,18 @@
 # Change history for ui-organizations
 
-## 6.1.0 (IN PROGRESS)
+## 7.1.0 (IN PROGRESS)
+
+* Keep assigned account numbers editable in the integration form and warn about duplicates. Refs UIORGS-481.
+
+## [7.0.0](https://github.com/folio-org/ui-organizations/tree/v7.0.0) (2026-04-17)
+[Full Changelog](https://github.com/folio-org/ui-organizations/compare/v6.0.1...v7.0.0)
 
 * Change radio buttons into drop-down in Settings > Organizations > Number generator options. Refs UIORGS-462.
 * Upgrade `@folio/stripes-acq-components` to `v7.0.2`. Refs UIORGS-466.
 * Memoize initial values for the integration form to prevent data from becoming stale. Refs UIORGS-472.
-* Include global `mod-settings` permissions in base permission sets. Refs UIORGS-476.
+* Include global `stripes-core.settings.read` permission in base permission sets. Refs UIORGS-476.
 * Replace the `moment` library with `dayjs` (Part 1). Refs UIORGS-463.
+* Rename permissions to make it easier to differentiate between them. Refs UIORGS-478.
 
 ## [6.0.1](https://github.com/folio-org/ui-organizations/tree/v6.0.1) (2025-05-05)
 [Full Changelog](https://github.com/folio-org/ui-organizations/compare/v6.0.0...v6.0.1)

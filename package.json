@@ -1,6 +1,6 @@
 {
   "name": "@folio/organizations",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "description": "Organizations",
   "main": "index.js",
   "repository": "folio-org/ui-organizations",
@@ -53,8 +53,7 @@
         "permissionName": "module.organizations.enabled",
         "displayName": "UI: Organizations module is enabled",
         "subPermissions": [
-          "mod-settings.entries.collection.get",
-          "mod-settings.global.read.stripes-core.prefs.manage"
+          "stripes-core.settings.read"
         ]
       },
       {
@@ -63,8 +62,7 @@
         "visible": false,
         "subPermissions": [
           "settings.enabled",
-          "mod-settings.entries.collection.get",
-          "mod-settings.global.read.stripes-core.prefs.manage"
+          "stripes-core.settings.read"
         ]
       },
       {
@@ -237,21 +235,27 @@
         ]
       },
       {
-        "permissionName": "ui-organizations.acqUnits.assign",
+        "permissionName": "ui-organizations.organizations.acquisitions_units.assign.execute",
         "displayName": "Organizations: Assign acquisition units to new organization",
         "description": "",
         "visible": true,
+        "replaces": [
+          "ui-organizations.acqUnits.assign"
+        ],
         "subPermissions": [
-          "organizations.acquisitions-units-assignments.assign"
+          "organizations.acquisitions-units-assignments.create.execute"
         ]
       },
       {
-        "permissionName": "ui-organizations.acqUnits.manage",
+        "permissionName": "ui-organizations.organizations.acquisitions_units.manage.execute",
         "displayName": "Organizations: Manage acquisition units",
         "description": "",
         "visible": true,
+        "replaces": [
+          "ui-organizations.acqUnits.manage"
+        ],
         "subPermissions": [
-          "organizations.acquisitions-units-assignments.manage"
+          "organizations.acquisitions-units-assignments.manage.execute"
         ]
       },
       {
@@ -325,11 +329,11 @@
     "@bigtest/interactor": "^0.9.2",
     "@bigtest/mocha": "^0.5.2",
     "@bigtest/react": "^0.1.2",
-    "@folio/eslint-config-stripes": "^8.0.0",
-    "@folio/jest-config-stripes": "^3.0.0",
+    "@folio/eslint-config-stripes": "^9.0.0",
+    "@folio/jest-config-stripes": "^4.0.0",
     "@folio/service-interaction": "^4.0.0",
     "@folio/stripes": "^10.0.0",
-    "@folio/stripes-cli": "^4.0.0",
+    "@folio/stripes-cli": "^5.0.0",
     "@folio/stripes-erm-components": "^10.0.0",
     "babel-jest": "^26.3.0",
     "chai": "^4.2.0",
@@ -356,7 +360,7 @@
   },
   "dependencies": {
     "@folio/plugin-find-organization": "^6.0.0",
-    "@folio/stripes-acq-components": "~7.1.0",
+    "@folio/stripes-acq-components": "~7.2.0",
     "lodash": "^4.17.5",
     "prop-types": "^15.5.10",
     "query-string": "^6.1.0",

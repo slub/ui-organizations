@@ -1,3 +1,4 @@
+import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import { useMemo } from 'react';
 import {
@@ -26,7 +27,9 @@ import {
   INTEGRATION_TYPE,
   TRANSMISSION_METHOD,
 } from '../../constants';
+import { AccountNumbersInUseBanner } from '../../AccountNumbersInUseBanner';
 import {
+  buildAvailableAccounts,
   getAccountOptions,
   getAcqMethodOptions,
   getFileFormatOptions,
@@ -39,10 +42,14 @@ import {
   validateAccountNumbersField,
 } from '../../utils';
 
+const ACCOUNT_NO_LIST_FIELD = 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.accountNoList';
+const NO_ACCOUNTS = [];
+
 export const IntegrationInfoForm = ({
-  accounts,
   acqMethods,
   defaultIntegration,
+  integrationConfigs,
+  organization,
 }) => {
   const intl = useIntl();
   const {
@@ -51,7 +58,10 @@ export const IntegrationInfoForm = ({
     getState,
   } = useForm();
 
-  const formValues = getState()?.values;
+  const {
+    initialValues,
+    values: formValues,
+  } = getState() || {};
 
   const isFormatEDI = isFileFormatEDI(formValues);
   const isOrderingType = isOrderingIntegration(formValues);
@@ -63,7 +73,16 @@ export const IntegrationInfoForm = ({
     ?.vendorEdiOrdersExportConfig
     ?.isDefaultConfig;
 
-  const accountOptions = useMemo(() => getAccountOptions(accounts), [accounts]);
+  const { id, type } = formValues || {};
+  const storedAccounts = get(initialValues, ACCOUNT_NO_LIST_FIELD) || NO_ACCOUNTS;
+  const selectedAccounts = get(formValues, ACCOUNT_NO_LIST_FIELD) || NO_ACCOUNTS;
+
+  const accountOptions = useMemo(() => {
+    // Stored accounts stay selectable until the form is saved, selected ones must not disappear on type change.
+    const assignedAccounts = [...storedAccounts, ...selectedAccounts];
+
+    return getAccountOptions(buildAvailableAccounts(organization, integrationConfigs, { id, type }, assignedAccounts));
+  }, [organization, integrationConfigs, id, type, storedAccounts, selectedAccounts]);
   const acqMethodOptions = useMemo(() => getAcqMethodOptions(acqMethods), [acqMethods]);
 
   const integrationTypeOptions = useMemo(() => getIntegrationTypeOptions(intl), [intl]);
@@ -120,6 +139,10 @@ export const IntegrationInfoForm = ({
       id="integrationInfo"
       label={<FormattedMessage id="ui-organizations.integration.info" />}
     >
+      <AccountNumbersInUseBanner
+        integrationConfigs={integrationConfigs}
+        integrationConfig={formValues}
+      />
       <Row>
         <Col xs={3}>
           <Field
@@ -211,7 +234,7 @@ export const IntegrationInfoForm = ({
             >
               <Field
                 label={<FormattedMessage id="ui-organizations.integration.edi.accountNumbers" />}
-                name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.accountNoList"
+                name={ACCOUNT_NO_LIST_FIELD}
                 component={Select}
                 dataOptions={accountOptions}
                 fullWidth
@@ -228,7 +251,8 @@ export const IntegrationInfoForm = ({
 };
 
 IntegrationInfoForm.propTypes = {
-  accounts: PropTypes.arrayOf(PropTypes.string),
   acqMethods: PropTypes.arrayOf(PropTypes.object),
   defaultIntegration: PropTypes.object,
+  integrationConfigs: PropTypes.arrayOf(PropTypes.object),
+  organization: PropTypes.object,
 };

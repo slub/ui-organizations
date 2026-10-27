@@ -76,14 +76,16 @@ const IntegrationInfoView = ({
           />
         </Col>
 
-        <Col xs={3}>
-          <Checkbox
-            label={<FormattedMessage id="ui-organizations.integration.info.isDefaultConfig" />}
-            checked={integrationConfig.isDefaultConfig}
-            vertical
-            disabled
-          />
-        </Col>
+        {!isClaimingType && (
+          <Col xs={3}>
+            <Checkbox
+              label={<FormattedMessage id="ui-organizations.integration.info.isDefaultConfig" />}
+              checked={integrationConfig.isDefaultConfig}
+              vertical
+              disabled
+            />
+          </Col>
+        )}
       </Row>
       <Row>
         <Col

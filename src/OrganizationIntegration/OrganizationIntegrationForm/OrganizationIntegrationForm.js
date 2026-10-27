@@ -171,7 +171,7 @@ const OrganizationIntegrationForm = ({
 
                 {isMethodEmail && <EmailForm organizationEmails={organizationEmails} />}
 
-                {(!isClaimingType || isMethodEmail) && <SchedulingForm />}
+                {!isClaimingType && <SchedulingForm />}
               </AccordionSet>
             </AccordionStatus>
           </Col>

@@ -126,6 +126,8 @@ export const IntegrationInfoForm = ({
         case INTEGRATION_TYPE.claiming: {
           change('type', EXPORT_TYPES.claims);
           change(`${configPath}.ediSchedule`, null);
+          // The default flag only matters for order export and its field is hidden for claiming.
+          change(`${configPath}.isDefaultConfig`, false);
           break;
         }
         default: break;
@@ -183,17 +185,19 @@ export const IntegrationInfoForm = ({
           />
         </Col>
 
-        <Col xs={3}>
-          <Field
-            component={Checkbox}
-            type="checkbox"
-            fullWidth
-            label={<FormattedMessage id="ui-organizations.integration.info.isDefaultConfig" />}
-            name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.isDefaultConfig"
-            vertical
-            disabled={Boolean(defaultIntegration)}
-          />
-        </Col>
+        {!isClaimingType && (
+          <Col xs={3}>
+            <Field
+              component={Checkbox}
+              type="checkbox"
+              fullWidth
+              label={<FormattedMessage id="ui-organizations.integration.info.isDefaultConfig" />}
+              name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.isDefaultConfig"
+              vertical
+              disabled={Boolean(defaultIntegration)}
+            />
+          </Col>
+        )}
       </Row>
       <Row>
         <Col xs={3}>

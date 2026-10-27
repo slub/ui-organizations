@@ -325,7 +325,7 @@ const OrganizationIntegrationView = ({ orgId }) => {
                   />
                 )}
 
-                {(!isClaimingType || isMethodEmail) && (
+                {!isClaimingType && (
                   <SchedulingView
                     ediSchedule={integrationConfig
                       ?.exportTypeSpecificParameters

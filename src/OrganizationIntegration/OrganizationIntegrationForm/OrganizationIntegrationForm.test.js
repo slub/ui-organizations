@@ -7,7 +7,11 @@ import {
   MemoryRouter,
 } from 'react-router-dom';
 
-import { render, screen } from '@folio/jest-config-stripes/testing-library/react';
+import {
+  render,
+  screen,
+  within,
+} from '@folio/jest-config-stripes/testing-library/react';
 import { queryHelpers } from '@folio/jest-config-stripes/testing-library/dom';
 import user from '@folio/jest-config-stripes/testing-library/user-event';
 
@@ -19,6 +23,10 @@ import {
 
 import { ORGANIZATIONS_ROUTE } from '../../common/constants';
 import {
+  useEmailTemplates,
+  useSmtpConfiguration,
+} from '../../common/hooks';
+import {
   EDI_CODE_TYPES,
   FTP_TYPES,
   TRANSMISSION_MODES,
@@ -26,6 +34,7 @@ import {
   EXPORT_TYPES,
   FILE_FORMAT,
   INTEGRATION_TYPE,
+  PLANNED_TRANSMISSION_METHOD,
   TRANSMISSION_METHOD,
 } from '../constants';
 import OrganizationIntegrationForm from './OrganizationIntegrationForm';
@@ -41,6 +50,11 @@ jest.mock('@folio/stripes-components/lib/Commander', () => ({
 }));
 // eslint-disable-next-line react/prop-types
 jest.mock('@folio/stripes-components/lib/AutoSuggest', () => (props) => <input {...props.input} />);
+jest.mock('../../common/hooks', () => ({
+  ...jest.requireActual('../../common/hooks'),
+  useEmailTemplates: jest.fn(),
+  useSmtpConfiguration: jest.fn(),
+}));
 
 const queryAllByClass = queryHelpers.queryAllByAttribute.bind(null, 'class');
 
@@ -104,6 +118,8 @@ const renderOrganizationIntegrationForm = (props = {}) => render(
 describe('OrganizationIntegrationForm', () => {
   beforeEach(() => {
     global.document.createRange = global.document.originalCreateRange;
+    useEmailTemplates.mockReturnValue({ templates: [], isLoading: false, isLoaded: true });
+    useSmtpConfiguration.mockReturnValue({ smtpConfiguration: undefined, isLoading: false });
   });
 
   afterEach(() => {
@@ -148,24 +164,27 @@ describe('OrganizationIntegrationForm', () => {
 
     await user.selectOptions(screen.getByRole('combobox', { name: 'ui-organizations.integration.info.integrationType' }), INTEGRATION_TYPE.ordering);
 
-    // Transmission method is now selectable for ordering (to allow Email)
     expect(screen.getByRole('combobox', { name: 'ui-organizations.integration.info.transmissionMethod' })).not.toBeDisabled();
-    // File format is disabled because ordering defaults to FTP+EDI
     expect(screen.getByRole('combobox', { name: 'ui-organizations.integration.info.fileFormat' })).toBeDisabled();
   });
 
-  it('should render Email accordion when transmission method is Email', () => {
-    const emailInitialValues = cloneDeep(initialValues);
+  it('should offer every transmission method plus the planned ones for claiming integrations', async () => {
+    renderOrganizationIntegrationForm();
 
-    set(
-      emailInitialValues,
-      'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.transmissionMethod',
+    const getMethodOptions = () => within(screen.getByRole('combobox', { name: 'ui-organizations.integration.info.transmissionMethod' }))
+      .getAllByRole('option');
+
+    expect(getMethodOptions().map(({ value }) => value)).toEqual([TRANSMISSION_METHOD.ftp, TRANSMISSION_METHOD.email]);
+
+    await user.selectOptions(screen.getByRole('combobox', { name: 'ui-organizations.integration.info.integrationType' }), INTEGRATION_TYPE.claiming);
+
+    expect(getMethodOptions().map(({ value }) => value)).toEqual([
+      TRANSMISSION_METHOD.fileDownLoad,
+      TRANSMISSION_METHOD.ftp,
       TRANSMISSION_METHOD.email,
-    );
-
-    renderOrganizationIntegrationForm({ initialValues: emailInitialValues });
-
-    expect(screen.getByText('ui-organizations.integration.email')).toBeInTheDocument();
+      PLANNED_TRANSMISSION_METHOD.print,
+    ]);
+    expect(screen.getByRole('option', { name: 'ui-organizations.integration.info.transmissionMethod.print' })).toBeDisabled();
   });
 
   describe('Account numbers', () => {
@@ -265,6 +284,65 @@ describe('OrganizationIntegrationForm', () => {
 
       expect(screen.getByRole('option', { name: '123' }).selected).toBe(true);
       expect(screen.getByText(IN_USE_WARNING)).toBeInTheDocument();
+    });
+  });
+
+  describe('Email', () => {
+    const METHOD_SELECT = 'ui-organizations.integration.info.transmissionMethod';
+    const ACQ_METHODS_FIELD = 'ui-organizations.integration.info.acquisitionMethods';
+
+    const buildEmailValues = (fileFormat = FILE_FORMAT.csv) => {
+      const values = cloneDeep(initialValues);
+
+      set(values, 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.transmissionMethod', TRANSMISSION_METHOD.email);
+      set(values, 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.fileFormat', fileFormat);
+
+      return values;
+    };
+
+    it('should preselect CSV and show the email details when the method changes to email', async () => {
+      renderOrganizationIntegrationForm();
+
+      await user.selectOptions(screen.getByRole('combobox', { name: METHOD_SELECT }), TRANSMISSION_METHOD.email);
+
+      expect(screen.getByRole('combobox', { name: 'ui-organizations.integration.info.fileFormat' }).value).toBe(FILE_FORMAT.csv);
+      expect(screen.getByText('ui-organizations.integration.email')).toBeInTheDocument();
+      expect(screen.queryByText('ui-organizations.integration.ftp')).not.toBeInTheDocument();
+      expect(screen.queryByText('ui-organizations.integration.edi')).not.toBeInTheDocument();
+      expect(screen.getByText('ui-organizations.integration.scheduling.scheduleEmail')).toBeInTheDocument();
+    });
+
+    it('should keep the EDI configuration for email integrations with EDI files', () => {
+      renderOrganizationIntegrationForm({ initialValues: buildEmailValues(FILE_FORMAT.edi) });
+
+      expect(screen.getByText('ui-organizations.integration.email')).toBeInTheDocument();
+      expect(screen.getByText('ui-organizations.integration.edi')).toBeInTheDocument();
+    });
+
+    it('should require acquisition methods for email integrations only', () => {
+      const { unmount } = renderOrganizationIntegrationForm({ initialValues: buildEmailValues() });
+
+      expect(screen.getByRole('listbox', { name: ACQ_METHODS_FIELD })).toBeRequired();
+
+      unmount();
+      renderOrganizationIntegrationForm();
+
+      expect(screen.getByRole('listbox', { name: ACQ_METHODS_FIELD })).not.toBeRequired();
+    });
+
+    it('should show the account numbers for email integrations', () => {
+      renderOrganizationIntegrationForm({ initialValues: buildEmailValues() });
+
+      expect(screen.getByRole('listbox', { name: 'ui-organizations.integration.edi.accountNumbers' })).toBeInTheDocument();
+    });
+
+    it('should keep email when the type of an email integration changes to claiming', async () => {
+      renderOrganizationIntegrationForm({ initialValues: buildEmailValues() });
+
+      await user.selectOptions(screen.getByRole('combobox', { name: 'ui-organizations.integration.info.integrationType' }), INTEGRATION_TYPE.claiming);
+
+      expect(screen.getByRole('combobox', { name: METHOD_SELECT }).value).toBe(TRANSMISSION_METHOD.email);
+      expect(screen.getByText('ui-organizations.integration.email')).toBeInTheDocument();
     });
   });
 

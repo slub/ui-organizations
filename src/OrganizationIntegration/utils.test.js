@@ -3,6 +3,8 @@ import { NO_DST_TIMEZONES } from '@folio/stripes-acq-components/test/jest/fixtur
 import {
   EDI_NAMING_TOKENS,
   EXPORT_TYPES,
+  INTEGRATION_TYPE,
+  TRANSMISSION_METHOD,
 } from './constants';
 import {
   buildAvailableAccounts,
@@ -14,7 +16,13 @@ import {
   getTenantTime,
   getDefaultEdiNamingConvention,
   getSchedulingDatetime,
+  isTransmissionMethodEmail,
+  validateAcquisitionMethodsField,
 } from './utils';
+
+const buildConfig = (vendorEdiOrdersExportConfig) => ({
+  exportTypeSpecificParameters: { vendorEdiOrdersExportConfig },
+});
 
 const organization = {
   accounts: [{ accountNo: '123' }, { accountNo: '456' }, { accountNo: '789' }],
@@ -273,6 +281,45 @@ describe('OrganizationIntegration utils', () => {
 
       expect(getDefaultEdiNamingConvention())
         .toEqual(`{${organizationCode}}-{${integrationName}}-{${exportJobEndDate}}`);
+    });
+  });
+
+  describe('isTransmissionMethodEmail', () => {
+    it('should detect the email transmission method', () => {
+      expect(isTransmissionMethodEmail(buildConfig({ transmissionMethod: TRANSMISSION_METHOD.email }))).toBe(true);
+      expect(isTransmissionMethodEmail(buildConfig({ transmissionMethod: TRANSMISSION_METHOD.ftp }))).toBe(false);
+      expect(isTransmissionMethodEmail(undefined)).toBe(false);
+    });
+  });
+
+  describe('validateAcquisitionMethodsField', () => {
+    const emailOrdering = buildConfig({
+      integrationType: INTEGRATION_TYPE.ordering,
+      transmissionMethod: TRANSMISSION_METHOD.email,
+    });
+
+    it('should require acquisition methods for email ordering integrations', () => {
+      expect(validateAcquisitionMethodsField(undefined, emailOrdering)).toBeDefined();
+      expect(validateAcquisitionMethodsField([], emailOrdering)).toBeDefined();
+      expect(validateAcquisitionMethodsField(['methodId'], emailOrdering)).toBeUndefined();
+    });
+
+    it('should not require acquisition methods for FTP integrations', () => {
+      const ftpOrdering = buildConfig({
+        integrationType: INTEGRATION_TYPE.ordering,
+        transmissionMethod: TRANSMISSION_METHOD.ftp,
+      });
+
+      expect(validateAcquisitionMethodsField([], ftpOrdering)).toBeUndefined();
+    });
+
+    it('should not require acquisition methods for claiming integrations', () => {
+      const emailClaiming = buildConfig({
+        integrationType: INTEGRATION_TYPE.claiming,
+        transmissionMethod: TRANSMISSION_METHOD.email,
+      });
+
+      expect(validateAcquisitionMethodsField([], emailClaiming)).toBeUndefined();
     });
   });
 });

@@ -46,7 +46,6 @@ const OrganizationIntegrationForm = ({
   form: { getState },
   integrationConfigs,
   onClose,
-  organizationEmails,
   organization,
   paneTitle,
   handleSubmit,
@@ -169,7 +168,7 @@ const OrganizationIntegrationForm = ({
 
                 {isMethodFTP && <FtpForm />}
 
-                {isMethodEmail && <EmailForm organizationEmails={organizationEmails} />}
+                {isMethodEmail && <EmailForm organizationEmails={organization?.emails} />}
 
                 {!isClaimingType && <SchedulingForm />}
               </AccordionSet>
@@ -190,7 +189,6 @@ OrganizationIntegrationForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   integrationConfigs: PropTypes.arrayOf(PropTypes.object),
   onClose: PropTypes.func.isRequired,
-  organizationEmails: PropTypes.arrayOf(PropTypes.object),
   organization: PropTypes.object,
   paneTitle: PropTypes.node.isRequired,
   pristine: PropTypes.bool.isRequired,

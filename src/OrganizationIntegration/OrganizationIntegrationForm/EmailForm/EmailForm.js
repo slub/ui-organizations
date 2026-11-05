@@ -1,14 +1,20 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import get from 'lodash/get';
 import PropTypes from 'prop-types';
-import { FormattedMessage, useIntl } from 'react-intl';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+} from 'react';
 import {
   Field,
   useForm,
   useFormState,
 } from 'react-final-form';
-import { useQuery } from 'react-query';
+import {
+  FormattedMessage,
+  useIntl,
+} from 'react-intl';
 
-import { useOkapiKy } from '@folio/stripes/core';
 import {
   Accordion,
   Col,
@@ -16,175 +22,94 @@ import {
   OptionSegment,
   Row,
   Select,
-  TextField,
 } from '@folio/stripes/components';
 import {
   FieldMultiSelectionFinal,
-  LIMIT_MAX,
   validateRequired,
 } from '@folio/stripes-acq-components';
 
 import {
-  createConditionalValidator,
-  getTemplateScope,
-  isTransmissionMethodEmail,
-} from '../../utils';
+  useEmailTemplates,
+  useSmtpConfiguration,
+} from '../../../common/hooks';
+import { getTemplateScope } from '../../utils';
 
-const TEMPLATES_API = 'templates';
+const EDI_EMAIL_PATH = 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediEmail';
+const EMPTY_OPTION = { value: '', label: '' };
 
-const EMAIL_SETTINGS_API = 'email/settings';
-const SMTP_CONFIG_QUERY = 'scope==mod-email and key==smtp-configuration';
+const formatSenderLabel = ({ name, address }) => (name ? `${name} <${address}>` : address);
 
-const ediEmailPath = 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediEmail';
-
-const validateEmailFrom = (...params) => {
-  return createConditionalValidator(isTransmissionMethodEmail, validateRequired)(...params);
-};
-
-const validateRecipient = (...params) => {
-  return createConditionalValidator(isTransmissionMethodEmail, validateRequired)(...params);
-};
-
-export const EmailForm = ({ organizationEmails }) => {
+export const EmailForm = ({ organizationEmails = [] }) => {
   const intl = useIntl();
-  const { change, getState } = useForm();
+  const { change } = useForm();
   const { values } = useFormState({ subscription: { values: true } });
-  const ky = useOkapiKy();
 
-  const formValues = getState()?.values;
-  const isMethodEmail = isTransmissionMethodEmail(formValues);
+  const {
+    emailFrom: currentEmailFrom,
+    emailTo: currentEmailTo,
+    emailBcc: currentEmailBcc,
+    emailTemplate: currentEmailTemplate,
+  } = get(values, EDI_EMAIL_PATH) || {};
 
-  const currentEmailTo = values
-    ?.exportTypeSpecificParameters
-    ?.vendorEdiOrdersExportConfig
-    ?.ediEmail
-    ?.emailTo;
+  const { smtpConfiguration, isLoading: isSmtpLoading } = useSmtpConfiguration();
+  const {
+    templates,
+    isLoading: isTemplatesLoading,
+    isLoaded: areTemplatesLoaded,
+  } = useEmailTemplates(getTemplateScope(values)); // Ordering and claiming pick from different scopes.
 
-  const currentEmailFrom = values
-    ?.exportTypeSpecificParameters
-    ?.vendorEdiOrdersExportConfig
-    ?.ediEmail
-    ?.emailFrom;
-
-  const currentEmailBcc = values
-    ?.exportTypeSpecificParameters
-    ?.vendorEdiOrdersExportConfig
-    ?.ediEmail
-    ?.emailBcc;
-
-  const currentEmailTemplate = values
-    ?.exportTypeSpecificParameters
-    ?.vendorEdiOrdersExportConfig
-    ?.ediEmail
-    ?.emailTemplate;
-
-  // emailTo stays a single string by design, not an array: an order has
-  // exactly one handler, and the field predates this feature.
-  const recipientOptions = useMemo(
-    () => (organizationEmails || []).filter(e => e.value),
+  // Recipient: the organization's email addresses, the primary one first.
+  const recipientEmails = useMemo(
+    () => organizationEmails.filter(({ value }) => value),
     [organizationEmails],
   );
-
   const primaryEmail = useMemo(
-    () => recipientOptions.find(e => e.isPrimary),
-    [recipientOptions],
+    () => recipientEmails.find(({ isPrimary }) => isPrimary),
+    [recipientEmails],
   );
-
-  const otherRecipientOptions = useMemo(
-    () => recipientOptions.filter(e => e !== primaryEmail),
-    [recipientOptions, primaryEmail],
-  );
-
-  const recipientAddresses = useMemo(
-    () => new Set(recipientOptions.map(e => e.value)),
-    [recipientOptions],
-  );
-
-  const hasNoRecipients = recipientAddresses.size === 0;
-
+  const hasNoRecipients = recipientEmails.length === 0;
   const isRecipientOrphaned = Boolean(
-    currentEmailTo
-    && recipientAddresses.size > 0
-    && !recipientAddresses.has(currentEmailTo),
+    currentEmailTo && !recipientEmails.some(({ value }) => value === currentEmailTo),
   );
 
-  const primaryLabel = intl.formatMessage({ id: 'ui-organizations.primaryItem' });
+  const recipientOptions = useMemo(() => {
+    const primaryLabel = intl.formatMessage({ id: 'ui-organizations.primaryItem' });
+    const options = [EMPTY_OPTION];
 
-  // No falsy children: stripes Select's React.Children.map crashes on child.type
-  // if a child is false/null.
-  const recipientSelectChildren = useMemo(() => {
-    const opts = [<option key="empty" value="" aria-label="empty" />];
-
-    if (isRecipientOrphaned && currentEmailTo) {
-      opts.push(
-        <option key="orphan" value={currentEmailTo}>
-          {currentEmailTo}
-        </option>,
-      );
+    if (isRecipientOrphaned) {
+      options.push({ value: currentEmailTo, label: currentEmailTo });
     }
 
     if (primaryEmail) {
-      opts.push(
-        <option key={primaryEmail.value} value={primaryEmail.value}>
-          {`${primaryEmail.value} (${primaryLabel})`}
-        </option>,
-      );
+      options.push({ value: primaryEmail.value, label: `${primaryEmail.value} (${primaryLabel})` });
     }
 
-    otherRecipientOptions.forEach(email => {
-      opts.push(
-        <option key={email.value} value={email.value}>
-          {email.value}
-        </option>,
-      );
-    });
+    recipientEmails
+      .filter((email) => email !== primaryEmail)
+      .forEach(({ value }) => options.push({ value, label: value }));
 
-    return opts;
-  }, [primaryEmail, otherRecipientOptions, isRecipientOrphaned, currentEmailTo, primaryLabel]);
+    return options;
+  }, [intl, isRecipientOrphaned, currentEmailTo, primaryEmail, recipientEmails]);
 
   useEffect(() => {
     if (currentEmailTo) return;
 
     if (primaryEmail) {
-      change(`${ediEmailPath}.emailTo`, primaryEmail.value);
-    } else if (recipientOptions.length === 1) {
-      change(`${ediEmailPath}.emailTo`, recipientOptions[0].value);
+      change(`${EDI_EMAIL_PATH}.emailTo`, primaryEmail.value);
+    } else if (recipientEmails.length === 1) {
+      change(`${EDI_EMAIL_PATH}.emailTo`, recipientEmails[0].value);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Ordering and claiming integrations pick from different template scopes.
-  const templateScope = getTemplateScope(formValues);
+  // Sender: the default address and the identities from the email settings.
+  // An identity only replaces the plain default address when it adds a name.
+  const senderIdentities = useMemo(() => {
+    if (!smtpConfiguration?.from) return [];
 
-  const { data: templatesData, isLoading: isTemplatesLoading } = useQuery(
-    ['ui-organizations', 'email-templates', templateScope],
-    () => ky.get(TEMPLATES_API, {
-      searchParams: {
-        query: `scope=="${templateScope}"`,
-        limit: LIMIT_MAX,
-      },
-    }).json(),
-    { enabled: isMethodEmail },
-  );
+    const byAddress = new Map([[smtpConfiguration.from, { address: smtpConfiguration.from }]]);
 
-  const { data: smtpData, isLoading: isSmtpLoading } = useQuery(
-    ['ui-organizations', 'email-smtp-settings'],
-    () => ky.get(EMAIL_SETTINGS_API, {
-      searchParams: { query: SMTP_CONFIG_QUERY },
-    }).json(),
-    { enabled: isMethodEmail },
-  );
-
-  const smtpConfig = smtpData?.settings?.[0]?.value;
-
-  // Dedupe by address; identities override `from` only if they add a name
-  const senderOptions = useMemo(() => {
-    if (!smtpConfig?.from) return [];
-
-    const byAddress = new Map();
-
-    byAddress.set(smtpConfig.from, { address: smtpConfig.from });
-    (smtpConfig.identities || []).forEach(identity => {
+    (smtpConfiguration.identities || []).forEach((identity) => {
       const existing = byAddress.get(identity.address);
 
       if (!existing || (identity.name && !existing.name)) {
@@ -193,176 +118,111 @@ export const EmailForm = ({ organizationEmails }) => {
     });
 
     return Array.from(byAddress.values());
-  }, [smtpConfig]);
+  }, [smtpConfiguration]);
 
+  const hasNoSender = !isSmtpLoading && senderIdentities.length === 0;
   const isEmailFromOrphaned = Boolean(
-    isMethodEmail
-    && currentEmailFrom
-    && senderOptions.length > 0
-    && !senderOptions.some(o => o.address === currentEmailFrom),
+    currentEmailFrom
+    && !isSmtpLoading
+    && !senderIdentities.some(({ address }) => address === currentEmailFrom),
   );
 
-  const defaultLabel = intl.formatMessage({ id: 'ui-organizations.integration.email.defaultLabel' });
+  const senderOptions = useMemo(() => {
+    const defaultLabel = intl.formatMessage({ id: 'ui-organizations.integration.email.defaultLabel' });
+    const options = [EMPTY_OPTION];
 
-  // No auto-select for sender, unlike Recipient: must be picked deliberately.
-  const senderSelectChildren = useMemo(() => {
-    if (senderOptions.length === 0) return null;
-
-    const opts = [<option key="empty" value="" aria-label="empty" />];
-
-    if (isEmailFromOrphaned && currentEmailFrom) {
-      opts.push(
-        <option key="orphan" value={currentEmailFrom}>
-          {currentEmailFrom}
-        </option>,
-      );
+    if (isEmailFromOrphaned) {
+      options.push({ value: currentEmailFrom, label: currentEmailFrom });
     }
 
-    const defaultAddress = smtpConfig?.from;
-    const defaultOption = senderOptions.find(o => o.address === defaultAddress);
-    const otherOptions = senderOptions.filter(o => o.address !== defaultAddress);
+    senderIdentities.forEach((identity) => {
+      const label = formatSenderLabel(identity);
 
-    if (defaultOption) {
-      const label = defaultOption.name
-        ? `${defaultOption.name} <${defaultOption.address}>`
-        : defaultOption.address;
-
-      opts.push(
-        <option key="default" value={defaultOption.address}>
-          {`${label} (${defaultLabel})`}
-        </option>,
-      );
-    }
-
-    otherOptions.forEach(o => {
-      opts.push(
-        <option key={o.address} value={o.address}>
-          {o.name ? `${o.name} <${o.address}>` : o.address}
-        </option>,
-      );
+      options.push({
+        value: identity.address,
+        label: identity.address === smtpConfiguration.from ? `${label} (${defaultLabel})` : label,
+      });
     });
 
-    return opts;
-  }, [senderOptions, isEmailFromOrphaned, currentEmailFrom, smtpConfig, defaultLabel]);
+    return options;
+  }, [intl, isEmailFromOrphaned, currentEmailFrom, senderIdentities, smtpConfiguration]);
 
-  const hasNoSender = isMethodEmail && !isSmtpLoading && senderOptions.length === 0;
+  // BCC: every sender and recipient address except the ones currently selected.
+  const bccAddresses = useMemo(() => {
+    const addresses = new Set([
+      ...senderIdentities.map(({ address }) => address),
+      ...recipientEmails.map(({ value }) => value),
+    ]);
 
-  // BCC pool merges our identities (minus the chosen sender) with the
-  // vendor's addresses (minus the chosen recipient); no default/primary
-  // markers here, unlike Sender/Recipient.
-  const allValidBccAddresses = useMemo(() => {
-    const addresses = new Set(senderOptions.map(o => o.address));
+    addresses.delete(currentEmailFrom);
+    addresses.delete(currentEmailTo);
 
-    recipientOptions.forEach(e => addresses.add(e.value));
+    return Array.from(addresses);
+  }, [senderIdentities, recipientEmails, currentEmailFrom, currentEmailTo]);
 
-    return addresses;
-  }, [senderOptions, recipientOptions]);
-
+  // A removed address stays selectable so the user sees the warning instead of losing
+  // the value silently; an address that became sender or recipient is dropped below.
   const orphanedBccAddresses = useMemo(
-    () => (currentEmailBcc || []).filter(addr => !allValidBccAddresses.has(addr)),
-    [currentEmailBcc, allValidBccAddresses],
+    () => (currentEmailBcc || []).filter(
+      (address) => address !== currentEmailFrom && address !== currentEmailTo && !bccAddresses.includes(address),
+    ),
+    [currentEmailBcc, currentEmailFrom, currentEmailTo, bccAddresses],
   );
+  const isEmailBccOrphaned = orphanedBccAddresses.length > 0;
 
-  const isEmailBccOrphaned = isMethodEmail && orphanedBccAddresses.length > 0;
-
-  // Drop a BCC address if it later becomes the sender or recipient, so the
-  // form can't silently hold that invalid combination until save.
   useEffect(() => {
-    if (!currentEmailBcc?.length) return;
-
-    const filtered = currentEmailBcc.filter(
-      addr => addr !== currentEmailFrom && addr !== currentEmailTo,
+    const kept = (currentEmailBcc || []).filter(
+      (address) => address !== currentEmailFrom && address !== currentEmailTo,
     );
 
-    if (filtered.length !== currentEmailBcc.length) {
-      change(`${ediEmailPath}.emailBcc`, filtered);
+    if (kept.length !== (currentEmailBcc || []).length) {
+      change(`${EDI_EMAIL_PATH}.emailBcc`, kept);
     }
   }, [currentEmailFrom, currentEmailTo, currentEmailBcc, change]);
 
-  // Plain address strings, not {value, label}: MultiSelection's default
-  // filter/formatter expect option.label, so filterBccOptions/formatBccOption
-  // below read the option itself instead.
-  const bccOptions = useMemo(() => {
-    const seen = new Set();
-    const addresses = [];
+  // Plain strings as options: MultiSelection's default filter and formatter expect option.label.
+  const bccOptions = useMemo(
+    () => [...orphanedBccAddresses, ...bccAddresses],
+    [orphanedBccAddresses, bccAddresses],
+  );
 
-    const addAddress = (address) => {
-      if (!address || seen.has(address)) return;
-      seen.add(address);
-      addresses.push(address);
-    };
-
-    orphanedBccAddresses.forEach(addAddress);
-    senderOptions.forEach(o => { if (o.address !== currentEmailFrom) addAddress(o.address); });
-    recipientOptions.forEach(e => { if (e.value !== currentEmailTo) addAddress(e.value); });
-
-    return addresses;
-  }, [orphanedBccAddresses, senderOptions, currentEmailFrom, recipientOptions, currentEmailTo]);
-
-  const isBccSelectable = bccOptions.length > 0;
-
-  const bccItemToString = useCallback(option => option || '', []);
+  const bccItemToString = useCallback((option) => option || '', []);
 
   const formatBccOption = useCallback(({ option, searchTerm }) => (
     <OptionSegment searchTerm={searchTerm}>{option}</OptionSegment>
   ), []);
 
   const filterBccOptions = useCallback((filterText, list) => {
-    const escapedFilterText = filterText?.replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&');
-    const filterRegExp = new RegExp(`^${escapedFilterText}`, 'i');
-    const renderedItems = filterText ? list.filter(item => item.search(filterRegExp) !== -1) : list;
-    const exactMatch = filterText ? renderedItems.filter(item => item === filterText).length === 1 : false;
+    const search = filterText?.toLowerCase();
+    const renderedItems = search ? list.filter((address) => address.toLowerCase().startsWith(search)) : list;
+    const exactMatch = renderedItems.includes(filterText);
 
     return { renderedItems, exactMatch };
   }, []);
 
-  const inactiveLabel = intl.formatMessage({ id: 'ui-organizations.integration.email.emailTemplate.inactiveLabel' });
+  // Template: active templates only; the stored one stays selectable while inactive and
+  // blocks saving once it is deleted.
+  const storedTemplate = templates.find(({ id }) => id === currentEmailTemplate);
+  const isTemplateInactive = Boolean(storedTemplate && !storedTemplate.active);
+  const isTemplateDeleted = Boolean(currentEmailTemplate && areTemplatesLoaded && !storedTemplate);
 
-  // An inactive template is only offered while it is the stored one, so
-  // deactivating a template never drops the assignment of an existing
-  // integration without the user noticing.
   const templateOptions = useMemo(() => {
-    const options = [{ value: '', label: '' }];
+    const inactiveLabel = intl.formatMessage({ id: 'ui-organizations.integration.email.emailTemplate.inactiveLabel' });
 
-    (templatesData?.templates || []).forEach(template => {
-      if (template.active) {
-        options.push({ value: template.id, label: template.name });
-      } else if (template.id === currentEmailTemplate) {
-        options.push({ value: template.id, label: `${template.name} (${inactiveLabel})` });
-      }
-    });
+    return [
+      EMPTY_OPTION,
+      ...templates
+        .filter(({ id, active }) => active || id === currentEmailTemplate)
+        .map(({ id, name, active }) => ({ value: id, label: active ? name : `${name} (${inactiveLabel})` })),
+    ];
+  }, [intl, templates, currentEmailTemplate]);
 
-    return options;
-  }, [templatesData, currentEmailTemplate, inactiveLabel]);
+  const validateEmailTemplate = useCallback((value) => {
+    if (isTemplateDeleted) {
+      return <FormattedMessage id="ui-organizations.integration.email.emailTemplate.deletedError" />;
+    }
 
-  const isTemplateInactive = Boolean(
-    isMethodEmail
-    && currentEmailTemplate
-    && templatesData?.templates?.some(t => t.id === currentEmailTemplate && !t.active),
-  );
-
-  // A deleted template cannot be rendered by the backend anymore, so it is not
-  // offered as an option. The stored id is kept as is and the validator below
-  // blocks saving until a valid template is picked.
-  const isTemplateDeleted = Boolean(
-    isMethodEmail
-    && currentEmailTemplate
-    && !isTemplatesLoading
-    && templatesData
-    && !templatesData.templates?.some(t => t.id === currentEmailTemplate),
-  );
-
-  const validateEmailTemplate = useCallback((value, allValues, meta) => {
-    const requiredError = createConditionalValidator(
-      isTransmissionMethodEmail,
-      validateRequired,
-    )(value, allValues, meta);
-
-    if (requiredError) return requiredError;
-
-    return isTemplateDeleted
-      ? <FormattedMessage id="ui-organizations.integration.email.emailTemplate.deletedError" />
-      : undefined;
+    return validateRequired(value);
   }, [isTemplateDeleted]);
 
   return (
@@ -407,66 +267,53 @@ export const EmailForm = ({ organizationEmails }) => {
       )}
       <Row>
         <Col xs={3}>
-          {senderOptions.length > 0 ? (
-            <Field
-              label={<FormattedMessage id="ui-organizations.integration.email.senderAddress" />}
-              name={`${ediEmailPath}.emailFrom`}
-              component={Select}
-              fullWidth
-              required={isMethodEmail}
-              validate={validateEmailFrom}
-              validateFields={[]}
-            >
-              {senderSelectChildren}
-            </Field>
-          ) : (
-            <Field
-              label={<FormattedMessage id="ui-organizations.integration.email.senderAddress" />}
-              name={`${ediEmailPath}.emailFrom`}
-              type="email"
-              component={TextField}
-              disabled
-              fullWidth
-              required={isMethodEmail}
-              validate={validateEmailFrom}
-              validateFields={[]}
-            />
-          )}
-        </Col>
-        <Col xs={3}>
           <Field
-            label={<FormattedMessage id="ui-organizations.integration.email.recipient" />}
-            name={`${ediEmailPath}.emailTo`}
+            label={<FormattedMessage id="ui-organizations.integration.email.senderAddress" />}
+            name={`${EDI_EMAIL_PATH}.emailFrom`}
             component={Select}
+            dataOptions={senderOptions}
+            disabled={hasNoSender}
             fullWidth
-            required={isMethodEmail}
-            validate={validateRecipient}
-            validateFields={[]}
-          >
-            {recipientSelectChildren}
-          </Field>
-        </Col>
-        <Col xs={3}>
-          <FieldMultiSelectionFinal
-            label={<FormattedMessage id="ui-organizations.integration.email.bcc" />}
-            name={`${ediEmailPath}.emailBcc`}
-            dataOptions={bccOptions}
-            itemToString={bccItemToString}
-            formatter={formatBccOption}
-            filter={filterBccOptions}
-            disabled={!isBccSelectable}
+            required
+            validate={validateRequired}
             validateFields={[]}
           />
         </Col>
         <Col xs={3}>
           <Field
+            label={<FormattedMessage id="ui-organizations.integration.email.recipient" />}
+            name={`${EDI_EMAIL_PATH}.emailTo`}
+            component={Select}
+            dataOptions={recipientOptions}
+            fullWidth
+            required
+            validate={validateRequired}
+            validateFields={[]}
+          />
+        </Col>
+        <Col xs={3}>
+          <FieldMultiSelectionFinal
+            label={<FormattedMessage id="ui-organizations.integration.email.bcc" />}
+            name={`${EDI_EMAIL_PATH}.emailBcc`}
+            dataOptions={bccOptions}
+            itemToString={bccItemToString}
+            formatter={formatBccOption}
+            filter={filterBccOptions}
+            disabled={bccOptions.length === 0}
+            validateFields={[]}
+          />
+        </Col>
+        <Col xs={3}>
+          {/* The key re-registers the field once the templates are loaded, so the validator runs again. */}
+          <Field
+            key={isTemplateDeleted ? 'deleted' : 'available'}
             label={<FormattedMessage id="ui-organizations.integration.email.emailTemplate" />}
-            name={`${ediEmailPath}.emailTemplate`}
+            name={`${EDI_EMAIL_PATH}.emailTemplate`}
             component={Select}
             dataOptions={templateOptions}
             disabled={isTemplatesLoading}
             fullWidth
-            required={isMethodEmail}
+            required
             validate={validateEmailTemplate}
             validateFields={[]}
           />
@@ -481,8 +328,4 @@ EmailForm.propTypes = {
     value: PropTypes.string,
     isPrimary: PropTypes.bool,
   })),
-};
-
-EmailForm.defaultProps = {
-  organizationEmails: [],
 };

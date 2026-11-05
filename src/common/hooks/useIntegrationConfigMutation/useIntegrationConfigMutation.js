@@ -19,8 +19,7 @@ export const useIntegrationConfigMutation = (options = {}) => {
 
       if (vendorConfig) {
         if (vendorConfig.transmissionMethod === TRANSMISSION_METHOD.email) {
-          // Keep ediConfig: it carries the matching layer (defaultAcquisitionMethods,
-          // accountNoList) which applies to all transmission methods, not just EDI.
+          // ediConfig stays: acquisition methods and account numbers apply to every method.
           delete vendorConfig.ediFtp;
         } else {
           delete vendorConfig.ediEmail;

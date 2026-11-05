@@ -97,10 +97,8 @@ exports[`OrganizationVendorInfoForm should render correct structure 1`] = `
             data-test-currency="true"
           >
             <div
-              aria-expanded="false"
               class="multiSelectContainer"
               id="multiselect-:r0:"
-              role="application"
             >
               <div
                 aria-live="assertive"
@@ -130,11 +128,7 @@ exports[`OrganizationVendorInfoForm should render correct structure 1`] = `
                 class="multiSelectControlWrapper"
               >
                 <div
-                  aria-describedby="multi-describe-control-multiselect-:r0:"
-                  aria-labelledby="multiselect-:r0:-label multi-value-status-multiselect-:r0:"
                   class="multiSelectControl formControl"
-                  role="searchbox"
-                  tabindex="0"
                 >
                   <div
                     class="multiSelectControlGroup"
@@ -199,8 +193,9 @@ exports[`OrganizationVendorInfoForm should render correct structure 1`] = `
                       aria-activedescendant=""
                       aria-autocomplete="list"
                       aria-controls="multiselect-option-list-multiselect-:r0:"
+                      aria-describedby="multi-describe-control-multiselect-:r0:"
                       aria-expanded="false"
-                      aria-labelledby="vendorFormCurrenciesLabel"
+                      aria-labelledby="multiselect-:r0:-label vendorFormCurrenciesLabel multi-value-status-multiselect-:r0:"
                       autocomplete="off"
                       class="multiSelectFilterField"
                       id="multiselect-:r0:-input"

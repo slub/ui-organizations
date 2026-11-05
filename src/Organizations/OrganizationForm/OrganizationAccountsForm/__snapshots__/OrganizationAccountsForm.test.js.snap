@@ -442,10 +442,8 @@ exports[`OrganizationAccountsForm should render correct structure with defined a
               class="col-xs-6 col-md-3"
             >
               <div
-                aria-expanded="false"
                 class="multiSelectContainer"
                 id="account-acq-units-0"
-                role="application"
               >
                 <div
                   aria-live="assertive"
@@ -475,11 +473,7 @@ exports[`OrganizationAccountsForm should render correct structure with defined a
                   class="multiSelectControlWrapper"
                 >
                   <div
-                    aria-describedby="multi-describe-control-account-acq-units-0"
-                    aria-labelledby="account-acq-units-0-label multi-value-status-account-acq-units-0"
                     class="multiSelectControl formControl"
-                    role="searchbox"
-                    tabindex="0"
                   >
                     <div
                       class="multiSelectControlGroup"
@@ -488,8 +482,9 @@ exports[`OrganizationAccountsForm should render correct structure with defined a
                         aria-activedescendant=""
                         aria-autocomplete="list"
                         aria-controls="multiselect-option-list-account-acq-units-0"
+                        aria-describedby="multi-describe-control-account-acq-units-0"
                         aria-expanded="false"
-                        aria-labelledby="account-acq-units-0-label"
+                        aria-labelledby="account-acq-units-0-label account-acq-units-0-label multi-value-status-account-acq-units-0"
                         autocomplete="off"
                         class="multiSelectFilterField"
                         id="account-acq-units-0-input"

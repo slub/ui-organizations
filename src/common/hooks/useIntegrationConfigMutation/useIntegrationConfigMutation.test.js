@@ -4,7 +4,10 @@ import { renderHook } from '@folio/jest-config-stripes/testing-library/react';
 
 import { useOkapiKy } from '@folio/stripes/core';
 
-import { SCHEDULE_PERIODS } from '../../../OrganizationIntegration/constants';
+import {
+  SCHEDULE_PERIODS,
+  TRANSMISSION_METHOD,
+} from '../../../OrganizationIntegration/constants';
 import { useIntegrationConfigMutation } from './useIntegrationConfigMutation';
 
 const queryClient = new QueryClient();
@@ -91,5 +94,45 @@ describe('useIntegrationConfigMutation', () => {
     });
 
     expect(deleteMock).toHaveBeenCalled();
+  });
+
+  describe('Transmission method', () => {
+    const buildConfig = (transmissionMethod) => ({
+      exportTypeSpecificParameters: {
+        vendorEdiOrdersExportConfig: {
+          transmissionMethod,
+          ediConfig: { accountNoList: ['123'] },
+          ediFtp: { ftpPort: '21' },
+          ediEmail: { emailFrom: 'orders@library.org' },
+        },
+      },
+    });
+
+    const mutate = async (config) => {
+      const postMock = jest.fn();
+
+      useOkapiKy.mockClear().mockReturnValue({ post: postMock });
+
+      const { result } = renderHook(() => useIntegrationConfigMutation(), { wrapper });
+
+      await result.current.mutateIntegrationConfig(config);
+
+      return postMock.mock.calls[0][1].json.exportTypeSpecificParameters.vendorEdiOrdersExportConfig;
+    };
+
+    it('should drop the FTP settings of an email integration and keep the EDI config', async () => {
+      const vendorConfig = await mutate(buildConfig(TRANSMISSION_METHOD.email));
+
+      expect(vendorConfig.ediFtp).toBeUndefined();
+      expect(vendorConfig.ediEmail).toEqual({ emailFrom: 'orders@library.org' });
+      expect(vendorConfig.ediConfig).toEqual({ accountNoList: ['123'] });
+    });
+
+    it('should drop the email settings of an FTP integration', async () => {
+      const vendorConfig = await mutate(buildConfig(TRANSMISSION_METHOD.ftp));
+
+      expect(vendorConfig.ediEmail).toBeUndefined();
+      expect(vendorConfig.ediFtp).toEqual({ ftpPort: '21' });
+    });
   });
 });

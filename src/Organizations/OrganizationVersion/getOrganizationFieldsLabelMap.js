@@ -4,11 +4,6 @@ export const getOrganizationFieldsLabelMap = () => {
     'tags.tagList': 'stripes-acq-components.label.tags',
     'tags.tagList[\\d]': 'stripes-acq-components.label.tags',
 
-    'metadata.createdByUserId': 'ui-organizations.metadata.createdByUserId',
-    'metadata.createdDate': 'ui-organizations.metadata.createdDate',
-    'metadata.updatedByUserId': 'ui-organizations.metadata.updatedByUserId',
-    'metadata.updatedDate': 'ui-organizations.metadata.updatedDate',
-
     'name': 'ui-organizations.summary.name',
     'code': 'ui-organizations.summary.code',
     'description': 'ui-organizations.summary.description',

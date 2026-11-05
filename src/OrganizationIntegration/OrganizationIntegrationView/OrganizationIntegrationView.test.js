@@ -23,7 +23,11 @@ import {
 
 import { integrationConfig } from 'fixtures';
 import { ORGANIZATIONS_ROUTE } from '../../common/constants';
-import { EXPORT_TYPES } from '../constants';
+import {
+  EXPORT_TYPES,
+  FILE_FORMAT,
+  TRANSMISSION_METHOD,
+} from '../constants';
 import {
   useIntegrationConfig,
   useIntegrationConfigMutation,
@@ -52,6 +56,7 @@ jest.mock('@folio/stripes-acq-components', () => ({
 }));
 jest.mock('../../common/hooks', () => ({
   useAcqMethods: jest.fn().mockReturnValue({ acqMethods: [], isLoading: false }),
+  useEmailTemplate: jest.fn().mockReturnValue({ template: undefined }),
   useIntegrationConfig: jest.fn(),
   useIntegrationConfigMutation: jest.fn().mockReturnValue({ mutateIntegrationConfig: jest.fn() }),
 }));
@@ -146,6 +151,49 @@ describe('OrganizationIntegrationView', () => {
       );
 
       expect(screen.queryByText(IN_USE_WARNING)).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Transmission method', () => {
+    const renderWithMethod = (transmissionMethod, fileFormat) => {
+      useIntegrationConfig.mockReturnValue({
+        integrationConfig: {
+          ...integrationConfig,
+          exportTypeSpecificParameters: {
+            vendorEdiOrdersExportConfig: {
+              ...integrationConfig.exportTypeSpecificParameters.vendorEdiOrdersExportConfig,
+              transmissionMethod,
+              fileFormat,
+            },
+          },
+        },
+      });
+
+      return renderOrganizationIntegrationView();
+    };
+
+    it('should show the email details instead of the FTP and EDI settings for email integrations', () => {
+      renderWithMethod(TRANSMISSION_METHOD.email, FILE_FORMAT.csv);
+
+      expect(screen.getByText('ui-organizations.integration.email')).toBeInTheDocument();
+      expect(screen.queryByText('ui-organizations.integration.ftp')).not.toBeInTheDocument();
+      expect(screen.queryByText('ui-organizations.integration.edi')).not.toBeInTheDocument();
+      expect(screen.getByText('ui-organizations.integration.scheduling.scheduleEmail')).toBeInTheDocument();
+    });
+
+    it('should keep the EDI settings for email integrations with EDI files', () => {
+      renderWithMethod(TRANSMISSION_METHOD.email, FILE_FORMAT.edi);
+
+      expect(screen.getByText('ui-organizations.integration.email')).toBeInTheDocument();
+      expect(screen.getByText('ui-organizations.integration.edi')).toBeInTheDocument();
+    });
+
+    it('should show the FTP settings for FTP integrations', () => {
+      renderWithMethod(TRANSMISSION_METHOD.ftp, FILE_FORMAT.edi);
+
+      expect(screen.getByText('ui-organizations.integration.ftp')).toBeInTheDocument();
+      expect(screen.queryByText('ui-organizations.integration.email')).not.toBeInTheDocument();
+      expect(screen.getByText('ui-organizations.integration.scheduling.scheduleEDI')).toBeInTheDocument();
     });
   });
 

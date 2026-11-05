@@ -3,6 +3,9 @@
 ## 7.1.0 (IN PROGRESS)
 
 * Keep assigned account numbers editable in the integration form and warn about duplicates. Refs UIORGS-481.
+* Do not show metadata fields in version view. Refs UIORGS-482.
+* Add email as transmission method for ordering integrations. Refs UIORGS-477.
+* Add claim email template and acquisition method catch-all to claiming integrations. Refs UIORGS-484.
 
 ## [7.0.0](https://github.com/folio-org/ui-organizations/tree/v7.0.0) (2026-04-17)
 [Full Changelog](https://github.com/folio-org/ui-organizations/compare/v6.0.1...v7.0.0)

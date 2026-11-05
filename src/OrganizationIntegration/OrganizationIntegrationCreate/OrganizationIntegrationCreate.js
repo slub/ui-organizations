@@ -121,7 +121,6 @@ export const OrganizationIntegrationCreate = ({ orgId }) => {
       organization={organization}
       onSubmit={mutateIntegrationConfig}
       onClose={closeForm}
-      organizationEmails={organization?.emails}
       paneTitle={<FormattedMessage id="ui-organizations.integration.create.paneTitle" />}
     />
   );

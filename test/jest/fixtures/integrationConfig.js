@@ -17,7 +17,8 @@ export const integrationConfig = {
       },
       ediEmail: {
         emailFrom: 'orders@library.org',
-        recipient: 'primaryEmail',
+        emailTo: 'orders@vendor.org',
+        emailBcc: ['archive@library.org'],
         emailTemplate: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
       },
       ediSchedule: {

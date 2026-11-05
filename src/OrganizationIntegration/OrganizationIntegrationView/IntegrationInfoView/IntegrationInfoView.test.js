@@ -23,4 +23,21 @@ describe('IntegrationInfoView', () => {
     expect(screen.getByText('ui-organizations.integration.info')).toBeInTheDocument();
     expect(screen.getByText(defaultProps.integrationConfig.configName)).toBeInTheDocument();
   });
+
+  it('should render the names of the acquisition methods', () => {
+    renderIntegrationInfoView({
+      integrationConfig: {
+        ...defaultProps.integrationConfig,
+        ediConfig: { defaultAcquisitionMethods: ['purchase-id'] },
+      },
+      acqMethods: [
+        { id: 'purchase-id', value: 'Purchase' },
+        { id: 'gift-id', value: 'Gift' },
+      ],
+    });
+
+    expect(screen.getByText('ui-organizations.integration.info.acquisitionMethods')).toBeInTheDocument();
+    expect(screen.getByText('Purchase')).toBeInTheDocument();
+    expect(screen.queryByText('Gift')).not.toBeInTheDocument();
+  });
 });

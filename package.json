@@ -22,6 +22,7 @@
       "acquisition-organization-events": "1.0",
       "banking-information": "1.0",
       "data-export-spring": "1.0 2.0",
+      "email.settings": "1.0",
       "configuration": "2.0",
       "organizations.organizations": "1.0",
       "organizations-storage.categories": "1.1",
@@ -30,6 +31,7 @@
       "organizations-storage.interfaces": "2.1",
       "organizations-storage.privileged-contacts": "1.0",
       "organizations-storage.settings": "1.1",
+      "template-engine": "2.3",
       "tags": "1.0",
       "users": "15.1 16.0"
     },
@@ -91,6 +93,7 @@
           "module.organizations.enabled",
           "data-export.config.collection.get",
           "data-export.config.item.get",
+          "email.settings.collection.get",
           "erm.agreements.collection.get",
           "orders.acquisition-methods.collection.get",
           "orders.acquisition-method.item.get",
@@ -104,6 +107,8 @@
           "organizations-storage.interfaces.item.get",
           "organizations-storage.interfaces.collection.get",
           "organizations-storage.settings.collection.get",
+          "templates.collection.get",
+          "templates.item.get",
           "ui-organizations.third-party-services.execute"
         ]
       },

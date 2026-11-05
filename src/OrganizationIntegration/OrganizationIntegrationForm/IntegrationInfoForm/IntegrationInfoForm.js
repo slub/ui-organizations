@@ -1,6 +1,9 @@
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
-import { useMemo } from 'react';
+import {
+  useMemo,
+  useState,
+} from 'react';
 import {
   Field,
   useForm,
@@ -25,6 +28,7 @@ import {
   EXPORT_TYPES,
   FILE_FORMAT,
   INTEGRATION_TYPE,
+  ORDERING_TRANSMISSION_METHODS,
   TRANSMISSION_METHOD,
 } from '../../constants';
 import { AccountNumbersInUseBanner } from '../../AccountNumbersInUseBanner';
@@ -44,10 +48,13 @@ import {
   isTransmissionMethodFTP,
   validateAccountNumbersField,
   validateAcquisitionMethodsField,
+  validateRequiredList,
 } from '../../utils';
 
 const ACCOUNT_NO_LIST_FIELD = 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.accountNoList';
+const ACQ_METHODS_FIELD = 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.defaultAcquisitionMethods';
 const NO_ACCOUNTS = [];
+const NO_ACQ_METHODS = [];
 
 export const IntegrationInfoForm = ({
   acqMethods,
@@ -84,6 +91,13 @@ export const IntegrationInfoForm = ({
   const { id, type } = formValues || {};
   const storedAccounts = get(initialValues, ACCOUNT_NO_LIST_FIELD) || NO_ACCOUNTS;
   const selectedAccounts = get(formValues, ACCOUNT_NO_LIST_FIELD) || NO_ACCOUNTS;
+  const selectedAcqMethods = get(formValues, ACQ_METHODS_FIELD) || NO_ACQ_METHODS;
+
+  // Claiming: an empty list covers every acquisition method that no other claiming integration with
+  // the same transmission method lists. The checkbox only makes that visible, nothing is stored for it.
+  const [coversRemainingAcqMethods, setCoversRemainingAcqMethods] = useState(
+    isClaimingType && selectedAcqMethods.length === 0,
+  );
 
   const accountOptions = useMemo(() => {
     // Stored accounts stay selectable until the form is saved, selected ones must not disappear on type change.
@@ -94,19 +108,13 @@ export const IntegrationInfoForm = ({
   const acqMethodOptions = useMemo(() => getAcqMethodOptions(acqMethods), [acqMethods]);
 
   const integrationTypeOptions = useMemo(() => getIntegrationTypeOptions(intl), [intl]);
-  const transmissionMethodOptions = useMemo(() => getTransmissionMethodOptions(intl), [intl]);
-  // Ordering: only FTP and Email (no File download — original folio-org behavior)
-  const orderingTransmissionMethodOptions = useMemo(
-    () => transmissionMethodOptions.filter(o => o.value !== TRANSMISSION_METHOD.fileDownLoad),
-    [transmissionMethodOptions],
+  const transmissionMethodOptions = useMemo(
+    () => (isOrderingType
+      ? getTransmissionMethodOptions(intl, ORDERING_TRANSMISSION_METHODS)
+      : getClaimingTransmissionMethodOptions(intl)),
+    [intl, isOrderingType],
   );
-  const claimingTransmissionMethodOptions = useMemo(() => getClaimingTransmissionMethodOptions(intl), [intl]);
   const fileFormatOptions = useMemo(() => getFileFormatOptions(), []);
-  // For email: CSV and EDI only (no EML), CSV is the default
-  const emailFileFormatOptions = useMemo(
-    () => fileFormatOptions.filter(o => o.value !== FILE_FORMAT.eml),
-    [fileFormatOptions],
-  );
 
   const configPath = 'exportTypeSpecificParameters.vendorEdiOrdersExportConfig';
 
@@ -128,11 +136,19 @@ export const IntegrationInfoForm = ({
           change(`${configPath}.ediSchedule`, null);
           // The default flag only matters for order export and its field is hidden for claiming.
           change(`${configPath}.isDefaultConfig`, false);
+          setCoversRemainingAcqMethods(selectedAcqMethods.length === 0);
           break;
         }
         default: break;
       }
     });
+  };
+
+  const handleCoversRemainingAcqMethodsChange = ({ target: { checked } }) => {
+    setCoversRemainingAcqMethods(checked);
+
+    // `undefined` drops the key, so the request carries no list at all, as a new integration always did.
+    if (checked) change(ACQ_METHODS_FIELD, undefined);
   };
 
   const handleTransmissionMethodChange = ({ target: { value } }) => {
@@ -161,6 +177,7 @@ export const IntegrationInfoForm = ({
       {isClaimingType && (
         <AcquisitionMethodsInUseBanner
           acqMethods={acqMethods}
+          coversRemainingAcqMethods={coversRemainingAcqMethods}
           integrationConfigs={integrationConfigs}
           integrationConfig={formValues}
         />
@@ -214,7 +231,7 @@ export const IntegrationInfoForm = ({
         <Col xs={3}>
           <Field
             component={Select}
-            dataOptions={isOrderingType ? orderingTransmissionMethodOptions : claimingTransmissionMethodOptions}
+            dataOptions={transmissionMethodOptions}
             fullWidth
             label={<FormattedMessage id="ui-organizations.integration.info.transmissionMethod" />}
             name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.transmissionMethod"
@@ -225,7 +242,7 @@ export const IntegrationInfoForm = ({
         <Col xs={3}>
           <Field
             component={Select}
-            dataOptions={isMethodEmail ? emailFileFormatOptions : fileFormatOptions}
+            dataOptions={fileFormatOptions}
             disabled={isOrderingType && isMethodFTP}
             fullWidth
             label={<FormattedMessage id="ui-organizations.integration.info.fileFormat" />}
@@ -238,26 +255,38 @@ export const IntegrationInfoForm = ({
         <Col
           data-test-edi-acq-methods
           xs={6}
-          md={3}
+          md={4}
         >
-          <Field
-            label={<FormattedMessage id="ui-organizations.integration.edi.defaultAcquisitionMethods" />}
-            name="exportTypeSpecificParameters.vendorEdiOrdersExportConfig.ediConfig.defaultAcquisitionMethods"
-            component={Select}
-            dataOptions={acqMethodOptions}
-            fullWidth
-            multiple
-            required={isClaimingType}
-            validate={validateAcquisitionMethodsField}
-            validateFields={[]}
-          />
+          {isClaimingType && (
+            <Checkbox
+              checked={coversRemainingAcqMethods}
+              fullWidth
+              label={<FormattedMessage id="ui-organizations.integration.info.acquisitionMethods.allRemaining" />}
+              onChange={handleCoversRemainingAcqMethodsChange}
+              vertical
+            />
+          )}
+          {!(isClaimingType && coversRemainingAcqMethods) && (
+            <Field
+              label={<FormattedMessage id="ui-organizations.integration.info.acquisitionMethods" />}
+              name={ACQ_METHODS_FIELD}
+              component={Select}
+              dataOptions={acqMethodOptions}
+              fullWidth
+              multiple
+              size={8}
+              required={(isOrderingType && isMethodEmail) || isClaimingType}
+              validate={isClaimingType ? validateRequiredList : validateAcquisitionMethodsField}
+              validateFields={[]}
+            />
+          )}
         </Col>
         {
           showAccountNumbers && (
             <Col
               data-test-edi-account-numbers
               xs={6}
-              md={3}
+              md={4}
             >
               <Field
                 label={<FormattedMessage id="ui-organizations.integration.edi.accountNumbers" />}

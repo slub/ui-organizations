@@ -8,6 +8,7 @@ import {
 } from '@folio/stripes-acq-components';
 
 import {
+  CLAIMING_TRANSMISSION_METHODS,
   EDI_NAMING_TOKENS,
   EXPORT_TYPES,
   FILE_FORMAT,
@@ -129,14 +130,16 @@ export const getIntegrationTypeOptions = (intl) => {
   }));
 };
 
-export const getTransmissionMethodOptions = (intl) => {
-  return Object.entries(TRANSMISSION_METHOD).map(([key, value]) => ({
-    label: intl.formatMessage({ id: `ui-organizations.integration.info.transmissionMethod.${key}` }),
-    value,
-  }));
+export const getTransmissionMethodOptions = (intl, methods = Object.values(TRANSMISSION_METHOD)) => {
+  return Object.entries(TRANSMISSION_METHOD)
+    .filter(([, value]) => methods.includes(value))
+    .map(([key, value]) => ({
+      label: intl.formatMessage({ id: `ui-organizations.integration.info.transmissionMethod.${key}` }),
+      value,
+    }));
 };
 
-// Claiming offers every method plus the planned ones as disabled options, so they show up in discussions.
+// Claiming offers its methods plus the planned ones as disabled options, so they show up in discussions.
 export const getClaimingTransmissionMethodOptions = (intl) => {
   const plannedOptions = Object.entries(PLANNED_TRANSMISSION_METHOD).map(([key, value]) => ({
     label: intl.formatMessage({ id: `ui-organizations.integration.info.transmissionMethod.${key}` }),
@@ -144,7 +147,7 @@ export const getClaimingTransmissionMethodOptions = (intl) => {
     disabled: true,
   }));
 
-  return [...getTransmissionMethodOptions(intl), ...plannedOptions];
+  return [...getTransmissionMethodOptions(intl, CLAIMING_TRANSMISSION_METHODS), ...plannedOptions];
 };
 
 export const getFileFormatOptions = () => {
@@ -205,22 +208,40 @@ export const getTemplateScope = (config) => {
   return isClaimingIntegration(config) ? TEMPLATE_SCOPE.claiming : TEMPLATE_SCOPE.ordering;
 };
 
-// Acquisition methods that other claiming integrations of the vendor with the same transmission method
-// already cover, mapped to the names of those integrations. One channel should resolve to one integration.
-export const getAcquisitionMethodsInUse = (integrations, currentIntegration) => {
-  const methodsInUse = new Map();
+// The other claiming integrations of the vendor on the same transmission method: the claim stage
+// names a channel, so one channel should resolve to one integration per acquisition method.
+const getOtherClaimingIntegrationsOnChannel = (integrations, currentIntegration) => {
   const currentConfig = currentIntegration?.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig;
 
-  (integrations || [])
-    .filter(integration => {
-      const config = integration.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig;
+  return (integrations || []).filter(integration => {
+    const config = integration.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig;
 
-      return (
-        integration.id !== currentIntegration?.id
-        && integration.type === EXPORT_TYPES.claims
-        && config?.transmissionMethod === currentConfig?.transmissionMethod
-      );
-    })
+    return (
+      integration.id !== currentIntegration?.id
+      && integration.type === EXPORT_TYPES.claims
+      && config?.transmissionMethod === currentConfig?.transmissionMethod
+    );
+  });
+};
+
+// Names of the other claiming integrations on the channel without acquisition methods, i.e. the ones
+// that already cover the remaining methods there.
+export const getRemainingAcqMethodsIntegrationNames = (integrations, currentIntegration) => {
+  return getOtherClaimingIntegrationsOnChannel(integrations, currentIntegration)
+    .map(integration => ({
+      integration,
+      config: integration.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig,
+    }))
+    .filter(({ config }) => !config?.ediConfig?.defaultAcquisitionMethods?.length)
+    .map(({ integration, config }) => config?.configName || integration.id);
+};
+
+// Acquisition methods that other claiming integrations of the vendor with the same transmission method
+// already cover, mapped to the names of those integrations.
+export const getAcquisitionMethodsInUse = (integrations, currentIntegration) => {
+  const methodsInUse = new Map();
+
+  getOtherClaimingIntegrationsOnChannel(integrations, currentIntegration)
     .forEach(integration => {
       const { configName, ediConfig } = integration.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig || {};
 
@@ -279,14 +300,18 @@ export const validateAccountNumbersField = (...params) => {
   return createConditionalValidator(isFileFormatEDI, validateRequired)(...params);
 };
 
+const isEmailOrderingIntegration = (config) => {
+  return isOrderingIntegration(config) && isTransmissionMethodEmail(config);
+};
+
 // `validateRequired` lets an empty array pass, so multi-selects need their own check.
-const validateRequiredList = (value) => {
+export const validateRequiredList = (value) => {
   return value?.length ? undefined : <FormattedMessage id="stripes-acq-components.validation.required" />;
 };
 
-// Claiming resolves the integration by acquisition method, so the list must not be empty there.
+// The export job resolves email integrations by acquisition method, so the list must not be empty.
 export const validateAcquisitionMethodsField = (...params) => {
-  return createConditionalValidator(isClaimingIntegration, validateRequiredList)(...params);
+  return createConditionalValidator(isEmailOrderingIntegration, validateRequiredList)(...params);
 };
 
 export const validateVendorEDICode = (...params) => {

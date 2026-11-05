@@ -366,10 +366,8 @@ exports[`OrganizationForm should render correct form with metadata 1`] = `
                             class="col-xs-6 col-md-3"
                           >
                             <div
-                              aria-expanded="false"
                               class="multiSelectContainer"
                               id="organizations-type"
-                              role="application"
                             >
                               <div
                                 aria-live="assertive"
@@ -399,11 +397,7 @@ exports[`OrganizationForm should render correct form with metadata 1`] = `
                                 class="multiSelectControlWrapper"
                               >
                                 <div
-                                  aria-describedby="multi-describe-control-organizations-type"
-                                  aria-labelledby="organizations-type-label multi-value-status-organizations-type"
                                   class="multiSelectControl formControl"
-                                  role="searchbox"
-                                  tabindex="0"
                                 >
                                   <div
                                     class="multiSelectControlGroup"
@@ -412,8 +406,9 @@ exports[`OrganizationForm should render correct form with metadata 1`] = `
                                       aria-activedescendant=""
                                       aria-autocomplete="list"
                                       aria-controls="multiselect-option-list-organizations-type"
+                                      aria-describedby="multi-describe-control-organizations-type"
                                       aria-expanded="false"
-                                      aria-labelledby="organizationFormTypesLabel"
+                                      aria-labelledby="organizations-type-label organizationFormTypesLabel multi-value-status-organizations-type"
                                       autocomplete="off"
                                       class="multiSelectFilterField"
                                       id="organizations-type-input"
@@ -513,10 +508,8 @@ exports[`OrganizationForm should render correct form with metadata 1`] = `
                             class="col-xs-6 col-md-3"
                           >
                             <div
-                              aria-expanded="false"
                               class="multiSelectContainer"
                               id="org-acq-units"
-                              role="application"
                             >
                               <div
                                 aria-live="assertive"
@@ -546,11 +539,7 @@ exports[`OrganizationForm should render correct form with metadata 1`] = `
                                 class="multiSelectControlWrapper"
                               >
                                 <div
-                                  aria-describedby="multi-describe-control-org-acq-units"
-                                  aria-labelledby="org-acq-units-label multi-value-status-org-acq-units"
                                   class="multiSelectControl formControl"
-                                  role="searchbox"
-                                  tabindex="0"
                                 >
                                   <div
                                     class="multiSelectControlGroup"
@@ -559,8 +548,9 @@ exports[`OrganizationForm should render correct form with metadata 1`] = `
                                       aria-activedescendant=""
                                       aria-autocomplete="list"
                                       aria-controls="multiselect-option-list-org-acq-units"
+                                      aria-describedby="multi-describe-control-org-acq-units"
                                       aria-expanded="false"
-                                      aria-labelledby="org-acq-units-label"
+                                      aria-labelledby="org-acq-units-label org-acq-units-label multi-value-status-org-acq-units"
                                       autocomplete="off"
                                       class="multiSelectFilterField"
                                       id="org-acq-units-input"
@@ -1442,10 +1432,8 @@ exports[`OrganizationForm should render correct non-vendor form structure 1`] = 
                             class="col-xs-6 col-md-3"
                           >
                             <div
-                              aria-expanded="false"
                               class="multiSelectContainer"
                               id="organizations-type"
-                              role="application"
                             >
                               <div
                                 aria-live="assertive"
@@ -1475,11 +1463,7 @@ exports[`OrganizationForm should render correct non-vendor form structure 1`] = 
                                 class="multiSelectControlWrapper"
                               >
                                 <div
-                                  aria-describedby="multi-describe-control-organizations-type"
-                                  aria-labelledby="organizations-type-label multi-value-status-organizations-type"
                                   class="multiSelectControl formControl"
-                                  role="searchbox"
-                                  tabindex="0"
                                 >
                                   <div
                                     class="multiSelectControlGroup"
@@ -1488,8 +1472,9 @@ exports[`OrganizationForm should render correct non-vendor form structure 1`] = 
                                       aria-activedescendant=""
                                       aria-autocomplete="list"
                                       aria-controls="multiselect-option-list-organizations-type"
+                                      aria-describedby="multi-describe-control-organizations-type"
                                       aria-expanded="false"
-                                      aria-labelledby="organizationFormTypesLabel"
+                                      aria-labelledby="organizations-type-label organizationFormTypesLabel multi-value-status-organizations-type"
                                       autocomplete="off"
                                       class="multiSelectFilterField"
                                       id="organizations-type-input"
@@ -1589,10 +1574,8 @@ exports[`OrganizationForm should render correct non-vendor form structure 1`] = 
                             class="col-xs-6 col-md-3"
                           >
                             <div
-                              aria-expanded="false"
                               class="multiSelectContainer"
                               id="org-acq-units"
-                              role="application"
                             >
                               <div
                                 aria-live="assertive"
@@ -1622,11 +1605,7 @@ exports[`OrganizationForm should render correct non-vendor form structure 1`] = 
                                 class="multiSelectControlWrapper"
                               >
                                 <div
-                                  aria-describedby="multi-describe-control-org-acq-units"
-                                  aria-labelledby="org-acq-units-label multi-value-status-org-acq-units"
                                   class="multiSelectControl formControl"
-                                  role="searchbox"
-                                  tabindex="0"
                                 >
                                   <div
                                     class="multiSelectControlGroup"
@@ -1635,8 +1614,9 @@ exports[`OrganizationForm should render correct non-vendor form structure 1`] = 
                                       aria-activedescendant=""
                                       aria-autocomplete="list"
                                       aria-controls="multiselect-option-list-org-acq-units"
+                                      aria-describedby="multi-describe-control-org-acq-units"
                                       aria-expanded="false"
-                                      aria-labelledby="org-acq-units-label"
+                                      aria-labelledby="org-acq-units-label org-acq-units-label multi-value-status-org-acq-units"
                                       autocomplete="off"
                                       class="multiSelectFilterField"
                                       id="org-acq-units-input"
@@ -2518,10 +2498,8 @@ exports[`OrganizationForm should render correct vendor form structure 1`] = `
                             class="col-xs-6 col-md-3"
                           >
                             <div
-                              aria-expanded="false"
                               class="multiSelectContainer"
                               id="organizations-type"
-                              role="application"
                             >
                               <div
                                 aria-live="assertive"
@@ -2551,11 +2529,7 @@ exports[`OrganizationForm should render correct vendor form structure 1`] = `
                                 class="multiSelectControlWrapper"
                               >
                                 <div
-                                  aria-describedby="multi-describe-control-organizations-type"
-                                  aria-labelledby="organizations-type-label multi-value-status-organizations-type"
                                   class="multiSelectControl formControl"
-                                  role="searchbox"
-                                  tabindex="0"
                                 >
                                   <div
                                     class="multiSelectControlGroup"
@@ -2564,8 +2538,9 @@ exports[`OrganizationForm should render correct vendor form structure 1`] = `
                                       aria-activedescendant=""
                                       aria-autocomplete="list"
                                       aria-controls="multiselect-option-list-organizations-type"
+                                      aria-describedby="multi-describe-control-organizations-type"
                                       aria-expanded="false"
-                                      aria-labelledby="organizationFormTypesLabel"
+                                      aria-labelledby="organizations-type-label organizationFormTypesLabel multi-value-status-organizations-type"
                                       autocomplete="off"
                                       class="multiSelectFilterField"
                                       id="organizations-type-input"
@@ -2665,10 +2640,8 @@ exports[`OrganizationForm should render correct vendor form structure 1`] = `
                             class="col-xs-6 col-md-3"
                           >
                             <div
-                              aria-expanded="false"
                               class="multiSelectContainer"
                               id="org-acq-units"
-                              role="application"
                             >
                               <div
                                 aria-live="assertive"
@@ -2698,11 +2671,7 @@ exports[`OrganizationForm should render correct vendor form structure 1`] = `
                                 class="multiSelectControlWrapper"
                               >
                                 <div
-                                  aria-describedby="multi-describe-control-org-acq-units"
-                                  aria-labelledby="org-acq-units-label multi-value-status-org-acq-units"
                                   class="multiSelectControl formControl"
-                                  role="searchbox"
-                                  tabindex="0"
                                 >
                                   <div
                                     class="multiSelectControlGroup"
@@ -2711,8 +2680,9 @@ exports[`OrganizationForm should render correct vendor form structure 1`] = `
                                       aria-activedescendant=""
                                       aria-autocomplete="list"
                                       aria-controls="multiselect-option-list-org-acq-units"
+                                      aria-describedby="multi-describe-control-org-acq-units"
                                       aria-expanded="false"
-                                      aria-labelledby="org-acq-units-label"
+                                      aria-labelledby="org-acq-units-label org-acq-units-label multi-value-status-org-acq-units"
                                       autocomplete="off"
                                       class="multiSelectFilterField"
                                       id="org-acq-units-input"
@@ -3286,10 +3256,8 @@ exports[`OrganizationForm should render correct vendor form structure 1`] = `
                                 data-test-currency="true"
                               >
                                 <div
-                                  aria-expanded="false"
                                   class="multiSelectContainer"
                                   id="multiselect-:rc:"
-                                  role="application"
                                 >
                                   <div
                                     aria-live="assertive"
@@ -3319,11 +3287,7 @@ exports[`OrganizationForm should render correct vendor form structure 1`] = `
                                     class="multiSelectControlWrapper"
                                   >
                                     <div
-                                      aria-describedby="multi-describe-control-multiselect-:rc:"
-                                      aria-labelledby="multiselect-:rc:-label multi-value-status-multiselect-:rc:"
                                       class="multiSelectControl formControl"
-                                      role="searchbox"
-                                      tabindex="0"
                                     >
                                       <div
                                         class="multiSelectControlGroup"
@@ -3332,8 +3296,9 @@ exports[`OrganizationForm should render correct vendor form structure 1`] = `
                                           aria-activedescendant=""
                                           aria-autocomplete="list"
                                           aria-controls="multiselect-option-list-multiselect-:rc:"
+                                          aria-describedby="multi-describe-control-multiselect-:rc:"
                                           aria-expanded="false"
-                                          aria-labelledby="vendorFormCurrenciesLabel"
+                                          aria-labelledby="multiselect-:rc:-label vendorFormCurrenciesLabel multi-value-status-multiselect-:rc:"
                                           autocomplete="off"
                                           class="multiSelectFilterField"
                                           id="multiselect-:rc:-input"

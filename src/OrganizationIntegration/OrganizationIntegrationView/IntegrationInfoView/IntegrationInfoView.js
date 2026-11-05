@@ -126,7 +126,7 @@ const IntegrationInfoView = ({
         <Col
           data-test-edi-acq-methods
           xs={6}
-          md={3}
+          md={4}
         >
           <KeyValue
             label={<FormattedMessage id="ui-organizations.integration.info.acquisitionMethods" />}
@@ -139,7 +139,7 @@ const IntegrationInfoView = ({
             <Col
               data-test-edi-account-numbers
               xs={6}
-              md={3}
+              md={4}
             >
               <KeyValue
                 label={<FormattedMessage id="ui-organizations.integration.edi.accountNumbers" />}

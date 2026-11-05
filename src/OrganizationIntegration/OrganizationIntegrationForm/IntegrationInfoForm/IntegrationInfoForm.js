@@ -255,7 +255,7 @@ export const IntegrationInfoForm = ({
         <Col
           data-test-edi-acq-methods
           xs={6}
-          md={3}
+          md={4}
         >
           {isClaimingType && (
             <Checkbox
@@ -274,6 +274,7 @@ export const IntegrationInfoForm = ({
               dataOptions={acqMethodOptions}
               fullWidth
               multiple
+              size={8}
               required={(isOrderingType && isMethodEmail) || isClaimingType}
               validate={isClaimingType ? validateRequiredList : validateAcquisitionMethodsField}
               validateFields={[]}
@@ -285,7 +286,7 @@ export const IntegrationInfoForm = ({
             <Col
               data-test-edi-account-numbers
               xs={6}
-              md={3}
+              md={4}
             >
               <Field
                 label={<FormattedMessage id="ui-organizations.integration.edi.accountNumbers" />}

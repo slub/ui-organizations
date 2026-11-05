@@ -208,22 +208,40 @@ export const getTemplateScope = (config) => {
   return isClaimingIntegration(config) ? TEMPLATE_SCOPE.claiming : TEMPLATE_SCOPE.ordering;
 };
 
-// Acquisition methods that other claiming integrations of the vendor with the same transmission method
-// already cover, mapped to the names of those integrations. One channel should resolve to one integration.
-export const getAcquisitionMethodsInUse = (integrations, currentIntegration) => {
-  const methodsInUse = new Map();
+// The other claiming integrations of the vendor on the same transmission method: the claim stage
+// names a channel, so one channel should resolve to one integration per acquisition method.
+const getOtherClaimingIntegrationsOnChannel = (integrations, currentIntegration) => {
   const currentConfig = currentIntegration?.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig;
 
-  (integrations || [])
-    .filter(integration => {
-      const config = integration.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig;
+  return (integrations || []).filter(integration => {
+    const config = integration.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig;
 
-      return (
-        integration.id !== currentIntegration?.id
-        && integration.type === EXPORT_TYPES.claims
-        && config?.transmissionMethod === currentConfig?.transmissionMethod
-      );
-    })
+    return (
+      integration.id !== currentIntegration?.id
+      && integration.type === EXPORT_TYPES.claims
+      && config?.transmissionMethod === currentConfig?.transmissionMethod
+    );
+  });
+};
+
+// Names of the other claiming integrations on the channel without acquisition methods, i.e. the ones
+// that already cover the remaining methods there.
+export const getRemainingAcqMethodsIntegrationNames = (integrations, currentIntegration) => {
+  return getOtherClaimingIntegrationsOnChannel(integrations, currentIntegration)
+    .map(integration => ({
+      integration,
+      config: integration.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig,
+    }))
+    .filter(({ config }) => !config?.ediConfig?.defaultAcquisitionMethods?.length)
+    .map(({ integration, config }) => config?.configName || integration.id);
+};
+
+// Acquisition methods that other claiming integrations of the vendor with the same transmission method
+// already cover, mapped to the names of those integrations.
+export const getAcquisitionMethodsInUse = (integrations, currentIntegration) => {
+  const methodsInUse = new Map();
+
+  getOtherClaimingIntegrationsOnChannel(integrations, currentIntegration)
     .forEach(integration => {
       const { configName, ediConfig } = integration.exportTypeSpecificParameters?.vendorEdiOrdersExportConfig || {};
 
@@ -287,7 +305,7 @@ const isEmailOrderingIntegration = (config) => {
 };
 
 // `validateRequired` lets an empty array pass, so multi-selects need their own check.
-const validateRequiredList = (value) => {
+export const validateRequiredList = (value) => {
   return value?.length ? undefined : <FormattedMessage id="stripes-acq-components.validation.required" />;
 };
 

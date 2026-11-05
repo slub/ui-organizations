@@ -30,11 +30,16 @@ const IntegrationInfoView = ({
   const defaultAcquisitionMethodsLabels = useMemo(() => {
     const defaultAcquisitionMethods = integrationConfig?.ediConfig?.defaultAcquisitionMethods || [];
 
+    // Claiming: an empty list covers every method that no other integration on the channel lists.
+    if (isClaimingType && !defaultAcquisitionMethods.length) {
+      return <FormattedMessage id="ui-organizations.integration.info.acquisitionMethods.allRemaining" />;
+    }
+
     return acqMethods
       .filter(({ id }) => defaultAcquisitionMethods.includes(id))
       .map(({ value }) => value)
       .join(', ');
-  }, [integrationConfig?.ediConfig?.defaultAcquisitionMethods, acqMethods]);
+  }, [integrationConfig?.ediConfig?.defaultAcquisitionMethods, acqMethods, isClaimingType]);
 
   const integrationType = useMemo(() => {
     const translationKey = Object.entries(INTEGRATION_TYPE).find(([, value]) => {
